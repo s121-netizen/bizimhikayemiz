@@ -56,7 +56,7 @@ h1 {
   box-shadow: 0 25px 55px rgba(0,0,0,0.35);
 }
 
-.card p, .card h2 {
+.card p {
   color: #fff;
   text-shadow: 0 2px 12px rgba(0,0,0,0.45);
 }
@@ -95,6 +95,15 @@ h1 {
   gap: 14px;
   overflow-x: auto;
   padding-bottom: 12px;
+  scroll-behavior: smooth;
+}
+
+.gallery-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.gallery-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
 }
 
 .gallery-item {
@@ -198,19 +207,24 @@ footer {
 <div class="gallery">
   <h2>birlikte biriken anlar</h2>
 
-  <div class="gallery-scroll">
+  <div class="gallery-scroll" id="gallery">
+    <!-- FOTO EKLEME ŞABLONU -->
     <div class="gallery-item">
       <img src="https://i.imgur.com/VqGB3wv.jpeg" data-date="1.1.1111">
       <span class="gallery-date">1.1.1111</span>
     </div>
+
     <div class="gallery-item">
       <img src="https://i.imgur.com/xW8Z5FU.jpeg" data-date="2.2.2222">
       <span class="gallery-date">2.2.2222</span>
     </div>
+
     <div class="gallery-item">
       <img src="https://i.imgur.com/hFsiwdH.jpeg" data-date="3.3.3333">
       <span class="gallery-date">3.3.3333</span>
     </div>
+
+    <!-- 226 FOTOYU BURAYA AYNI ŞEKİLDE EKLE -->
   </div>
 </div>
 
@@ -235,10 +249,10 @@ const images = Array.from(document.querySelectorAll(".gallery-item img"));
 let index = 0;
 
 images.forEach((img,i)=>{
-  img.onclick = ()=>{
+  img.addEventListener("click", ()=>{
     index = i;
     openLightbox();
-  };
+  });
 });
 
 function openLightbox(){
@@ -249,18 +263,18 @@ function openLightbox(){
 
 document.querySelector(".close").onclick = ()=> lightbox.style.display="none";
 document.querySelector(".arrow.right").onclick = ()=>{
-  index = (index+1)%images.length;
+  index = (index + 1) % images.length;
   openLightbox();
 };
 document.querySelector(".arrow.left").onclick = ()=>{
-  index = (index-1+images.length)%images.length;
+  index = (index - 1 + images.length) % images.length;
   openLightbox();
 };
 
 document.addEventListener("keydown", e=>{
-  if(e.key==="Escape") lightbox.style.display="none";
-  if(e.key==="ArrowRight") document.querySelector(".arrow.right").click();
-  if(e.key==="ArrowLeft") document.querySelector(".arrow.left").click();
+  if(e.key === "Escape") lightbox.style.display = "none";
+  if(e.key === "ArrowRight") document.querySelector(".arrow.right").click();
+  if(e.key === "ArrowLeft") document.querySelector(".arrow.left").click();
 });
 </script>
 
