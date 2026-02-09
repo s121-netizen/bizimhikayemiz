@@ -29,7 +29,6 @@ body {
   text-align: center;
 }
 
-/* BAŞLIK */
 h1 {
   font-family: 'Playfair Display', serif;
   font-size: 40px;
@@ -42,7 +41,6 @@ h1 {
   margin-bottom: 60px;
 }
 
-/* CARD */
 .card {
   border-radius: 26px;
   padding: 48px 32px;
@@ -56,7 +54,7 @@ h1 {
   box-shadow: 0 25px 55px rgba(0,0,0,0.35);
 }
 
-.card p, .card h2 {
+.card p {
   color: #fff;
   text-shadow: 0 2px 12px rgba(0,0,0,0.45);
 }
@@ -79,7 +77,6 @@ h1 {
     url("https://i.imgur.com/hFsiwdH.jpeg");
 }
 
-/* GALERİ */
 .gallery {
   margin-top: 80px;
 }
@@ -179,9 +176,7 @@ footer {
 <h1>aynı şehirde olmasak da<br>aynı hislerdeyiz</h1>
 <div class="subtitle">bu sayfa bir mesafeye değil, bir hisse ait.</div>
 
-<div class="card card-one">
-  <p>hislerim hep sende.</p>
-</div>
+<div class="card card-one"><p>hislerim hep sende.</p></div>
 
 <div class="card card-two">
   <iframe src="https://open.spotify.com/embed/playlist/49IHmn6WGDS5Vnz5OgU57Y"
@@ -194,7 +189,6 @@ footer {
   <p>aynı anda özlemek,<br>bazen yan yana olmaktan daha yakın.</p>
 </div>
 
-<!-- GALERİ -->
 <div class="gallery">
   <h2>birlikte biriken anlar</h2>
 
@@ -217,7 +211,6 @@ footer {
 <footer>14 şubat · 🤍</footer>
 </div>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <span class="close">×</span>
   <span class="arrow left">‹</span>
@@ -230,7 +223,6 @@ footer {
 const lightbox = document.getElementById("lightbox");
 const imgBox = document.getElementById("lightbox-img");
 const dateBox = document.getElementById("lightbox-date");
-
 const images = Array.from(document.querySelectorAll(".gallery-item img"));
 let index = 0;
 
@@ -263,31 +255,25 @@ document.addEventListener("keydown", e=>{
   if(e.key==="ArrowLeft") document.querySelector(".arrow.left").click();
 });
 
-  <script>
+/* 🔥 TELEFON SWIPE */
 let startX = 0;
-let endX = 0;
 
-lightbox.addEventListener("touchstart", e => {
+lightbox.addEventListener("touchstart", e=>{
   startX = e.touches[0].clientX;
-}, { passive: true });
+});
 
-lightbox.addEventListener("touchmove", e => {
-  endX = e.touches[0].clientX;
-}, { passive: true });
+lightbox.addEventListener("touchend", e=>{
+  const endX = e.changedTouches[0].clientX;
+  const diff = startX - endX;
 
-lightbox.addEventListener("touchend", () => {
-  if (startX - endX > 50) {
-    index = (index + 1) % images.length;
-    openLightbox();
-  }
-
-  if (endX - startX > 50) {
-    index = (index - 1 + images.length) % images.length;
-    openLightbox();
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      document.querySelector(".arrow.right").click();
+    } else {
+      document.querySelector(".arrow.left").click();
+    }
   }
 });
-</script>
-
 </script>
 
 </body>
