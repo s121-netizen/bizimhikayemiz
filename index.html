@@ -262,6 +262,32 @@ document.addEventListener("keydown", e=>{
   if(e.key==="ArrowRight") document.querySelector(".arrow.right").click();
   if(e.key==="ArrowLeft") document.querySelector(".arrow.left").click();
 });
+
+  <script>
+let startX = 0;
+let endX = 0;
+
+lightbox.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+}, { passive: true });
+
+lightbox.addEventListener("touchmove", e => {
+  endX = e.touches[0].clientX;
+}, { passive: true });
+
+lightbox.addEventListener("touchend", () => {
+  if (startX - endX > 50) {
+    index = (index + 1) % images.length;
+    openLightbox();
+  }
+
+  if (endX - startX > 50) {
+    index = (index - 1 + images.length) % images.length;
+    openLightbox();
+  }
+});
+</script>
+
 </script>
 
 </body>
