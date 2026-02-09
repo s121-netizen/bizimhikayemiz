@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aynı Şehirde Olmasak da Aynı Hislerdeyiz</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background:
+    linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
+    url("https://i.imgur.com/PyNRVJW.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #fff;
+}
+
+.page {
+  max-width: 720px;
+  margin: auto;
+  padding: 80px 16px;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  font-size: 14px;
+  opacity: .8;
+  margin-bottom: 60px;
+}
+
+.card {
+  border-radius: 26px;
+  padding: 48px 32px;
+  margin-bottom: 60px;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  box-shadow: 0 25px 55px rgba(0,0,0,.4);
+}
+
+.card p, .card h2 {
+  text-shadow: 0 2px 12px rgba(0,0,0,.5);
+}
+
+.card-one {
+  background:
+    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
+    url("https://i.imgur.com/VqGB3wv.jpeg");
+  background-position: center 20%;
+}
+
+.card-two {
+  background:
+    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
+    url("https://i.imgur.com/xW8Z5FU.jpeg");
+}
+
+.card-three {
+  background:
+    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
+    url("https://i.imgur.com/hFsiwdH.jpeg");
+}
+
+h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+}
+
+iframe {
+  max-width: 100%;
+  border-radius: 14px;
+}
+
+.link {
+  display: inline-block;
+  margin-top: 14px;
+  color: #1db954;
+  text-decoration: none;
+}
+
+/* GALERİ */
+.gallery {
+  margin-top: 80px;
+}
+
+.gallery h2 {
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 24px;
+}
+
+.gallery-scroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  overscroll-behavior-x: contain;
+}
+
+.gallery-scroll img {
+  flex: 0 0 auto;
+  width: 180px;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 18px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+  transition: transform .25s ease;
+}
+
+.gallery-scroll img:hover {
+  transform: scale(1.05);
+}
+
+/* LIGHTBOX */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.lightbox img {
+  max-width: 90%;
+  max-height: 85%;
+  border-radius: 18px;
+}
+
+.close {
+  position: absolute;
+  top: 22px;
+  right: 28px;
+  font-size: 36px;
+  cursor: pointer;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  font-size: 52px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.arrow.left { left: 24px; }
+.arrow.right { right: 24px; }
+
+footer {
+  margin-top: 80px;
+  font-size: 13px;
+  opacity: .8;
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+<h1>aynı şehirde olmasak da<br>aynı hislerdeyiz</h1>
+<div class="subtitle">bu sayfa bir mesafeye değil, bir hisse ait.</div>
+
+<div class="card card-one">
+  <p>boş geçmek istemedim.<br>hislerim hep sende.</p>
+</div>
+
+<div class="card card-two">
+  <div>
+    <h2>bizim playlist</h2>
+    <iframe src="https://open.spotify.com/embed/playlist/49IHmn6WGDS5Vnz5OgU57Y"
+      width="100%" height="152"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen;">
+    </iframe>
+    <a class="link" href="https://open.spotify.com/playlist/49IHmn6WGDS5Vnz5OgU57Y" target="_blank">
+      spotify’da aç 🎧
+    </a>
+  </div>
+</div>
+
+<div class="card card-three">
+  <p>aynı anda özlemek,<br>bazen yan yana olmaktan daha yakın.</p>
+</div>
+
+<div class="gallery">
+  <h2>birlikte biriken anlar</h2>
+
+  <div class="gallery-scroll">
+    <img src="https://i.ibb.co/kszN3DL3/MG-20251201-WA0038.jpg">
+    <img src="https://i.ibb.co/k23PNbHc/MG-20251207-WA0002.jpg">
+    <img src="https://i.ibb.co/QvJd6sk5/MG-20251209-WA0044.jpg">
+    <img src="https://i.ibb.co/Mz61rxr/MG-20251211-WA0101.jpg">
+    <img src="https://i.ibb.co/wFP4JB6D/MG-20251211-WA0102.jpg">
+    <img src="https://i.ibb.co/WjNBd3n/MG-20251212-WA0018.jpg">
+  </div>
+</div>
+
+<footer>14 şubat · 🤍</footer>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <span class="close">×</span>
+  <span class="arrow left">‹</span>
+  <img id="lightbox-img">
+  <span class="arrow right">›</span>
+</div>
+
+<script>
+const lightbox = document.getElementById("lightbox");
+const imgBox = document.getElementById("lightbox-img");
+const imgs = document.querySelectorAll(".gallery-scroll img");
+let index = 0;
+
+imgs.forEach((img,i)=>{
+  img.onclick = ()=>{
+    index = i;
+    imgBox.src = img.src;
+    lightbox.style.display = "flex";
+  }
+});
+
+document.querySelector(".close").onclick = ()=> lightbox.style.display="none";
+document.querySelector(".arrow.right").onclick = ()=>{
+  index = (index+1)%imgs.length;
+  imgBox.src = imgs[index].src;
+};
+document.querySelector(".arrow.left").onclick = ()=>{
+  index = (index-1+imgs.length)%imgs.length;
+  imgBox.src = imgs[index].src;
+};
+
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape") lightbox.style.display="none";
+});
+</script>
+
+</body>
+</html>
