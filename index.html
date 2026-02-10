@@ -1,505 +1,445 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sadece Bizim İçin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aynı Şehirde Olmasak da Aynı Hislerdeyiz</title>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap');
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap');
 
-* { box-sizing: border-box; }
+        * { box-sizing: border-box; }
 
-/* --- ŞİFRE EKRANI --- */
-#login-overlay {
-  position: fixed;
-  inset: 0;
-  background: #0a0a0a;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  transition: opacity 0.8s ease;
-}
+        /* --- ŞİFRE EKRANI --- */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.8s ease;
+        }
 
-#login-overlay input {
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid #555;
-  color: white;
-  font-size: 24px;
-  text-align: center;
-  padding: 10px;
-  outline: none;
-  font-family: 'Playfair Display', serif;
-  margin-bottom: 20px;
-}
+        #login-overlay input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #555;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            padding: 10px;
+            outline: none;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
+        }
 
-#login-overlay button {
-  background: white;
-  color: black;
-  border: none;
-  padding: 10px 30px;
-  border-radius: 50px;
-  cursor: pointer;
-  font-weight: bold;
-}
+        #login-overlay button {
+            background: white;
+            color: black;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-/* --- ANA SAYFA --- */
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url("https://i.imgur.com/PyNRVJW.jpeg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  color: #f5f5f5;
-}
+        /* --- GENEL TASARIM --- */
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url("https://i.imgur.com/PyNRVJW.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #f5f5f5;
+            overflow-x: hidden;
+        }
 
-.page {
-  max-width: 720px;
-  margin: auto;
-  padding: 80px 16px;
-  text-align: center;
-  opacity: 0; /* Şifre girilene kadar gizli */
-  transition: opacity 1s ease;
-}
+        .page {
+            max-width: 720px;
+            margin: auto;
+            padding: 80px 16px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
 
-h1 { font-family: 'Playfair Display', serif; font-size: 40px; margin-bottom: 12px; }
-.subtitle { font-size: 14px; color: #d6d6d6; margin-bottom: 40px; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 38px; margin-bottom: 12px; }
+        .subtitle { font-size: 14px; color: #d6d6d6; margin-bottom: 50px; }
 
-/* --- NOTLAR BÖLÜMÜ --- */
-.notes-container {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 26px;
-  padding: 30px;
-  margin-bottom: 60px;
-}
-#note-display { font-family: 'Playfair Display', serif; font-size: 20px; min-height: 50px; margin-bottom: 20px; font-style: italic; transition: opacity 0.3s; }
-.note-btn { background: #fff; color: #000; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 13px; font-weight: 500; }
+        /* --- 1. ÖZELLİK: NOTLAR --- */
+        .notes-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 26px;
+            padding: 30px;
+            margin-bottom: 50px;
+        }
+        #note-display { font-family: 'Playfair Display', serif; font-size: 19px; min-height: 50px; margin-bottom: 20px; font-style: italic; transition: opacity 0.3s; }
+        .note-btn { background: #fff; color: #000; border: none; padding: 12px 24px; border-radius: 50px; cursor: pointer; font-size: 13px; font-weight: 500; }
 
-/* --- KARTLAR --- */
-.card {
-  border-radius: 26px;
-  padding: 48px 32px;
-  margin-bottom: 40px;
-  min-height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-size: cover;
-  background-position: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-.card-one { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("https://i.imgur.com/VqGB3wv.jpeg"); }
-.card-two { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("https://i.imgur.com/xW8Z5FU.jpeg"); }
-.card-three { background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("https://i.imgur.com/hFsiwdH.jpeg"); }
+        /* --- KARTLAR --- */
+        .card {
+            border-radius: 26px;
+            padding: 48px 32px;
+            margin-bottom: 40px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .card p { font-size: 18px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .card-one { background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url("https://i.imgur.com/VqGB3wv.jpeg"); }
+        .card-two { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .card-three { background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url("https://i.imgur.com/hFsiwdH.jpeg"); }
 
-/* --- GALERİ (YATAY) --- */
-.gallery-scroll {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  padding: 20px 0;
-  scroll-behavior: smooth;
-}
-.gallery-item { flex: 0 0 auto; position: relative; }
-.gallery-item img { width: 180px; height: 240px; object-fit: cover; border-radius: 18px; cursor: pointer; transition: 0.3s; }
-.gallery-item img:hover { transform: scale(1.05); }
-.gallery-date { position: absolute; bottom: 8px; left: 10px; font-size: 10px; background: rgba(0,0,0,0.5); padding: 3px 7px; border-radius: 8px; }
+        /* --- GALERİ (YATAY) --- */
+        .gallery { margin-top: 60px; text-align: left; }
+        .gallery h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin-left: 10px; margin-bottom: 20px; }
+        .gallery-scroll {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding: 10px;
+            scroll-behavior: smooth;
+        }
+        .gallery-scroll::-webkit-scrollbar { height: 5px; }
+        .gallery-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        
+        .gallery-item { flex: 0 0 auto; position: relative; }
+        .gallery-item img { width: 180px; height: 240px; object-fit: cover; border-radius: 18px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .gallery-item img:hover { transform: scale(1.03); }
+        .gallery-date { position: absolute; bottom: 8px; left: 10px; font-size: 10px; background: rgba(0,0,0,0.5); padding: 3px 8px; border-radius: 8px; pointer-events: none; }
 
-/* --- LIGHTBOX --- */
-.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 11000; }
-.lightbox img { max-width: 90%; max-height: 80%; border-radius: 10px; }
-.close { position: absolute; top: 20px; right: 20px; font-size: 40px; cursor: pointer; }
-</style>
+        /* --- LIGHTBOX --- */
+        .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 11000; padding: 20px; }
+        .lightbox img { max-width: 100%; max-height: 90vh; border-radius: 12px; }
+        .close { position: absolute; top: 20px; right: 30px; font-size: 40px; color: white; cursor: pointer; }
+
+        footer { margin-top: 100px; opacity: 0.5; font-size: 12px; padding-bottom: 40px; }
+    </style>
 </head>
 
 <body>
 
 <div id="login-overlay">
-  <p style="font-family: 'Playfair Display'; margin-bottom: 15px;">Sadece senin için...</p>
-  <input type="password" id="pass-input" placeholder="Şifreyi gir">
-  <button onclick="checkPass()">Giriş</button>
-  <p id="error-msg" style="color: #ff4d4d; display: none; margin-top: 10px; font-size: 13px;">Hatalı şifre sevgilim...</p>
+    <p style="font-family: 'Playfair Display'; margin-bottom: 20px;">Sadece bizim için...</p>
+    <input type="password" id="pass-input" placeholder="Şifreyi yaz...">
+    <button onclick="checkPass()">Giriş Yap</button>
+    <p id="error-msg" style="color: #ff4d4d; display: none; margin-top: 15px; font-size: 13px;">Hatalı şifre sevgilim, tekrar dene.</p>
 </div>
 
 <div class="page" id="main-content">
-  <h1>aynı şehirde olmasak da<br>aynı hislerdeyiz</h1>
-  <div class="subtitle">bu sayfa bir mesafeye değil, bir hisse ait.</div>
+    <h1>aynı şehirde olmasak da<br>aynı hislerdeyiz</h1>
+    <div class="subtitle">bu sayfa bir mesafeye değil, bir hisse ait.</div>
 
-  <div class="notes-container">
-    <div id="note-display">Sana bir notum var...</div>
-    <button class="note-btn" onclick="generateNote()">Notu Oku ✨</button>
-  </div>
-
-  <div class="card card-one"><p>hislerim hep sende.</p></div>
-
-  <div class="card card-two">
-    <iframe src="https://open.spotify.com/embed/track/3n3Pp3STvR9v7t11u60mJy" 
-      width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen;">
-    </iframe>
-  </div>
-
-  <div class="card card-three"><p>aynı anda özlemek,<br>bazen yan yana olmaktan daha yakın.</p></div>
-
-  <div class="gallery">
-    <h2 style="font-family: 'Playfair Display';">birlikte biriken anlar</h2>
-    <div class="gallery-scroll">
-      <div class="gallery-item"><img src="2025/02.12.2025.2.jpg" data-date="02.12.2025"><span class="gallery-date">02.12.2025</span></div>
-      <div class="gallery-item"><img src="2025/02.12.2025.jpg" data-date="02.12.2025"><span class="gallery-date">02.12.2025</span></div>
-      <div class="gallery-item"><img src="2025/03.12.2025.jpg" data-date="03.12.2025"><span class="gallery-date">03.12.2025</span></div>
+    <div class="notes-container">
+        <div id="note-display">Buraya senin için minik notlar bıraktım...</div>
+        <button class="note-btn" onclick="generateNote()">Bir Not Oku ✨</button>
     </div>
-  </div>
 
-  <footer style="margin-top: 80px; opacity: 0.6; font-size: 12px;">14 şubat · 🤍</footer>
+    <div class="card card-one">
+        <p>hislerim hep sende.</p>
+    </div>
+
+    <div class="card card-two">
+        <iframe src="https://open.spotify.com/embed/track/3Z0oRkoSbaia6j7UbtqYv7" 
+            width="100%" height="152" frameborder="0" 
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen;">
+        </iframe>
+    </div>
+
+    <div class="card card-three">
+        <p>aynı anda özlemek,<br>bazen yan yana olmaktan daha yakın.</p>
+    </div>
+
+    <div class="gallery">
+        <h2>birlikte biriken anlar</h2>
+        <div class="gallery-scroll">
+            <div class="gallery-item"><img src="2025/02.12.2025.2.jpg"><span class="gallery-date">02.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/02.12.2025.jpg"><span class="gallery-date">02.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/03.12.2025.2.jpg"><span class="gallery-date">03.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/03.12.2025.jpg"><span class="gallery-date">03.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/04.12.2025.jpg"><span class="gallery-date">04.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/05.12.2025.jpg"><span class="gallery-date">05.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/06.12.2025.jpg"><span class="gallery-date">06.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/07.12.2025.2.jpg"><span class="gallery-date">07.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/07.12.2025.jpg"><span class="gallery-date">07.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/08.12.2025.2.jpg"><span class="gallery-date">08.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/08.12.2025.jpg"><span class="gallery-date">08.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/09.12.2025.jpg"><span class="gallery-date">09.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/10.12.2025.2.jpg"><span class="gallery-date">10.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/10.12.2025.3.jpg"><span class="gallery-date">10.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/10.12.2025.4.jpg"><span class="gallery-date">10.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/10.12.2025.jpg"><span class="gallery-date">10.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/11.12.2025.2.jpg"><span class="gallery-date">11.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/11.12.2025.3.jpg"><span class="gallery-date">11.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/11.12.2025.4.jpg"><span class="gallery-date">11.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/11.12.2025.jpg"><span class="gallery-date">11.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/12.12.2025.2.jpg"><span class="gallery-date">12.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/12.12.2025.jpg"><span class="gallery-date">12.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/13.12.2025.2.jpg"><span class="gallery-date">13.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/13.12.2025.3.jpg"><span class="gallery-date">13.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/13.12.2025.jpg"><span class="gallery-date">13.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/14.12.2025.2.jpg"><span class="gallery-date">14.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/14.12.2025.3.jpg"><span class="gallery-date">14.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/14.12.2025.jpg"><span class="gallery-date">14.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/15.12.2025.2.jpg"><span class="gallery-date">15.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/15.12.2025.3.jpg"><span class="gallery-date">15.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/15.12.2025.jpg"><span class="gallery-date">15.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/16.12.2025.2.jpg"><span class="gallery-date">16.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/16.12.2025.3.jpg"><span class="gallery-date">16.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/16.12.2025.4.jpg"><span class="gallery-date">16.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/16.12.2025.5.jpg"><span class="gallery-date">16.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/16.12.2025.6.jpg"><span class="gallery-date">16.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/16.12.2025.png"><span class="gallery-date">16.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/17.12.2025.2.jpg"><span class="gallery-date">17.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/17.12.2025.3.jpg"><span class="gallery-date">17.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/17.12.2025.4.jpg"><span class="gallery-date">17.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/17.12.2025.jpg"><span class="gallery-date">17.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/18.12.2025.2.jpg"><span class="gallery-date">18.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/18.12.2025.3.jpg"><span class="gallery-date">18.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/18.12.2025.jpg"><span class="gallery-date">18.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/19.12.2025.2.jpg"><span class="gallery-date">19.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/19.12.2025.jpg"><span class="gallery-date">19.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/20.12.2025.2.jpg"><span class="gallery-date">20.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/20.12.2025.jpg"><span class="gallery-date">20.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/21.12.2025.2.jpg"><span class="gallery-date">21.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/21.12.2025.jpg"><span class="gallery-date">21.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/22.11.2025.jpg"><span class="gallery-date">22.11.2025</span></div>
+            <div class="gallery-item"><img src="2025/22.12.2025.2.jpg"><span class="gallery-date">22.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/22.12.2025.3.jpg"><span class="gallery-date">22.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/22.12.2025.4.jpg"><span class="gallery-date">22.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/22.12.2025.5.jpg"><span class="gallery-date">22.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/22.12.2025.6.jpg"><span class="gallery-date">22.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/22.12.2025.jpg"><span class="gallery-date">22.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/23.12.2025.2.jpg"><span class="gallery-date">23.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/23.12.2025.3.jpg"><span class="gallery-date">23.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/23.12.2025.jpg"><span class="gallery-date">23.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/24.12.2025.2.jpg"><span class="gallery-date">24.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/24.12.2025.3.jpg"><span class="gallery-date">24.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/24.12.2025.jpg"><span class="gallery-date">24.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/25.12.2025.2.jpg"><span class="gallery-date">25.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/25.12.2025.3.jpg"><span class="gallery-date">25.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/25.12.2025.4.jpg"><span class="gallery-date">25.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/25.12.2025.jpg"><span class="gallery-date">25.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/26.12.2025.2.jpg"><span class="gallery-date">26.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/26.12.2025.3.jpg"><span class="gallery-date">26.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/26.12.2025.4.jpg"><span class="gallery-date">26.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/26.12.2025.5.jpg"><span class="gallery-date">26.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/26.12.2025.jpg"><span class="gallery-date">26.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/27.12.2025.jpg"><span class="gallery-date">27.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/28.11.2025.jpg"><span class="gallery-date">28.11.2025</span></div>
+            <div class="gallery-item"><img src="2025/28.12.2025.2.jpg"><span class="gallery-date">28.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/28.12.2025.3.jpg"><span class="gallery-date">28.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/28.12.2025.jpg"><span class="gallery-date">28.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/29.11.2025.jpg"><span class="gallery-date">29.11.2025</span></div>
+            <div class="gallery-item"><img src="2025/29.12.2025.jpg"><span class="gallery-date">29.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/30.11.2025.jpg"><span class="gallery-date">30.11.2025</span></div>
+            <div class="gallery-item"><img src="2025/30.12.2025.2.jpg"><span class="gallery-date">30.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/30.12.2025.3.jpg"><span class="gallery-date">30.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/30.12.2025.4.jpg"><span class="gallery-date">30.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/30.12.2025.jpg"><span class="gallery-date">30.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/31.12.2025.2.jpg"><span class="gallery-date">31.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/31.12.2025.3.jpg"><span class="gallery-date">31.12.2025</span></div>
+            <div class="gallery-item"><img src="2025/31.12.2025.jpg"><span class="gallery-date">31.12.2025</span></div>
+            <div class="gallery-item"><img src="01/01.01.2026.2.jpg"><span class="gallery-date">01.01.2026</span></div>
+            <div class="gallery-item"><img src="01/01.01.2026.jpg"><span class="gallery-date">01.01.2026</span></div>
+            <div class="gallery-item"><img src="01/02.01.2026.2.jpg"><span class="gallery-date">02.01.2026</span></div>
+            <div class="gallery-item"><img src="01/02.01.2026.3.jpg"><span class="gallery-date">02.01.2026</span></div>
+            <div class="gallery-item"><img src="01/02.01.2026.jpg"><span class="gallery-date">02.01.2026</span></div>
+            <div class="gallery-item"><img src="01/03.01.2026.jpg"><span class="gallery-date">03.01.2026</span></div>
+            <div class="gallery-item"><img src="01/04.01.2026.2.jpg"><span class="gallery-date">04.01.2026</span></div>
+            <div class="gallery-item"><img src="01/04.01.2026.3.jpg"><span class="gallery-date">04.01.2026</span></div>
+            <div class="gallery-item"><img src="01/04.01.2026.jpg"><span class="gallery-date">04.01.2026</span></div>
+            <div class="gallery-item"><img src="01/05.01.2026.jpg"><span class="gallery-date">05.01.2026</span></div>
+            <div class="gallery-item"><img src="01/06.01.2026.2.jpg"><span class="gallery-date">06.01.2026</span></div>
+            <div class="gallery-item"><img src="01/06.01.2026.3.jpg"><span class="gallery-date">06.01.2026</span></div>
+            <div class="gallery-item"><img src="01/06.01.2026.4.jpg"><span class="gallery-date">06.01.2026</span></div>
+            <div class="gallery-item"><img src="01/06.01.2026.jpg"><span class="gallery-date">06.01.2026</span></div>
+            <div class="gallery-item"><img src="01/07.01.2026.2.jpg"><span class="gallery-date">07.01.2026</span></div>
+            <div class="gallery-item"><img src="01/07.01.2026.3.jpg"><span class="gallery-date">07.01.2026</span></div>
+            <div class="gallery-item"><img src="01/07.01.2026.jpg"><span class="gallery-date">07.01.2026</span></div>
+            <div class="gallery-item"><img src="01/08.01.2026.2.jpg"><span class="gallery-date">08.01.2026</span></div>
+            <div class="gallery-item"><img src="01/08.01.2026.3.jpg"><span class="gallery-date">08.01.2026</span></div>
+            <div class="gallery-item"><img src="01/08.01.2026.jpg"><span class="gallery-date">08.01.2026</span></div>
+            <div class="gallery-item"><img src="01/09.01.2026.2.jpg"><span class="gallery-date">09.01.2026</span></div>
+            <div class="gallery-item"><img src="01/09.01.2026.3.jpg"><span class="gallery-date">09.01.2026</span></div>
+            <div class="gallery-item"><img src="01/09.01.2026.jpg"><span class="gallery-date">09.01.2026</span></div>
+            <div class="gallery-item"><img src="01/10.01.2026.2.jpg"><span class="gallery-date">10.01.2026</span></div>
+            <div class="gallery-item"><img src="01/10.01.2026.3.jpg"><span class="gallery-date">10.01.2026</span></div>
+            <div class="gallery-item"><img src="01/10.01.2026.4.jpg"><span class="gallery-date">10.01.2026</span></div>
+            <div class="gallery-item"><img src="01/10.01.2026.5.jpg"><span class="gallery-date">10.01.2026</span></div>
+            <div class="gallery-item"><img src="01/10.01.2026.jpg"><span class="gallery-date">10.01.2026</span></div>
+            <div class="gallery-item"><img src="01/11.01.2026.jpg"><span class="gallery-date">11.01.2026</span></div>
+            <div class="gallery-item"><img src="01/12.01.2026.2.jpg"><span class="gallery-date">12.01.2026</span></div>
+            <div class="gallery-item"><img src="01/12.01.2026.jpg"><span class="gallery-date">12.01.2026</span></div>
+            <div class="gallery-item"><img src="01/13.01.2026.2.jpg"><span class="gallery-date">13.01.2026</span></div>
+            <div class="gallery-item"><img src="01/13.01.2026.jpg"><span class="gallery-date">13.01.2026</span></div>
+            <div class="gallery-item"><img src="01/14.01.2026.2.jpg"><span class="gallery-date">14.01.2026</span></div>
+            <div class="gallery-item"><img src="01/14.01.2026.jpg"><span class="gallery-date">14.01.2026</span></div>
+            <div class="gallery-item"><img src="01/15.01.2026.jpg"><span class="gallery-date">15.01.2026</span></div>
+            <div class="gallery-item"><img src="01/16.01.2026.2.jpg"><span class="gallery-date">16.01.2026</span></div>
+            <div class="gallery-item"><img src="01/16.01.2026.3.jpg"><span class="gallery-date">16.01.2026</span></div>
+            <div class="gallery-item"><img src="01/16.01.2026.4.jpg"><span class="gallery-date">16.01.2026</span></div>
+            <div class="gallery-item"><img src="01/16.01.2026.5.jpg"><span class="gallery-date">16.01.2026</span></div>
+            <div class="gallery-item"><img src="01/16.01.2026.6.jpg"><span class="gallery-date">16.01.2026</span></div>
+            <div class="gallery-item"><img src="01/16.01.2026.7.jpg"><span class="gallery-date">16.01.2026</span></div>
+            <div class="gallery-item"><img src="01/16.01.2026.8.jpg"><span class="gallery-date">16.01.2026</span></div>
+            <div class="gallery-item"><img src="01/16.01.2026.9.jpg"><span class="gallery-date">16.01.2026</span></div>
+            <div class="gallery-item"><img src="01/16.01.2026.jpg"><span class="gallery-date">16.01.2026</span></div>
+            <div class="gallery-item"><img src="01/17.01.2026.2.jpg"><span class="gallery-date">17.01.2026</span></div>
+            <div class="gallery-item"><img src="01/17.01.2026.3.jpg"><span class="gallery-date">17.01.2026</span></div>
+            <div class="gallery-item"><img src="01/17.01.2026.jpg"><span class="gallery-date">17.01.2026</span></div>
+            <div class="gallery-item"><img src="01/18.01.2026.jpg"><span class="gallery-date">18.01.2026</span></div>
+            <div class="gallery-item"><img src="01/19.01.2026.jpg"><span class="gallery-date">19.01.2026</span></div>
+            <div class="gallery-item"><img src="01/20.01.2026.2.jpg"><span class="gallery-date">20.01.2026</span></div>
+            <div class="gallery-item"><img src="01/20.01.2026.jpg"><span class="gallery-date">20.01.2026</span></div>
+            <div class="gallery-item"><img src="01/21.01.2026.2.jpg"><span class="gallery-date">21.01.2026</span></div>
+            <div class="gallery-item"><img src="01/21.01.2026.3.jpg"><span class="gallery-date">21.01.2026</span></div>
+            <div class="gallery-item"><img src="01/21.01.2026.4.jpg"><span class="gallery-date">21.01.2026</span></div>
+            <div class="gallery-item"><img src="01/21.01.2026.5.jpg"><span class="gallery-date">21.01.2026</span></div>
+            <div class="gallery-item"><img src="01/21.01.2026.jpg"><span class="gallery-date">21.01.2026</span></div>
+            <div class="gallery-item"><img src="01/22.01.2026.2.jpg"><span class="gallery-date">22.01.2026</span></div>
+            <div class="gallery-item"><img src="01/22.01.2026.3.jpg"><span class="gallery-date">22.01.2026</span></div>
+            <div class="gallery-item"><img src="01/22.01.2026.4.jpg"><span class="gallery-date">22.01.2026</span></div>
+            <div class="gallery-item"><img src="01/22.01.2026.5.jpg"><span class="gallery-date">22.01.2026</span></div>
+            <div class="gallery-item"><img src="01/22.01.2026.6.jpg"><span class="gallery-date">22.01.2026</span></div>
+            <div class="gallery-item"><img src="01/22.01.2026.7.jpg"><span class="gallery-date">22.01.2026</span></div>
+            <div class="gallery-item"><img src="01/22.01.2026.jpg"><span class="gallery-date">22.01.2026</span></div>
+            <div class="gallery-item"><img src="01/23.01.2026.2.jpg"><span class="gallery-date">23.01.2026</span></div>
+            <div class="gallery-item"><img src="01/23.01.2026.3.jpg"><span class="gallery-date">23.01.2026</span></div>
+            <div class="gallery-item"><img src="01/23.01.2026.jpg"><span class="gallery-date">23.01.2026</span></div>
+            <div class="gallery-item"><img src="01/24.01.2026.2.jpg"><span class="gallery-date">24.01.2026</span></div>
+            <div class="gallery-item"><img src="01/24.01.2026.3.jpg"><span class="gallery-date">24.01.2026</span></div>
+            <div class="gallery-item"><img src="01/24.01.2026.4.jpg"><span class="gallery-date">24.01.2026</span></div>
+            <div class="gallery-item"><img src="01/24.01.2026.5.jpg"><span class="gallery-date">24.01.2026</span></div>
+            <div class="gallery-item"><img src="01/24.01.2026.jpg"><span class="gallery-date">24.01.2026</span></div>
+            <div class="gallery-item"><img src="01/25.01.2026.2.jpg"><span class="gallery-date">25.01.2026</span></div>
+            <div class="gallery-item"><img src="01/25.01.2026.3.jpg"><span class="gallery-date">25.01.2026</span></div>
+            <div class="gallery-item"><img src="01/25.01.2026.4.jpg"><span class="gallery-date">25.01.2026</span></div>
+            <div class="gallery-item"><img src="01/25.01.2026.jpg"><span class="gallery-date">25.01.2026</span></div>
+            <div class="gallery-item"><img src="01/26.01.2026.2.jpg"><span class="gallery-date">26.01.2026</span></div>
+            <div class="gallery-item"><img src="01/26.01.2026.3.jpg"><span class="gallery-date">26.01.2026</span></div>
+            <div class="gallery-item"><img src="01/26.01.2026.4.jpg"><span class="gallery-date">26.01.2026</span></div>
+            <div class="gallery-item"><img src="01/26.01.2026.5.jpg"><span class="gallery-date">26.01.2026</span></div>
+            <div class="gallery-item"><img src="01/26.01.2026.6.jpg"><span class="gallery-date">26.01.2026</span></div>
+            <div class="gallery-item"><img src="01/26.01.2026.jpg"><span class="gallery-date">26.01.2026</span></div>
+            <div class="gallery-item"><img src="01/27.01.2026.2.jpg"><span class="gallery-date">27.01.2026</span></div>
+            <div class="gallery-item"><img src="01/27.01.2026.3.jpg"><span class="gallery-date">27.01.2026</span></div>
+            <div class="gallery-item"><img src="01/27.01.2026.4.jpg"><span class="gallery-date">27.01.2026</span></div>
+            <div class="gallery-item"><img src="01/27.01.2026.5.jpg"><span class="gallery-date">27.01.2026</span></div>
+            <div class="gallery-item"><img src="01/27.01.2026.6.jpg"><span class="gallery-date">27.01.2026</span></div>
+            <div class="gallery-item"><img src="01/27.01.2026.jpg"><span class="gallery-date">27.01.2026</span></div>
+            <div class="gallery-item"><img src="01/28.01.2026.2.jpg"><span class="gallery-date">28.01.2026</span></div>
+            <div class="gallery-item"><img src="01/28.01.2026.3.jpg"><span class="gallery-date">28.01.2026</span></div>
+            <div class="gallery-item"><img src="01/28.01.2026.png"><span class="gallery-date">28.01.2026</span></div>
+            <div class="gallery-item"><img src="01/29.01.2026.2.jpg"><span class="gallery-date">29.01.2026</span></div>
+            <div class="gallery-item"><img src="01/29.01.2026.3.jpg"><span class="gallery-date">29.01.2026</span></div>
+            <div class="gallery-item"><img src="01/29.01.2026.4.jpg"><span class="gallery-date">29.01.2026</span></div>
+            <div class="gallery-item"><img src="01/29.01.2026.5.jpg"><span class="gallery-date">29.01.2026</span></div>
+            <div class="gallery-item"><img src="01/29.01.2026.6.jpg"><span class="gallery-date">29.01.2026</span></div>
+            <div class="gallery-item"><img src="01/29.01.2026.jpg"><span class="gallery-date">29.01.2026</span></div>
+            <div class="gallery-item"><img src="01/30.01.2026.2.jpg"><span class="gallery-date">30.01.2026</span></div>
+            <div class="gallery-item"><img src="02/01.02.2026.jpg"><span class="gallery-date">01.02.2026</span></div>
+            <div class="gallery-item"><img src="02/01.02.2026.2.jpg"><span class="gallery-date">01.02.2026</span></div>
+            <div class="gallery-item"><img src="02/02.02.2026.jpg"><span class="gallery-date">02.02.2026</span></div>
+            <div class="gallery-item"><img src="02/02.02.2026.2.jpg"><span class="gallery-date">02.02.2026</span></div>
+            <div class="gallery-item"><img src="02/02.02.2026.3.jpg"><span class="gallery-date">02.02.2026</span></div>
+            <div class="gallery-item"><img src="02/03.02.2026.jpg"><span class="gallery-date">03.02.2026</span></div>
+            <div class="gallery-item"><img src="02/03.02.2026.2.jpg"><span class="gallery-date">03.02.2026</span></div>
+            <div class="gallery-item"><img src="02/03.02.2026.3.jpg"><span class="gallery-date">03.02.2026</span></div>
+            <div class="gallery-item"><img src="02/03.02.2026.4.jpg"><span class="gallery-date">03.02.2026</span></div>
+            <div class="gallery-item"><img src="02/03.02.2026.5.jpg"><span class="gallery-date">03.02.2026</span></div>
+            <div class="gallery-item"><img src="02/03.02.2026.6.jpg"><span class="gallery-date">03.02.2026</span></div>
+            <div class="gallery-item"><img src="02/03.02.2026.7.jpg"><span class="gallery-date">03.02.2026</span></div>
+            <div class="gallery-item"><img src="02/04.02.2026.jpg"><span class="gallery-date">04.02.2026</span></div>
+            <div class="gallery-item"><img src="02/04.02.2026.2.jpg"><span class="gallery-date">04.02.2026</span></div>
+            <div class="gallery-item"><img src="02/04.02.2026.3.jpg"><span class="gallery-date">04.02.2026</span></div>
+            <div class="gallery-item"><img src="02/05.02.2026.jpg"><span class="gallery-date">05.02.2026</span></div>
+            <div class="gallery-item"><img src="02/05.02.2026.2.jpg"><span class="gallery-date">05.02.2026</span></div>
+            <div class="gallery-item"><img src="02/05.02.2026.3.jpg"><span class="gallery-date">05.02.2026</span></div>
+            <div class="gallery-item"><img src="02/05.02.2026.4.jpg"><span class="gallery-date">05.02.2026</span></div>
+            <div class="gallery-item"><img src="02/05.02.2026.5.jpg"><span class="gallery-date">05.02.2026</span></div>
+            <div class="gallery-item"><img src="02/05.02.2026.6.jpg"><span class="gallery-date">05.02.2026</span></div>
+        </div>
+    </div>
+
+    <footer>14 şubat 2026 · kalbimdesin 🤍</footer>
 </div>
 
 <div class="lightbox" id="lightbox">
-  <span class="close" onclick="closeLightbox()">×</span>
-  <img id="lightbox-img">
+    <span class="close" onclick="closeLightbox()">&times;</span>
+    <img id="lightbox-img" src="">
 </div>
 
 <script>
-// Şifre Ayarı
-const MY_PASS = "bizim gunumuz"; // Burayı istediğin şifreyle değiştir
+    // --- ŞİFRE KONTROLÜ ---
+    const MY_SECRET = "bizim gunumuz"; // Buradan şifreyi değiştirebilirsin
 
-function checkPass() {
-  const val = document.getElementById("pass-input").value.toLowerCase();
-  if(val === MY_PASS) {
-    document.getElementById("login-overlay").style.opacity = "0";
-    setTimeout(() => {
-      document.getElementById("login-overlay").style.display = "none";
-      document.getElementById("main-content").style.opacity = "1";
-    }, 800);
-  } else {
-    document.getElementById("error-msg").style.display = "block";
-  }
-}
+    function checkPass() {
+        const input = document.getElementById("pass-input").value.toLowerCase();
+        if(input === MY_SECRET) {
+            const overlay = document.getElementById("login-overlay");
+            const content = document.getElementById("main-content");
+            overlay.style.opacity = "0";
+            setTimeout(() => {
+                overlay.style.display = "none";
+                content.style.opacity = "1";
+            }, 800);
+        } else {
+            document.getElementById("error-msg").style.display = "block";
+        }
+    }
 
-// Notlar
-const notes = [
-  "En çok gülüşünü seviyorum.",
-  "Mesafeler kalbimize engel değil.",
-  "Seninle geçen her an çok kıymetli.",
-  "İyi ki hayatımdasın sevgilim.",
-  "Gözlerindeki huzuru kimsede bulamadım.",
-  "Sen benim en güzel manzaramsın."
-];
+    // --- RASTGELE NOTLAR ---
+    const loveNotes = [
+        "En çok gülüşünü seviyorum, çünkü o an dünya güzelleşiyor.",
+        "Seninle içtiğim en sade kahve bile dünyanın en güzel içeceği.",
+        "Gözlerinin içine baktığımda huzuru buluyorum.",
+        "Mesafeler sadece kilometrelerden ibaret, kalbim hep seninle.",
+        "İyi ki varsın, iyi ki hayatımdasın sevgilim.",
+        "Bir gün uyanıp yanımda seni göreceğim günü bekliyorum.",
+        "Sen benim başıma gelen en güzel şeysin."
+    ];
 
-function generateNote() {
-  const display = document.getElementById("note-display");
-  const rand = notes[Math.floor(Math.random() * notes.length)];
-  display.style.opacity = 0;
-  setTimeout(() => {
-    display.textContent = rand;
-    display.style.opacity = 1;
-  }, 300);
-}
+    function generateNote() {
+        const display = document.getElementById("note-display");
+        const randomIndex = Math.floor(Math.random() * loveNotes.length);
+        display.style.opacity = "0";
+        setTimeout(() => {
+            display.textContent = loveNotes[randomIndex];
+            display.style.opacity = "1";
+        }, 300);
+    }
 
-// Galeri Tıklama
-const images = document.querySelectorAll(".gallery-item img");
-images.forEach(img => {
-  img.onclick = () => {
-    document.getElementById("lightbox-img").src = img.src;
-    document.getElementById("lightbox").style.display = "flex";
-  };
-});
+    // --- GALERİ VE LIGHTBOX ---
+    const images = document.querySelectorAll(".gallery-item img");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
 
-function closeLightbox() {
-  document.getElementById("lightbox").style.display = "none";
-}
-</script>
+    images.forEach(img => {
+        img.onclick = () => {
+            lightboxImg.src = img.src;
+            lightbox.style.display = "flex";
+        };
+    });
 
-</body>
-</html>
+    function closeLightbox() {
+        lightbox.style.display = "none";
+    }
 
-<div class="gallery">
-  <h2>birlikte biriken anlar</h2>
-
-  <div class="gallery-scroll">
-    <div class="gallery-item"><img src="2025/02.12.2025.2.jpg" data-date="02.12.2025"><span class="gallery-date">02.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/02.12.2025.jpg" data-date="02.12.2025"><span class="gallery-date">02.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/03.12.2025.2.jpg" data-date="03.12.2025"><span class="gallery-date">03.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/03.12.2025.jpg" data-date="03.12.2025"><span class="gallery-date">03.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/04.12.2025.jpg" data-date="04.12.2025"><span class="gallery-date">04.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/05.12.2025.jpg" data-date="05.12.2025"><span class="gallery-date">05.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/06.12.2025.jpg" data-date="06.12.2025"><span class="gallery-date">06.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/07.12.2025.2.jpg" data-date="07.12.2025"><span class="gallery-date">07.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/07.12.2025.jpg" data-date="07.12.2025"><span class="gallery-date">07.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/08.12.2025.2.jpg" data-date="08.12.2025"><span class="gallery-date">08.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/08.12.2025.jpg" data-date="08.12.2025"><span class="gallery-date">08.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/09.12.2025.jpg" data-date="09.12.2025"><span class="gallery-date">09.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/10.12.2025.2.jpg" data-date="10.12.2025"><span class="gallery-date">10.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/10.12.2025.3.jpg" data-date="10.12.2025"><span class="gallery-date">10.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/10.12.2025.4.jpg" data-date="10.12.2025"><span class="gallery-date">10.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/10.12.2025.jpg" data-date="10.12.2025"><span class="gallery-date">10.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/11.12.2025.2.jpg" data-date="11.12.2025"><span class="gallery-date">11.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/11.12.2025.3.jpg" data-date="11.12.2025"><span class="gallery-date">11.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/11.12.2025.4.jpg" data-date="11.12.2025"><span class="gallery-date">11.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/11.12.2025.jpg" data-date="11.12.2025"><span class="gallery-date">11.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/12.12.2025.2.jpg" data-date="12.12.2025"><span class="gallery-date">12.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/12.12.2025.jpg" data-date="12.12.2025"><span class="gallery-date">12.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/13.12.2025.2.jpg" data-date="13.12.2025"><span class="gallery-date">13.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/13.12.2025.3.jpg" data-date="13.12.2025"><span class="gallery-date">13.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/13.12.2025.jpg" data-date="13.12.2025"><span class="gallery-date">13.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/14.12.2025.2.jpg" data-date="14.12.2025"><span class="gallery-date">14.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/14.12.2025.3.jpg" data-date="14.12.2025"><span class="gallery-date">14.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/14.12.2025.jpg" data-date="14.12.2025"><span class="gallery-date">14.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/15.12.2025.2.jpg" data-date="15.12.2025"><span class="gallery-date">15.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/15.12.2025.3.jpg" data-date="15.12.2025"><span class="gallery-date">15.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/15.12.2025.jpg" data-date="15.12.2025"><span class="gallery-date">15.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/16.12.2025.2.jpg" data-date="16.12.2025"><span class="gallery-date">16.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/16.12.2025.3.jpg" data-date="16.12.2025"><span class="gallery-date">16.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/16.12.2025.4.jpg" data-date="16.12.2025"><span class="gallery-date">16.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/16.12.2025.5.jpg" data-date="16.12.2025"><span class="gallery-date">16.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/16.12.2025.6.jpg" data-date="16.12.2025"><span class="gallery-date">16.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/16.12.2025.png" data-date="16.12.2025"><span class="gallery-date">16.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/17.12.2025.2.jpg" data-date="17.12.2025"><span class="gallery-date">17.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/17.12.2025.3.jpg" data-date="17.12.2025"><span class="gallery-date">17.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/17.12.2025.4.jpg" data-date="17.12.2025"><span class="gallery-date">17.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/17.12.2025.jpg" data-date="17.12.2025"><span class="gallery-date">17.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/18.12.2025.2.jpg" data-date="18.12.2025"><span class="gallery-date">18.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/18.12.2025.3.jpg" data-date="18.12.2025"><span class="gallery-date">18.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/18.12.2025.jpg" data-date="18.12.2025"><span class="gallery-date">18.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/19.12.2025.2.jpg" data-date="19.12.2025"><span class="gallery-date">19.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/19.12.2025.jpg" data-date="19.12.2025"><span class="gallery-date">19.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/20.12.2025.2.jpg" data-date="20.12.2025"><span class="gallery-date">20.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/20.12.2025.jpg" data-date="20.12.2025"><span class="gallery-date">20.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/21.12.2025.2.jpg" data-date="21.12.2025"><span class="gallery-date">21.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/21.12.2025.jpg" data-date="21.12.2025"><span class="gallery-date">21.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/22.11.2025.jpg" data-date="22.11.2025"><span class="gallery-date">22.11.2025</span></div>
-    <div class="gallery-item"><img src="2025/22.12.2025.2.jpg" data-date="22.12.2025"><span class="gallery-date">22.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/22.12.2025.3.jpg" data-date="22.12.2025"><span class="gallery-date">22.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/22.12.2025.4.jpg" data-date="22.12.2025"><span class="gallery-date">22.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/22.12.2025.5.jpg" data-date="22.12.2025"><span class="gallery-date">22.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/22.12.2025.6.jpg" data-date="22.12.2025"><span class="gallery-date">22.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/22.12.2025.jpg" data-date="22.12.2025"><span class="gallery-date">22.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/23.12.2025.2.jpg" data-date="23.12.2025"><span class="gallery-date">23.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/23.12.2025.3.jpg" data-date="23.12.2025"><span class="gallery-date">23.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/23.12.2025.jpg" data-date="23.12.2025"><span class="gallery-date">23.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/24.12.2025.2.jpg" data-date="24.12.2025"><span class="gallery-date">24.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/24.12.2025.3.jpg" data-date="24.12.2025"><span class="gallery-date">24.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/24.12.2025.jpg" data-date="24.12.2025"><span class="gallery-date">24.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/25.12.2025.2.jpg" data-date="25.12.2025"><span class="gallery-date">25.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/25.12.2025.3.jpg" data-date="25.12.2025"><span class="gallery-date">25.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/25.12.2025.4.jpg" data-date="25.12.2025"><span class="gallery-date">25.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/25.12.2025.jpg" data-date="25.12.2025"><span class="gallery-date">25.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/26.12.2025.2.jpg" data-date="26.12.2025"><span class="gallery-date">26.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/26.12.2025.3.jpg" data-date="26.12.2025"><span class="gallery-date">26.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/26.12.2025.4.jpg" data-date="26.12.2025"><span class="gallery-date">26.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/26.12.2025.5.jpg" data-date="26.12.2025"><span class="gallery-date">26.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/26.12.2025.jpg" data-date="26.12.2025"><span class="gallery-date">26.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/27.12.2025.jpg" data-date="27.12.2025"><span class="gallery-date">27.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/28.11.2025.jpg" data-date="28.11.2025"><span class="gallery-date">28.11.2025</span></div>
-    <div class="gallery-item"><img src="2025/28.12.2025.2.jpg" data-date="28.12.2025"><span class="gallery-date">28.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/28.12.2025.3.jpg" data-date="28.12.2025"><span class="gallery-date">28.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/28.12.2025.jpg" data-date="28.12.2025"><span class="gallery-date">28.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/29.11.2025.jpg" data-date="29.11.2025"><span class="gallery-date">29.11.2025</span></div>
-    <div class="gallery-item"><img src="2025/29.12.2025.jpg" data-date="29.12.2025"><span class="gallery-date">29.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/30.11.2025.jpg" data-date="30.11.2025"><span class="gallery-date">30.11.2025</span></div>
-    <div class="gallery-item"><img src="2025/30.12.2025.2.jpg" data-date="30.12.2025"><span class="gallery-date">30.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/30.12.2025.3.jpg" data-date="30.12.2025"><span class="gallery-date">30.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/30.12.2025.4.jpg" data-date="30.12.2025"><span class="gallery-date">30.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/30.12.2025.jpg" data-date="30.12.2025"><span class="gallery-date">30.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/31.12.2025.2.jpg" data-date="31.12.2025"><span class="gallery-date">31.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/31.12.2025.3.jpg" data-date="31.12.2025"><span class="gallery-date">31.12.2025</span></div>
-    <div class="gallery-item"><img src="2025/31.12.2025.jpg" data-date="31.12.2025"><span class="gallery-date">31.12.2025</span></div>
-
-    <div class="gallery-item"><img src="01/01.01.2026.2.jpg" data-date="01.01.2026"><span class="gallery-date">01.01.2026</span></div>
-    <div class="gallery-item"><img src="01/01.01.2026.jpg" data-date="01.01.2026"><span class="gallery-date">01.01.2026</span></div>
-    <div class="gallery-item"><img src="01/02.01.2026.2.jpg" data-date="02.01.2026"><span class="gallery-date">02.01.2026</span></div>
-    <div class="gallery-item"><img src="01/02.01.2026.3.jpg" data-date="02.01.2026"><span class="gallery-date">02.01.2026</span></div>
-    <div class="gallery-item"><img src="01/02.01.2026.jpg" data-date="02.01.2026"><span class="gallery-date">02.01.2026</span></div>
-    <div class="gallery-item"><img src="01/03.01.2026.jpg" data-date="03.01.2026"><span class="gallery-date">03.01.2026</span></div>
-    <div class="gallery-item"><img src="01/04.01.2026.2.jpg" data-date="04.01.2026"><span class="gallery-date">04.01.2026</span></div>
-    <div class="gallery-item"><img src="01/04.01.2026.3.jpg" data-date="04.01.2026"><span class="gallery-date">04.01.2026</span></div>
-    <div class="gallery-item"><img src="01/04.01.2026.jpg" data-date="04.01.2026"><span class="gallery-date">04.01.2026</span></div>
-    <div class="gallery-item"><img src="01/05.01.2026.jpg" data-date="05.01.2026"><span class="gallery-date">05.01.2026</span></div>
-    <div class="gallery-item"><img src="01/06.01.2026.2.jpg" data-date="06.01.2026"><span class="gallery-date">06.01.2026</span></div>
-    <div class="gallery-item"><img src="01/06.01.2026.3.jpg" data-date="06.01.2026"><span class="gallery-date">06.01.2026</span></div>
-    <div class="gallery-item"><img src="01/06.01.2026.4.jpg" data-date="06.01.2026"><span class="gallery-date">06.01.2026</span></div>
-    <div class="gallery-item"><img src="01/06.01.2026.jpg" data-date="06.01.2026"><span class="gallery-date">06.01.2026</span></div>
-    <div class="gallery-item"><img src="01/07.01.2026.2.jpg" data-date="07.01.2026"><span class="gallery-date">07.01.2026</span></div>
-    <div class="gallery-item"><img src="01/07.01.2026.3.jpg" data-date="07.01.2026"><span class="gallery-date">07.01.2026</span></div>
-    <div class="gallery-item"><img src="01/07.01.2026.jpg" data-date="07.01.2026"><span class="gallery-date">07.01.2026</span></div>
-    <div class="gallery-item"><img src="01/08.01.2026.2.jpg" data-date="08.01.2026"><span class="gallery-date">08.01.2026</span></div>
-    <div class="gallery-item"><img src="01/08.01.2026.3.jpg" data-date="08.01.2026"><span class="gallery-date">08.01.2026</span></div>
-    <div class="gallery-item"><img src="01/08.01.2026.jpg" data-date="08.01.2026"><span class="gallery-date">08.01.2026</span></div>
-    <div class="gallery-item"><img src="01/09.01.2026.2.jpg" data-date="09.01.2026"><span class="gallery-date">09.01.2026</span></div>
-    <div class="gallery-item"><img src="01/09.01.2026.3.jpg" data-date="09.01.2026"><span class="gallery-date">09.01.2026</span></div>
-    <div class="gallery-item"><img src="01/09.01.2026.jpg" data-date="09.01.2026"><span class="gallery-date">09.01.2026</span></div>
-    <div class="gallery-item"><img src="01/10.01.2026.2.jpg" data-date="10.01.2026"><span class="gallery-date">10.01.2026</span></div>
-    <div class="gallery-item"><img src="01/10.01.2026.3.jpg" data-date="10.01.2026"><span class="gallery-date">10.01.2026</span></div>
-    <div class="gallery-item"><img src="01/10.01.2026.4.jpg" data-date="10.01.2026"><span class="gallery-date">10.01.2026</span></div>
-    <div class="gallery-item"><img src="01/10.01.2026.5.jpg" data-date="10.01.2026"><span class="gallery-date">10.01.2026</span></div>
-    <div class="gallery-item"><img src="01/10.01.2026.jpg" data-date="10.01.2026"><span class="gallery-date">10.01.2026</span></div>
-    <div class="gallery-item"><img src="01/11.01.2026.jpg" data-date="11.01.2026"><span class="gallery-date">11.01.2026</span></div>
-    <div class="gallery-item"><img src="01/12.01.2026.2.jpg" data-date="12.01.2026"><span class="gallery-date">12.01.2026</span></div>
-    <div class="gallery-item"><img src="01/12.01.2026.jpg" data-date="12.01.2026"><span class="gallery-date">12.01.2026</span></div>
-    <div class="gallery-item"><img src="01/13.01.2026.2.jpg" data-date="13.01.2026"><span class="gallery-date">13.01.2026</span></div>
-    <div class="gallery-item"><img src="01/13.01.2026.jpg" data-date="13.01.2026"><span class="gallery-date">13.01.2026</span></div>
-    <div class="gallery-item"><img src="01/14.01.2026.2.jpg" data-date="14.01.2026"><span class="gallery-date">14.01.2026</span></div>
-    <div class="gallery-item"><img src="01/14.01.2026.jpg" data-date="14.01.2026"><span class="gallery-date">14.01.2026</span></div>
-    <div class="gallery-item"><img src="01/15.01.2026.jpg" data-date="15.01.2026"><span class="gallery-date">15.01.2026</span></div>
-    <div class="gallery-item"><img src="01/16.01.2026.2.jpg" data-date="16.01.2026"><span class="gallery-date">16.01.2026</span></div>
-    <div class="gallery-item"><img src="01/16.01.2026.3.jpg" data-date="16.01.2026"><span class="gallery-date">16.01.2026</span></div>
-    <div class="gallery-item"><img src="01/16.01.2026.4.jpg" data-date="16.01.2026"><span class="gallery-date">16.01.2026</span></div>
-    <div class="gallery-item"><img src="01/16.01.2026.5.jpg" data-date="16.01.2026"><span class="gallery-date">16.01.2026</span></div>
-    <div class="gallery-item"><img src="01/16.01.2026.6.jpg" data-date="16.01.2026"><span class="gallery-date">16.01.2026</span></div>
-    <div class="gallery-item"><img src="01/16.01.2026.7.jpg" data-date="16.01.2026"><span class="gallery-date">16.01.2026</span></div>
-    <div class="gallery-item"><img src="01/16.01.2026.8.jpg" data-date="16.01.2026"><span class="gallery-date">16.01.2026</span></div>
-    <div class="gallery-item"><img src="01/16.01.2026.9.jpg" data-date="16.01.2026"><span class="gallery-date">16.01.2026</span></div>
-    <div class="gallery-item"><img src="01/16.01.2026.jpg" data-date="16.01.2026"><span class="gallery-date">16.01.2026</span></div>
-    <div class="gallery-item"><img src="01/17.01.2026.2.jpg" data-date="17.01.2026"><span class="gallery-date">17.01.2026</span></div>
-    <div class="gallery-item"><img src="01/17.01.2026.3.jpg" data-date="17.01.2026"><span class="gallery-date">17.01.2026</span></div>
-    <div class="gallery-item"><img src="01/17.01.2026.jpg" data-date="17.01.2026"><span class="gallery-date">17.01.2026</span></div>
-    <div class="gallery-item"><img src="01/18.01.2026.jpg" data-date="18.01.2026"><span class="gallery-date">18.01.2026</span></div>
-    <div class="gallery-item"><img src="01/19.01.2026.jpg" data-date="19.01.2026"><span class="gallery-date">19.01.2026</span></div>
-    <div class="gallery-item"><img src="01/20.01.2026.2.jpg" data-date="20.01.2026"><span class="gallery-date">20.01.2026</span></div>
-    <div class="gallery-item"><img src="01/20.01.2026.jpg" data-date="20.01.2026"><span class="gallery-date">20.01.2026</span></div>
-    <div class="gallery-item"><img src="01/21.01.2026.2.jpg" data-date="21.01.2026"><span class="gallery-date">21.01.2026</span></div>
-    <div class="gallery-item"><img src="01/21.01.2026.3.jpg" data-date="21.01.2026"><span class="gallery-date">21.01.2026</span></div>
-    <div class="gallery-item"><img src="01/21.01.2026.4.jpg" data-date="21.01.2026"><span class="gallery-date">21.01.2026</span></div>
-    <div class="gallery-item"><img src="01/21.01.2026.5.jpg" data-date="21.01.2026"><span class="gallery-date">21.01.2026</span></div>
-    <div class="gallery-item"><img src="01/21.01.2026.jpg" data-date="21.01.2026"><span class="gallery-date">21.01.2026</span></div>
-    <div class="gallery-item"><img src="01/22.01.2026.2.jpg" data-date="22.01.2026"><span class="gallery-date">22.01.2026</span></div>
-    <div class="gallery-item"><img src="01/22.01.2026.3.jpg" data-date="22.01.2026"><span class="gallery-date">22.01.2026</span></div>
-    <div class="gallery-item"><img src="01/22.01.2026.4.jpg" data-date="22.01.2026"><span class="gallery-date">22.01.2026</span></div>
-    <div class="gallery-item"><img src="01/22.01.2026.5.jpg" data-date="22.01.2026"><span class="gallery-date">22.01.2026</span></div>
-    <div class="gallery-item"><img src="01/22.01.2026.6.jpg" data-date="22.01.2026"><span class="gallery-date">22.01.2026</span></div>
-    <div class="gallery-item"><img src="01/22.01.2026.7.jpg" data-date="22.01.2026"><span class="gallery-date">22.01.2026</span></div>
-    <div class="gallery-item"><img src="01/22.01.2026.jpg" data-date="22.01.2026"><span class="gallery-date">22.01.2026</span></div>
-    <div class="gallery-item"><img src="01/23.01.2026.2.jpg" data-date="23.01.2026"><span class="gallery-date">23.01.2026</span></div>
-    <div class="gallery-item"><img src="01/23.01.2026.3.jpg" data-date="23.01.2026"><span class="gallery-date">23.01.2026</span></div>
-    <div class="gallery-item"><img src="01/23.01.2026.jpg" data-date="23.01.2026"><span class="gallery-date">23.01.2026</span></div>
-    <div class="gallery-item"><img src="01/24.01.2026.2.jpg" data-date="24.01.2026"><span class="gallery-date">24.01.2026</span></div>
-    <div class="gallery-item"><img src="01/24.01.2026.3.jpg" data-date="24.01.2026"><span class="gallery-date">24.01.2026</span></div>
-    <div class="gallery-item"><img src="01/24.01.2026.4.jpg" data-date="24.01.2026"><span class="gallery-date">24.01.2026</span></div>
-    <div class="gallery-item"><img src="01/24.01.2026.5.jpg" data-date="24.01.2026"><span class="gallery-date">24.01.2026</span></div>
-    <div class="gallery-item"><img src="01/24.01.2026.jpg" data-date="24.01.2026"><span class="gallery-date">24.01.2026</span></div>
-    <div class="gallery-item"><img src="01/25.01.2026.2.jpg" data-date="25.01.2026"><span class="gallery-date">25.01.2026</span></div>
-    <div class="gallery-item"><img src="01/25.01.2026.3.jpg" data-date="25.01.2026"><span class="gallery-date">25.01.2026</span></div>
-    <div class="gallery-item"><img src="01/25.01.2026.4.jpg" data-date="25.01.2026"><span class="gallery-date">25.01.2026</span></div>
-    <div class="gallery-item"><img src="01/25.01.2026.jpg" data-date="25.01.2026"><span class="gallery-date">25.01.2026</span></div>
-    <div class="gallery-item"><img src="01/26.01.2026.2.jpg" data-date="26.01.2026"><span class="gallery-date">26.01.2026</span></div>
-    <div class="gallery-item"><img src="01/26.01.2026.3.jpg" data-date="26.01.2026"><span class="gallery-date">26.01.2026</span></div>
-    <div class="gallery-item"><img src="01/26.01.2026.4.jpg" data-date="26.01.2026"><span class="gallery-date">26.01.2026</span></div>
-    <div class="gallery-item"><img src="01/26.01.2026.5.jpg" data-date="26.01.2026"><span class="gallery-date">26.01.2026</span></div>
-    <div class="gallery-item"><img src="01/26.01.2026.6.jpg" data-date="26.01.2026"><span class="gallery-date">26.01.2026</span></div>
-    <div class="gallery-item"><img src="01/26.01.2026.jpg" data-date="26.01.2026"><span class="gallery-date">26.01.2026</span></div>
-    <div class="gallery-item"><img src="01/27.01.2026.2.jpg" data-date="27.01.2026"><span class="gallery-date">27.01.2026</span></div>
-    <div class="gallery-item"><img src="01/27.01.2026.3.jpg" data-date="27.01.2026"><span class="gallery-date">27.01.2026</span></div>
-    <div class="gallery-item"><img src="01/27.01.2026.4.jpg" data-date="27.01.2026"><span class="gallery-date">27.01.2026</span></div>
-    <div class="gallery-item"><img src="01/27.01.2026.5.jpg" data-date="27.01.2026"><span class="gallery-date">27.01.2026</span></div>
-    <div class="gallery-item"><img src="01/27.01.2026.6.jpg" data-date="27.01.2026"><span class="gallery-date">27.01.2026</span></div>
-    <div class="gallery-item"><img src="01/27.01.2026.jpg" data-date="27.01.2026"><span class="gallery-date">27.01.2026</span></div>
-    <div class="gallery-item"><img src="01/28.01.2026.2.jpg" data-date="28.01.2026"><span class="gallery-date">28.01.2026</span></div>
-    <div class="gallery-item"><img src="01/28.01.2026.3.jpg" data-date="28.01.2026"><span class="gallery-date">28.01.2026</span></div>
-    <div class="gallery-item"><img src="01/28.01.2026.png" data-date="28.01.2026"><span class="gallery-date">28.01.2026</span></div>
-    <div class="gallery-item"><img src="01/29.01.2026.2.jpg" data-date="29.01.2026"><span class="gallery-date">29.01.2026</span></div>
-    <div class="gallery-item"><img src="01/29.01.2026.3.jpg" data-date="29.01.2026"><span class="gallery-date">29.01.2026</span></div>
-    <div class="gallery-item"><img src="01/29.01.2026.4.jpg" data-date="29.01.2026"><span class="gallery-date">29.01.2026</span></div>
-    <div class="gallery-item"><img src="01/29.01.2026.5.jpg" data-date="29.01.2026"><span class="gallery-date">29.01.2026</span></div>
-    <div class="gallery-item"><img src="01/29.01.2026.6.jpg" data-date="29.01.2026"><span class="gallery-date">29.01.2026</span></div>
-    <div class="gallery-item"><img src="01/29.01.2026.jpg" data-date="29.01.2026"><span class="gallery-date">29.01.2026</span></div>
-    <div class="gallery-item"><img src="01/30.01.2026.2.jpg" data-date="30.01.2026"><span class="gallery-date">30.01.2026</span></div>
-
-    <div class="gallery-item"><img src="02/01.02.2026.jpg" data-date="01.02.2026"><span class="gallery-date">01.02.2026</span></div>
-    <div class="gallery-item"><img src="02/01.02.2026.2.jpg" data-date="01.02.2026"><span class="gallery-date">01.02.2026</span></div>
-    <div class="gallery-item"><img src="02/02.02.2026.jpg" data-date="02.02.2026"><span class="gallery-date">02.02.2026</span></div>
-    <div class="gallery-item"><img src="02/02.02.2026.2.jpg" data-date="02.02.2026"><span class="gallery-date">02.02.2026</span></div>
-    <div class="gallery-item"><img src="02/02.02.2026.3.jpg" data-date="02.02.2026"><span class="gallery-date">02.02.2026</span></div>
-    <div class="gallery-item"><img src="02/03.02.2026.jpg" data-date="03.02.2026"><span class="gallery-date">03.02.2026</span></div>
-    <div class="gallery-item"><img src="02/03.02.2026.2.jpg" data-date="03.02.2026"><span class="gallery-date">03.02.2026</span></div>
-    <div class="gallery-item"><img src="02/03.02.2026.3.jpg" data-date="03.02.2026"><span class="gallery-date">03.02.2026</span></div>
-    <div class="gallery-item"><img src="02/03.02.2026.4.jpg" data-date="03.02.2026"><span class="gallery-date">03.02.2026</span></div>
-    <div class="gallery-item"><img src="02/03.02.2026.5.jpg" data-date="03.02.2026"><span class="gallery-date">03.02.2026</span></div>
-    <div class="gallery-item"><img src="02/03.02.2026.6.jpg" data-date="03.02.2026"><span class="gallery-date">03.02.2026</span></div>
-    <div class="gallery-item"><img src="02/03.02.2026.7.jpg" data-date="03.02.2026"><span class="gallery-date">03.02.2026</span></div>
-    <div class="gallery-item"><img src="02/04.02.2026.jpg" data-date="04.02.2026"><span class="gallery-date">04.02.2026</span></div>
-    <div class="gallery-item"><img src="02/04.02.2026.2.jpg" data-date="04.02.2026"><span class="gallery-date">04.02.2026</span></div>
-    <div class="gallery-item"><img src="02/04.02.2026.3.jpg" data-date="04.02.2026"><span class="gallery-date">04.02.2026</span></div>
-    <div class="gallery-item"><img src="02/05.02.2026.jpg" data-date="05.02.2026"><span class="gallery-date">05.02.2026</span></div>
-    <div class="gallery-item"><img src="02/05.02.2026.2.jpg" data-date="05.02.2026"><span class="gallery-date">05.02.2026</span></div>
-    <div class="gallery-item"><img src="02/05.02.2026.3.jpg" data-date="05.02.2026"><span class="gallery-date">05.02.2026</span></div>
-    <div class="gallery-item"><img src="02/05.02.2026.4.jpg" data-date="05.02.2026"><span class="gallery-date">05.02.2026</span></div>
-    <div class="gallery-item"><img src="02/05.02.2026.5.jpg" data-date="05.02.2026"><span class="gallery-date">05.02.2026</span></div>
-    <div class="gallery-item"><img src="02/05.02.2026.6.jpg" data-date="05.02.2026"><span class="gallery-date">05.02.2026</span></div>
-    <div class="gallery-item"><img src="02/05.02.2026.7.jpg" data-date="05.02.2026"><span class="gallery-date">05.02.2026</span></div>
-    <div class="gallery-item"><img src="02/05.02.2026.8.jpg" data-date="05.02.2026"><span class="gallery-date">05.02.2026</span></div>
-    <div class="gallery-item"><img src="02/06.02.2026.jpg" data-date="06.02.2026"><span class="gallery-date">06.02.2026</span></div>
-    <div class="gallery-item"><img src="02/06.02.2026.2.jpg" data-date="06.02.2026"><span class="gallery-date">06.02.2026</span></div>
-    <div class="gallery-item"><img src="02/06.02.2026.3.jpg" data-date="06.02.2026"><span class="gallery-date">06.02.2026</span></div>
-    <div class="gallery-item"><img src="02/07.02.2026.jpg" data-date="07.02.2026"><span class="gallery-date">07.02.2026</span></div>
-    <div class="gallery-item"><img src="02/07.02.2026.2.jpg" data-date="07.02.2026"><span class="gallery-date">07.02.2026</span></div>
-    <div class="gallery-item"><img src="02/07.02.2026.3.jpg" data-date="07.02.2026"><span class="gallery-date">07.02.2026</span></div>
-    <div class="gallery-item"><img src="02/07.02.2026.4.jpg" data-date="07.02.2026"><span class="gallery-date">07.02.2026</span></div>
-    <div class="gallery-item"><img src="02/08.02.2026.jpg" data-date="08.02.2026"><span class="gallery-date">08.02.2026</span></div>
-    <div class="gallery-item"><img src="02/08.02.2026.2.jpg" data-date="08.02.2026"><span class="gallery-date">08.02.2026</span></div>
-    <div class="gallery-item"><img src="02/08.02.2026.3.jpg" data-date="08.02.2026"><span class="gallery-date">08.02.2026</span></div>
-    <div class="gallery-item"><img src="02/19.02.2026.jpg" data-date="19.02.2026"><span class="gallery-date">19.02.2026</span></div>
-    <div class="gallery-item"><img src="02/19.02.2026.2.jpg" data-date="19.02.2026"><span class="gallery-date">19.02.2026</span></div>
-
-  </div>
-</div>
-
-<footer>14 şubat · 🤍</footer>
-</div>
-
-<div class="lightbox" id="lightbox">
-  <span class="close">×</span>
-  <span class="arrow left">‹</span>
-  <img id="lightbox-img">
-  <div class="lightbox-date" id="lightbox-date"></div>
-  <span class="arrow right">›</span>
-</div>
-
-<script>
-const lightbox = document.getElementById("lightbox");
-const imgBox = document.getElementById("lightbox-img");
-const dateBox = document.getElementById("lightbox-date");
-
-// Sayfa yüklendikten sonra resimleri seç
-const images = Array.from(document.querySelectorAll(".gallery-item img"));
-let index = 0;
-
-images.forEach((img, i) => {
-  img.addEventListener("click", () => {
-    index = i;
-    openLightbox();
-  });
-});
-
-function openLightbox() {
-  imgBox.src = images[index].src;
-  dateBox.textContent = images[index].dataset.date;
-  lightbox.style.display = "flex";
-}
-
-document.querySelector(".close").onclick = () => lightbox.style.display = "none";
-document.querySelector(".arrow.right").onclick = () => {
-  index = (index + 1) % images.length;
-  openLightbox();
-};
-document.querySelector(".arrow.left").onclick = () => {
-  index = (index - 1 + images.length) % images.length;
-  openLightbox();
-};
-
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") lightbox.style.display = "none";
-  if (e.key === "ArrowRight") document.querySelector(".arrow.right").click();
-  if (e.key === "ArrowLeft") document.querySelector(".arrow.left").click();
-});
-
-// Lightbox dışına tıklandığında kapat
-lightbox.addEventListener("click", (e) => {
-  if (e.target === lightbox) lightbox.style.display = "none";
-});
+    // Escape tuşuyla kapatma
+    window.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") closeLightbox();
+    });
 </script>
 
 </body>
