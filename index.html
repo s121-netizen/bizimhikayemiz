@@ -139,6 +139,31 @@
         .prev { left: 5px; } .next { right: 5px; }
         .close { position: absolute; top: 20px; right: 20px; font-size: 40px; color: white; cursor: pointer; }
 
+
+        /* --- FOTO TARİH ETİKETİ --- */
+        .photo-date {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            backdrop-filter: blur(4px);
+        }
+
+        .lightbox-date {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            font-size: 15px;
+            padding: 6px 14px;
+            border-radius: 14px;
+        }
+
 </style>
 </head>
 
@@ -405,6 +430,7 @@
 
 
 
+
     const MY_SECRET = "28112025"; 
     const START_DATE = new Date("2025-11-28T19:58:00"); 
 
@@ -575,6 +601,32 @@ const loveNotes = [
 
 
 
+
+
+
+
+    function updateLightboxDate(index) {
+        const dates = document.querySelectorAll(".photo-date");
+        const lbDate = document.getElementById("lightbox-date");
+        if (dates[index] && lbDate) {
+            lbDate.innerText = dates[index].innerText;
+        }
+    }
+
+    // mevcut openLightbox fonksiyonuna tarih ekle
+    const _oldOpenLightbox = openLightbox;
+    openLightbox = function() {
+        _oldOpenLightbox();
+        updateLightboxDate(currentIdx);
+    };
+
+    // changeImage sonrası da güncelle
+    const _oldChangeImage = changeImage;
+    changeImage = function(dir) {
+        _oldChangeImage(dir);
+        updateLightboxDate(currentIdx);
+    };
+    
 
 </script>
 
