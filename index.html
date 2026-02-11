@@ -14,7 +14,7 @@
         #login-overlay {
             position: fixed;
             inset: 0;
-            background: #0a0a0a;a
+            background: #0a0a0a;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -125,6 +125,23 @@
         .close-btn { position: absolute; top: 20px; right: 25px; font-size: 40px; color: white; cursor: pointer; z-index: 11002; }
 
         footer { padding: 40px 0; opacity: 0.4; font-size: 11px; text-align: center; }
+
+
+        /* --- TIKLAYINCA ÇIKAN MOR/GRİ KALPLER --- */
+        .tap-heart {
+            position: fixed;
+            left: 0; top: 0;
+            pointer-events: none;
+            z-index: 10050;
+            font-size: 28px;
+            transform: translate(-50%, -50%);
+            animation: tapRise 1.4s ease-out forwards;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.35));
+        }
+        @keyframes tapRise {
+            0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, calc(-50% - 140px)) scale(1.8); }
+        }
 
 </style>
 </head>
@@ -388,6 +405,7 @@
 
 <script>
 
+
     const MY_SECRET = "28112025"; 
     const START_DATE = new Date("2025-11-28T19:58:00"); 
 
@@ -471,6 +489,58 @@
             d.style.opacity = 1;
         }, 300);
     }
+
+
+
+
+    // --- TIKLAYINCA MOR/GRİ KALP EFEKTİ (BOŞ TIKLAMADA) ---
+    (function () {
+        if (window.__tapHeartsAdded) return;
+        window.__tapHeartsAdded = true;
+
+        const colors = ["#8e44ad", "#b0b0b0"]; // mor, gri
+
+        function spawnTapHeart(x, y) {
+            const h = document.createElement("div");
+            h.className = "tap-heart";
+            h.textContent = "❤";
+            h.style.left = x + "px";
+            h.style.top = y + "px";
+            h.style.color = colors[Math.floor(Math.random() * colors.length)];
+            h.style.fontSize = (22 + Math.random() * 14) + "px";
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 1500);
+        }
+
+        document.addEventListener("click", function (e) {
+            // login ekranında olmasın
+            if (e.target.closest("#login-overlay")) return;
+
+            // buton/input tıklamalarında olmasın
+            if (e.target.closest("button") || e.target.closest("input") || e.target.closest("a")) return;
+
+            // yağan kalbe tıklayınca K çıkıyor — onu bozma
+            if (e.target.closest(".heart")) return;
+
+            // lightbox kontrol / resim tıklamalarında spam olmasın
+            if (e.target.closest("#lightbox")) return;
+
+            spawnTapHeart(e.clientX, e.clientY);
+        }, { passive: true });
+
+        // Mobil dokunuş desteği
+        document.addEventListener("touchstart", function (e) {
+            if (e.target.closest("#login-overlay")) return;
+            if (e.target.closest("button") || e.target.closest("input") || e.target.closest("a")) return;
+            if (e.target.closest(".heart")) return;
+            if (e.target.closest("#lightbox")) return;
+
+            const t = e.touches && e.touches[0];
+            if (!t) return;
+            spawnTapHeart(t.clientX, t.clientY);
+        }, { passive: true });
+    })();
+
 
 </script>
 
