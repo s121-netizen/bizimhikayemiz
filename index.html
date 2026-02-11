@@ -166,12 +166,17 @@
 
     <div class="card card-one"><p>hislerim hep sende.</p></div>
 
+    
     <div class="card card-two">
-        <p>Kalbimin Ritmi 🎵</p>
-        <a href="https://open.spotify.com/playlist/37i9dQZF1E8O6D8R6S6S6S" target="_blank" class="spotify-btn">Spotify'da Dinle</a>
+        <p>kalbimin ritmi 🎵</p>
+        <iframe style="border-radius:16px; width:100%; max-width:520px; height:152px; border:0; margin-top:14px;"
+            src="https://open.spotify.com/embed/playlist/6bIp7TqcJfDi6jRy2k7Qfi?utm_source=generator"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"></iframe>
     </div>
 
-    <div class="card card-three"><p>mesafeler kalbi güçlendirir.</p></div>
+
+    <div class="card card-three">><p>mesafeler kalbi güçlendirir.</p></div>
 
     <div class="gallery">
         <h2>birlikte biriken anlar</h2>
@@ -399,6 +404,7 @@
 
 
 
+
     const MY_SECRET = "28112025"; 
     const START_DATE = new Date("2025-11-28T19:58:00"); 
 
@@ -487,6 +493,30 @@
         lightboxImg.src = imgs[currentIdx].src;
     }
 
+
+
+    // --- SWIPE DESTEK (TELEFONDA PARMAKLA KAYDIR) ---
+    (function () {
+        const lightbox = document.getElementById("lightbox");
+        if (!lightbox) return;
+
+        let touchstartX = 0;
+        let touchendX = 0;
+
+        lightbox.addEventListener("touchstart", (e) => {
+            touchstartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        lightbox.addEventListener("touchend", (e) => {
+            touchendX = e.changedTouches[0].screenX;
+            const diff = touchstartX - touchendX;
+
+            // sola kaydır -> sonraki, sağa kaydır -> önceki
+            if (diff > 50) changeImage(1);
+            if (diff < -50) changeImage(-1);
+        }, { passive: true });
+    })();
+    
 const loveNotes = [
         "Aynı gökyüzüne bakıyoruz, bu bizi hep bir arada tutuyor. ✨",
         "Mesafeler sadece rakamdan ibaret, kalbim her an seninle. ❤️",
@@ -542,6 +572,7 @@ const loveNotes = [
             spawnTapHeart(e.clientX, e.clientY);
         }, { passive: true });
     })();
+
 
 
 
