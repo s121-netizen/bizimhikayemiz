@@ -63,7 +63,7 @@
         /* --- YENİ: AKAN KIRMIZI K'LAR --- */
         .rain-k {
             position: fixed; top: -50px; color: #ff4d4d; font-size: 24px; font-weight: bold;
-            pointer-events: none; z-index: 9998; animation: fall linear forwards;
+            pointer-events: auto; z-index: 9998; animation: fall linear forwards;
             font-family: 'Playfair Display', serif;
         }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
@@ -83,7 +83,91 @@
         .close-btn { position: absolute; top: 20px; right: 25px; font-size: 40px; color: white; cursor: pointer; z-index: 11002; }
 
         footer { padding: 40px 0; opacity: 0.4; font-size: 11px; text-align: center; }
-    </style>
+    
+        /* --- CANLI AŞK SAYACI --- */
+        #counter-container {
+            font-family: 'Inter', sans-serif;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            display: inline-block;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .counter-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.7;
+            margin-bottom: 8px;
+            display: block;
+        }
+        #live-timer {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+
+        /* --- KALP YAĞMURU --- */
+        .falling-heart {
+            position: fixed;
+            top: -50px;
+            z-index: 9999;
+            user-select: none;
+            pointer-events: none;
+            animation: heartFall linear forwards;
+        }
+        @keyframes heartFall {
+            to { transform: translateY(110vh) rotate(360deg); opacity: 0.9; }
+        }
+
+        /* --- TIKLAYINCA ÇIKAN K --- */
+        .k-pop {
+            position: fixed;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            pointer-events: none;
+            z-index: 10000;
+            animation: riseUp 1s ease-out forwards;
+        }
+        @keyframes riseUp {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, calc(-50% - 110px)) scale(2); }
+        }
+
+
+        /* --- TIKLAYINCA K PATLAMASI --- */
+        .k-pop {
+            position: fixed;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            pointer-events: none;
+            z-index: 10000;
+            animation: kRise 900ms ease-out forwards;
+        }
+        @keyframes kRise {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, calc(-50% - 120px)) scale(2); }
+        }
+
+        .k-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10001;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            will-change: transform, opacity;
+            animation: kFly 650ms ease-out forwards;
+        }
+        @keyframes kFly {
+            0%   { transform: translate(var(--x0), var(--y0)) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x1), var(--y1)) scale(0.15); opacity: 0; }
+        }
+
+</style>
 </head>
 
 <body onclick="createHeart(event)">
@@ -97,6 +181,12 @@
 
 <div class="page" id="main-content">
     <h1>aynı şehirde olmasak da<br>aynı hislerdeyiz</h1>
+
+    <div id="counter-container">
+        <span class="counter-label">Her Saniye Senleyim</span>
+        <div id="live-timer">Hesaplanıyor...</div>
+    </div>
+
     <div class="subtitle" style="color: #a0a0a0; margin-bottom: 40px;">bir mesafeye değil, bir hisse aitiz.</div>
 
     <div class="notes-container">
@@ -356,7 +446,7 @@
     function createRainK() {
         const k = document.createElement("div");
         k.className = "rain-k";
-        k.innerHTML = "K";
+        k.innerHTML = "❤";
         k.style.left = Math.random() * 100 + "vw";
         k.style.animationDuration = (Math.random() * 3 + 3) + "s";
         k.style.opacity = Math.random();
@@ -444,6 +534,98 @@
         if (touchstartX - touchendX > 50) changeImage(1); // Sola kaydır -> Sonraki
         if (touchendX - touchstartX > 50) changeImage(-1); // Sağa kaydır -> Önceki
     }
+</script>
+
+
+<script>
+const startDate = new Date("2025-12-27T00:00:00");
+
+function updateCounter() {
+    const now = new Date();
+    const diff = now - startDate;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("live-timer").innerHTML =
+        `${days} gün ${hours} saat ${minutes} dakika ${seconds} saniye`;
+}
+
+setInterval(updateCounter, 1000);
+updateCounter();
+</script>
+
+
+<script>
+function burstK(x, y) {
+    const count = 10;
+    for (let i = 0; i < count; i++) {
+        const p = document.createElement("div");
+        p.className = "k-particle";
+        p.textContent = "K";
+        p.style.color = "#ff4d4d";
+
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 35 + Math.random() * 75;
+
+        const x0 = x - 6;
+        const y0 = y - 10;
+        const x1 = x0 + Math.cos(angle) * dist;
+        const y1 = y0 + Math.sin(angle) * dist;
+
+        p.style.setProperty("--x0", `${x0}px`);
+        p.style.setProperty("--y0", `${y0}px`);
+        p.style.setProperty("--x1", `${x1}px`);
+        p.style.setProperty("--y1", `${y1}px`);
+
+        p.style.fontSize = (12 + Math.random() * 14) + "px";
+        p.style.opacity = (0.7 + Math.random() * 0.3).toFixed(2);
+
+        document.body.appendChild(p);
+        p.addEventListener("animationend", () => p.remove());
+    }
+}
+
+function popBigK(x, y) {
+    const k = document.createElement("div");
+    k.className = "k-pop";
+    k.textContent = "K";
+    k.style.left = x + "px";
+    k.style.top = y + "px";
+    k.style.color = "#ff4d4d";
+    k.style.fontSize = (18 + Math.random() * 10) + "px";
+    document.body.appendChild(k);
+    setTimeout(() => k.remove(), 950);
+}
+
+// Tek bir click dinleyicisi
+(function () {
+    // Eğer daha önce eklenmişse tekrar eklemeyelim
+    if (window.__kClickAdded) return;
+    window.__kClickAdded = true;
+
+    document.addEventListener("click", function (e) {
+        // Şifre ekranında veya input/button üstünde patlama olmasın
+        if (e.target.closest("#login-overlay")) return;
+        if (e.target.closest("button") || e.target.closest("input")) return;
+
+        // SADECE YAĞAN KALBE TIKLAYINCA
+        const heartEl = e.target.closest(".rain-k");
+        if (!heartEl) return;
+
+        const r = heartEl.getBoundingClientRect();
+        const x = r.left + r.width / 2;
+        const y = r.top + r.height / 2;
+
+        burstK(x, y);
+        popBigK(x, y);
+
+        // tıklanan kalbi kaldır (patlamış gibi)
+        heartEl.remove();
+    }, { passive: true });
+})();
 </script>
 
 </body>
