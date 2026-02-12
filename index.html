@@ -565,6 +565,8 @@
 
 <script>
 let slideSpeed = 3000;
+let __lastHeartTap = 0;
+
 
 // --- ŞİFRE KONTROLÜ ---
 const MY_SECRET = "28112025";
@@ -623,7 +625,11 @@ function checkPass() {
         heart.style.fontSize = (Math.random() * 10 + 12) + "px";
         heart.style.animationDuration = Math.random() * 3 + 4 + "s";
         
-        heart.onclick = (e) => {
+        heart.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            __lastHeartTap = Date.now();
+
             const k = document.createElement("div");
             k.classList.add("k-pop");
             k.innerText = "K";
@@ -632,10 +638,16 @@ function checkPass() {
             document.body.appendChild(k);
             heart.remove();
             setTimeout(() => k.remove(), 1000);
-        };
+        }, { capture: true });
 
-        // Mobilde dokunma desteği
-        heart.ontouchstart = (e) => {
+
+// Mobilde dokunma desteği
+        heart.addEventListener("touchstart", (e) => {
+            // passive:false gerekir ki preventDefault çalışsın
+            e.preventDefault();
+            e.stopPropagation();
+            __lastHeartTap = Date.now();
+
             const touch = e.touches[0];
             const k = document.createElement("div");
             k.classList.add("k-pop");
@@ -645,9 +657,9 @@ function checkPass() {
             document.body.appendChild(k);
             heart.remove();
             setTimeout(() => k.remove(), 1000);
-        };
+        }, { passive: false, capture: true });
 
-        document.body.appendChild(heart);
+document.body.appendChild(heart);
         setTimeout(() => { if(heart.parentNode) heart.remove(); }, 6000);
     }
 
@@ -796,6 +808,8 @@ function generateNote() {
         }
 
         document.addEventListener("click", function (e) {
+            // yağan kalbe tıklayınca K çıkıyor — normal kalp spawn etme
+            if (Date.now() - __lastHeartTap < 450) return;
             // login ekranında olmasın
             if (e.target.closest("#login-overlay")) return;
 
@@ -938,6 +952,13 @@ function syncLightboxDate(index) {
             });
         });
     });
+
+    // iOS/Android ghost click önleme: kalbe dokununca hemen ardından gelen click'i yeme
+    document.addEventListener("touchend", (e) => {
+        if (e.target && e.target.closest && e.target.closest(".heart")) {
+            __lastHeartTap = Date.now();
+        }
+    }, { passive: true });
 </script>
 
 </body>
