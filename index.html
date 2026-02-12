@@ -97,7 +97,6 @@
     animation: loveGlow 1.5s infinite ease-in-out;
 }
 
-
         /* --- KARTLAR & SPOTIFY --- */
         .card {
             border-radius: 26px; padding: 48px 32px; margin-bottom: 40px; min-height: 250px;
@@ -625,9 +624,6 @@ function generateNote() {
 
         d.innerText = loveNotes[noteIndex];
 
-        // Önce glow'u temizle
-        d.classList.remove("glow-love");
-
         // 🎨 Renk sistemi
         if (noteIndex % 2 === 0) {
             d.style.color = "#b57edc"; // mor
@@ -635,13 +631,11 @@ function generateNote() {
             d.style.color = "#bfbfbf"; // gri
         }
 
-        // 🔥 20. nota özel efekt
+        // 🔥 20. nota özel büyük font
         if (noteIndex === 19) {
-            d.style.fontSize = "24px";
-            d.style.fontWeight = "800";
+            d.style.fontSize = "22px";
+            d.style.fontWeight = "700";
             d.style.letterSpacing = "1px";
-            d.style.color = "#ff4d6d";
-            d.classList.add("glow-love");
         } else {
             d.style.fontSize = "16px";
             d.style.fontWeight = "400";
