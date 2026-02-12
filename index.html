@@ -97,6 +97,7 @@
     animation: loveGlow 1.5s infinite ease-in-out;
 }
 
+
         /* --- KARTLAR & SPOTIFY --- */
         .card {
             border-radius: 26px; padding: 48px 32px; margin-bottom: 40px; min-height: 250px;
@@ -188,6 +189,78 @@
             border-radius: 14px;
             z-index: 13000;
         }
+
+        /* --- HOŞ GELDİN TOAST --- */
+        #welcome-toast {
+          position: fixed;
+          top: 18px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(0,0,0,0.55);
+          color: #fff;
+          padding: 10px 16px;
+          border-radius: 14px;
+          backdrop-filter: blur(8px);
+          z-index: 30000;
+          font-size: 14px;
+          opacity: 0;
+          pointer-events: none;
+        }
+        #welcome-toast.show {
+          animation: toastInOut 2.6s ease forwards;
+        }
+        @keyframes toastInOut {
+          0%   { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+          15%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+          85%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+          100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        }
+
+        /* --- 20. NOTTA MİNİ KALP PATLAMASI --- */
+        .note-heart {
+          position: fixed;
+          left: 0; top: 0;
+          pointer-events: none;
+          z-index: 20000;
+          transform: translate(-50%, -50%);
+          animation: notePop 900ms ease-out forwards;
+          filter: drop-shadow(0 8px 16px rgba(0,0,0,0.35));
+        }
+        @keyframes notePop {
+          0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          100% { opacity: 0; transform: translate(-50%, calc(-50% - 120px)) scale(1.8); }
+        }
+
+        .note-heart-p {
+          position: fixed;
+          left: 0; top: 0;
+          pointer-events: none;
+          z-index: 20000;
+          will-change: transform, opacity;
+          animation: noteFly 700ms ease-out forwards;
+        }
+        @keyframes noteFly {
+          0%   { transform: translate(var(--x0), var(--y0)) scale(1); opacity: 1; }
+          100% { transform: translate(var(--x1), var(--y1)) scale(0.15); opacity: 0; }
+        }
+
+
+        /* --- GALERİ OTOMATİK KAYDIR BUTONU --- */
+        .autoplay-btn{
+            position:absolute;
+            top:22px;
+            left:20px;
+            background:rgba(255,255,255,0.12);
+            color:#fff;
+            border:1px solid rgba(255,255,255,0.18);
+            padding:8px 12px;
+            border-radius:14px;
+            font-size:12px;
+            cursor:pointer;
+            z-index:13000;
+            backdrop-filter:blur(8px);
+        }
+        .autoplay-btn.off{ opacity:0.7; }
 </style>
 </head>
 
@@ -227,7 +300,7 @@
     </div>
 
 
-    <div class="card card-three">><p>mesafeler kalbi güçlendirir.</p></div>
+    <div class="card card-three"><p>mesafeler kalbi güçlendirir.</p></div>
 
     <div class="gallery">
         <h2>birlikte biriken anlar</h2>
@@ -437,13 +510,14 @@
         </div>
     </div>
 
-    <footer
-
     <footer>14 şubat 2026 · kalbimdesin 🤍</footer>
 </div>
 
+<div id="welcome-toast">hoş geldin aşkım 💜 parmakların yorulmasın diye otomatik yaptım 😄</div>
+
 <div class="lightbox" id="lightbox">
     <span class="close" onclick="closeLightbox()">×</span>
+    <button id="autoplay-btn" class="autoplay-btn" type="button">otomatik: kapalı</button>
     <span class="nav-btn prev" onclick="changeImage(-1)">❮</span>
     <img id="lightbox-img" src="">
     <div id="lightbox-date" class="lightbox-date"></div>
@@ -453,13 +527,7 @@
 
 
 <script>
-
-
-
-
-
-
-    // --- ŞİFRE KONTROLÜ ---
+// --- ŞİFRE KONTROLÜ ---
 const MY_SECRET = "28112025";
 const START_DATE = new Date("2025-11-28T19:58:00");
 
@@ -479,7 +547,9 @@ function checkPass() {
             overlay.style.display = "none";
             content.style.opacity = "1";
 
-            // ✅ Aşk sayacı bozulmasın: girişten sonra başlat
+            
+            showWelcomeToast();
+// ✅ Aşk sayacı bozulmasın: girişten sonra başlat
             setInterval(updateLiveTimer, 1000);
             updateLiveTimer();
 
@@ -557,9 +627,11 @@ function checkPass() {
         lightbox.style.display = "flex";
         lightboxImg.src = imgs[currentIdx].src;
         syncLightboxDate(currentIdx);
+        updateAutoplayBtn();
+        startAutoSlide();
     }
 
-    function closeLightbox() { lightbox.style.display = "none"; }
+    function closeLightbox() { lightbox.style.display = "none"; stopAutoSlide(); }
 
     function changeImage(dir) {
         currentIdx = (currentIdx + dir + imgs.length) % imgs.length;
@@ -624,6 +696,9 @@ function generateNote() {
 
         d.innerText = loveNotes[noteIndex];
 
+        // Önce glow'u temizle
+        d.classList.remove("glow-love");
+
         // 🎨 Renk sistemi
         if (noteIndex % 2 === 0) {
             d.style.color = "#b57edc"; // mor
@@ -631,11 +706,13 @@ function generateNote() {
             d.style.color = "#bfbfbf"; // gri
         }
 
-        // 🔥 20. nota özel büyük font
+        // 🔥 20. nota özel efekt
         if (noteIndex === 19) {
-            d.style.fontSize = "22px";
-            d.style.fontWeight = "700";
+            d.style.fontSize = "24px";
+            d.style.fontWeight = "800";
             d.style.letterSpacing = "1px";
+            d.style.color = "#ff4d6d";
+            d.classList.add("glow-love");
         } else {
             d.style.fontSize = "16px";
             d.style.fontWeight = "400";
@@ -693,39 +770,7 @@ function generateNote() {
         }, { passive: true });
     })();
 
-
-
-
-
-
-
-    function updateLightboxDate(index) {
-        const dates = document.querySelectorAll(".photo-date");
-        const lbDate = document.getElementById("lightbox-date");
-        if (dates[index] && lbDate) {
-            lbDate.innerText = dates[index].innerText;
-        }
-    }
-
-    // mevcut openLightbox fonksiyonuna tarih ekle
-    const _oldOpenLightbox = openLightbox;
-    openLightbox = function() {
-        _oldOpenLightbox();
-        updateLightboxDate(currentIdx);
-    };
-
-    // changeImage sonrası da güncelle
-    const _oldChangeImage = changeImage;
-    changeImage = function(dir) {
-        _oldChangeImage(dir);
-        updateLightboxDate(currentIdx);
-    };
-    
-
-
-
-
-    function syncLightboxDate(index) {
+function syncLightboxDate(index) {
         const dates = document.querySelectorAll(".gallery-date");
         const lbDate = document.getElementById("lightbox-date");
         if (!lbDate) return;
@@ -733,6 +778,109 @@ function generateNote() {
         else lbDate.innerText = "";
     }
 
+
+    function showWelcomeToast() {
+        const t = document.getElementById("welcome-toast");
+        if (!t) return;
+        t.classList.remove("show");
+        void t.offsetWidth; // restart anim
+        t.classList.add("show");
+    }
+
+    function noteBurstHearts(x, y) {
+        const big = document.createElement("div");
+        big.className = "note-heart";
+        big.textContent = "❤️";
+        big.style.left = x + "px";
+        big.style.top = y + "px";
+        big.style.fontSize = "28px";
+        document.body.appendChild(big);
+        setTimeout(() => big.remove(), 950);
+
+        const count = 10;
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement("div");
+            p.className = "note-heart-p";
+            p.textContent = "❤";
+
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 30 + Math.random() * 80;
+
+            const x0 = x - 6;
+            const y0 = y - 10;
+            const x1 = x0 + Math.cos(angle) * dist;
+            const y1 = y0 + Math.sin(angle) * dist;
+
+            p.style.setProperty("--x0", `${x0}px`);
+            p.style.setProperty("--y0", `${y0}px`);
+            p.style.setProperty("--x1", `${x1}px`);
+            p.style.setProperty("--y1", `${y1}px`);
+
+            p.style.left = "0px";
+            p.style.top = "0px";
+            p.style.color = "#ff4d6d";
+            p.style.fontSize = (10 + Math.random() * 10) + "px";
+
+            document.body.appendChild(p);
+            p.addEventListener("animationend", () => p.remove());
+        }
+    }
+
+    let autoSlideTimer = null;
+    let autoSlideResumeTimer = null;
+
+    function startAutoSlide() {
+        if (!autoplayEnabled) return;
+        stopAutoSlide();
+        autoSlideTimer = setInterval(() => {
+            const lb = document.getElementById("lightbox");
+            if (lb && lb.style.display === "flex") changeImage(1);
+        }, 3500);
+    }
+
+    function stopAutoSlide() {
+        if (autoSlideTimer) clearInterval(autoSlideTimer);
+        autoSlideTimer = null;
+        if (autoSlideResumeTimer) clearTimeout(autoSlideResumeTimer);
+        autoSlideResumeTimer = null;
+    }
+
+    function pauseThenResumeAutoSlide() {
+        stopAutoSlide();
+        autoSlideResumeTimer = setTimeout(() => startAutoSlide(), 4000);
+    }
+
+    // --- AUTO SLIDE ETKİLEŞİM: dokununca dur, sonra devam ---
+    ["click","touchstart","keydown"].forEach(ev => {
+        document.addEventListener(ev, (e) => {
+            if (e.target && e.target.closest && e.target.closest("#login-overlay")) return;
+            if (e.target && e.target.closest && e.target.closest("#lightbox")) return;
+            pauseThenResumeAutoSlide();
+        }, { passive: true });
+    });
+
+    // --- GALERİ OTOMATİK KAYDIR AÇ/KAPA ---
+    let autoplayEnabled = false;
+
+    function updateAutoplayBtn(){
+        const btn = document.getElementById("autoplay-btn");
+        if(!btn) return;
+        btn.textContent = autoplayEnabled ? "otomatik: açık" : "otomatik: kapalı";
+        btn.classList.toggle("off", !autoplayEnabled);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("autoplay-btn");
+        if(!btn) return;
+        updateAutoplayBtn();
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            autoplayEnabled = !autoplayEnabled;
+            updateAutoplayBtn();
+            if (autoplayEnabled) startAutoSlide();
+            else stopAutoSlide();
+        });
+    });
 </script>
 
 </body>
