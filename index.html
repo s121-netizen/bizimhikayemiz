@@ -10,7 +10,7 @@
 
         * { box-sizing: border-box; }
 
-        /* --- ŞİFRE EKRANI --- */
+                /* --- ŞİFRE EKRANI --- */
         #login-overlay {
             position: fixed;
             inset: 0;
@@ -24,14 +24,26 @@
         }
 
         #login-overlay input {
-            background: transparent; border: none; border-bottom: 2px solid #555;
-            color: white; font-size: 24px; text-align: center; padding: 10px;
-            outline: none; font-family: 'Playfair Display', serif; margin-bottom: 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #555;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            padding: 10px;
+            outline: none;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
         }
 
         #login-overlay button {
-            background: white; color: black; border: none; padding: 10px 30px;
-            border-radius: 50px; cursor: pointer; font-weight: bold;
+            background: white;
+            color: black;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
         }
 
         /* --- GENEL TASARIM --- */
@@ -95,7 +107,7 @@
             display: flex; align-items: center; justify-content: center;
         }
         .k-pop {
-            position: fixed; color: #fff; font-weight: bold; font-family: 'Playfair Display', serif;
+            position: fixed; color: #cec6c683; font-weight: bold; font-family: 'Playfair Display', serif;
             pointer-events: none; z-index: 10000; animation: riseUp 1s ease-out forwards;
         }
         @keyframes fall { to { transform: translateY(105vh) rotate(360deg); } }
@@ -170,10 +182,12 @@
 <body>
 
 <div id="login-overlay">
-    <p style="font-family: 'Playfair Display'; color: white; margin-bottom: 20px;">Bizim Günümüz...</p>
+    <p style="font-family: 'Playfair Display'; margin-bottom: 20px;">Bizim Günümüz...</p>
     <input type="password" id="pass-input" placeholder="Şifreyi yaz...">
     <button onclick="checkPass()">Anılarımıza Giriş Yap</button>
+    <p id="error-msg" style="color: #ff4d4d; display: none; margin-top: 15px; font-size: 13px;">Hatalı şifre sevgilim, tekrar dene.</p>
 </div>
+
 
 <div class="page" id="main-content">
     <h1>aynı şehirde olmasak da<br>aynı hislerdeyiz</h1>
@@ -433,21 +447,39 @@
 
 
 
-    const MY_SECRET = "28112025"; 
-    const START_DATE = new Date("2025-11-28T19:58:00"); 
+    // --- ŞİFRE KONTROLÜ ---
+const MY_SECRET = "28112025";
+const START_DATE = new Date("2025-11-28T19:58:00");
 
-    function checkPass() {
-        if(document.getElementById("pass-input").value === MY_SECRET) {
-            document.getElementById("login-overlay").style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById("login-overlay").style.display = "none";
-                document.getElementById("main-content").style.opacity = "1";
-                setInterval(updateLiveTimer, 1000);
-                updateLiveTimer();
-                startHeartRain(); 
-            }, 800);
-        }
+function checkPass() {
+    const inputEl = document.getElementById("pass-input");
+    const val = inputEl ? inputEl.value.trim() : "";
+    const err = document.getElementById("error-msg");
+
+    if (val === MY_SECRET) {
+        if (err) err.style.display = "none";
+
+        const overlay = document.getElementById("login-overlay");
+        const content = document.getElementById("main-content");
+
+        overlay.style.opacity = "0";
+        setTimeout(() => {
+            overlay.style.display = "none";
+            content.style.opacity = "1";
+
+            // ✅ Aşk sayacı bozulmasın: girişten sonra başlat
+            setInterval(updateLiveTimer, 1000);
+            updateLiveTimer();
+
+            // ✅ Kalp yağmuru da girişten sonra başlasın
+            startHeartRain();
+        }, 800);
+
+    } else {
+        if (err) err.style.display = "block";
     }
+}
+
 
     function updateLiveTimer() {
         const now = new Date();
@@ -547,22 +579,68 @@
         }, { passive: true });
     })();
     
-const loveNotes = [
-        "Aynı gökyüzüne bakıyoruz, bu bizi hep bir arada tutuyor. ✨",
-        "Mesafeler sadece rakamdan ibaret, kalbim her an seninle. ❤️",
-        "Gülüşün, kilometrelerce uzaktan bile içimi ısıtıyor. 😊",
-        "İyi ki varsın, iyi ki biz olduk.",
-        "Sen benim başıma gelen en güzel hikayesin."
-    ];
+let noteIndex = 0;
 
-    function generateNote() {
-        const d = document.getElementById("note-display");
-        d.style.opacity = 0;
-        setTimeout(() => {
-            d.innerText = loveNotes[Math.floor(Math.random() * loveNotes.length)];
-            d.style.opacity = 1;
-        }, 300);
-    }
+const loveNotes = [
+"sen benim en güzel tesadüfümsün 💜",
+"her şey değişir ama sana olan sevgim asla 🤍",
+"kalbimin en güzel yeri senin isminle atıyor 💜",
+"mesafeler var ama hislerimiz yan yana 🤍",
+"gülüşün dünyamın en güzel manzarası 💜",
+"iyi ki hayatıma girdin 🤍",
+"seninle her şey daha anlamlı 💜",
+"kalbimin ritmi seninle aynı 🤍",
+"en güzel hayalim sensin 💜",
+"sen benim huzurumsun 🤍",
+"yıldızlara baktığımda aklıma sen geliyorsun 💜",
+"sesin bile içimi ısıtıyor 🤍",
+"yanımda olmasan da kalbimdesin 💜",
+"seninle geçen her saniye değerli 🤍",
+"kalbimin tek sahibi sensin 💜",
+"günümü aydınlatan tek şey sensin 🤍",
+"seni düşünmek bile mutluluk 💜",
+"her duamda adın var 🤍",
+"sonsuza kadar sen 💜",
+"SENİ ÇOK SEVİYORUM SEVGİLİM ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️"
+];
+
+function generateNote() {
+    const d = document.getElementById("note-display");
+    d.style.opacity = 0;
+
+    setTimeout(() => {
+
+        d.innerText = loveNotes[noteIndex];
+
+        // 🎨 Renk sistemi
+        if (noteIndex % 2 === 0) {
+            d.style.color = "#b57edc"; // mor
+        } else {
+            d.style.color = "#bfbfbf"; // gri
+        }
+
+        // 🔥 20. nota özel büyük font
+        if (noteIndex === 19) {
+            d.style.fontSize = "22px";
+            d.style.fontWeight = "700";
+            d.style.letterSpacing = "1px";
+        } else {
+            d.style.fontSize = "16px";
+            d.style.fontWeight = "400";
+            d.style.letterSpacing = "0px";
+        }
+
+        d.style.opacity = 1;
+
+        noteIndex++;
+        if (noteIndex >= loveNotes.length) {
+            noteIndex = 0;
+        }
+
+    }, 300);
+}
+
+
 
 
 
