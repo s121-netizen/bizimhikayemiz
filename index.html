@@ -478,6 +478,113 @@ body.logged-in #mini-game-btn{ display:block !important; }
 }
 
 
+
+/* ===== DOĞUM GÜNÜ MODU ===== */
+#birthday-surprise{
+    position:fixed; inset:0;
+    display:none;
+    align-items:center; justify-content:center; flex-direction:column;
+    background: radial-gradient(1200px 800px at 50% 20%, rgba(123,44,191,0.35), rgba(0,0,0,0.92) 60%);
+    z-index:99999;
+    text-align:center;
+    padding:22px;
+}
+#birthday-surprise .bday-title{
+    font-family:'Playfair Display', serif;
+    font-size:38px;
+    margin:0 0 8px 0;
+}
+#birthday-surprise .bday-sub{
+    font-size:14px;
+    opacity:0.82;
+    max-width:560px;
+    line-height:1.55;
+}
+#birthday-surprise .bday-btn{
+    margin-top:18px;
+    background:#fff;
+    color:#000;
+    border:none;
+    padding:12px 26px;
+    border-radius:999px;
+    cursor:pointer;
+    font-weight:700;
+}
+#birthday-message{
+    display:none;
+    margin:14px auto 0;
+    max-width:520px;
+    font-family:'Playfair Display', serif;
+    font-size:16px;
+    opacity:0.92;
+    padding:10px 14px;
+    border-radius:16px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+}
+.card-birthday{
+    background-image:
+      linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)),
+      url("https://i.imgur.com/hFsiwdH.jpeg");
+}
+.bday-card-btn{
+    margin-top:14px;
+    padding:12px 18px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.10);
+    color:#fff;
+    cursor:pointer;
+    backdrop-filter:blur(8px);
+}
+#bday-card-modal{
+    position:fixed; inset:0;
+    display:none;
+    align-items:center; justify-content:center;
+    z-index:99998;
+    padding:16px;
+}
+#bday-card-modal.show{ display:flex; }
+#bday-card-modal .backdrop{
+    position:absolute; inset:0;
+    background:rgba(0,0,0,0.72);
+}
+#bday-card-modal .card{
+    position:relative;
+    width:min(720px, calc(100vw - 26px));
+    max-height:min(82vh, 760px);
+    padding:22px 18px;
+    border-radius:18px;
+    background:rgba(15,15,18,0.92);
+    border:1px solid rgba(255,255,255,0.14);
+    backdrop-filter: blur(12px);
+    text-align:left;
+    overflow:auto;
+}
+#bday-card-modal .card h3{
+    font-family:'Playfair Display', serif;
+    margin:0 0 10px 0;
+    font-size:22px;
+}
+#bday-card-modal .card p{
+    margin:0 0 10px 0;
+    line-height:1.7;
+    font-size:14px;
+    opacity:0.92;
+}
+#bday-card-modal .close{
+    position:absolute;
+    top:12px; right:12px;
+    width:38px; height:38px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.14);
+    background:rgba(255,255,255,0.08);
+    color:#fff;
+    font-size:20px;
+    cursor:pointer;
+}
+
 </style>
 </head>
 
@@ -507,6 +614,8 @@ body.logged-in #mini-game-btn{ display:block !important; }
         <div id="live-timer">Hesaplanıyor...</div>
     </div>
 
+    <div id="birthday-message">Bugün senin günün… İyi ki doğdun sevgilim. Dileklerinin içinde biraz ben olayım 💜</div>
+
     <div class="notes-container">
         <div id="note-display">Seni ne kadar çok sevdiğimi biliyor musun? ✨</div>
         <button class="note-btn" onclick="generateNote()">💜Yeni Bir Not 🩶</button>
@@ -527,6 +636,12 @@ body.logged-in #mini-game-btn{ display:block !important; }
 
 
     <div class="card card-three"><p>mesafeler kalbi güçlendirir.</p></div>
+
+
+    <div class="card card-birthday">
+        <p>bugün, senin için yazdığım küçük bir kart var… 🎂💜</p>
+        <button class="bday-card-btn" type="button" onclick="openBdayCard()">Kartı Aç</button>
+    </div>
 
     <div class="gallery">
         <h2>bizi biz yapan şeyler yaşadığımız anılar</h2>
@@ -888,6 +1003,28 @@ body.logged-in #mini-game-btn{ display:block !important; }
 
 <div id="welcome-toast">hoş geldin aşkımmmmm 💜🩶 </div>
 
+
+<div id="birthday-surprise">
+    <div style="font-size:22px; margin-bottom:10px;">🎈🎉🎈</div>
+    <div class="bday-title">İyi ki doğdun sevgilim 🎂</div>
+    <div class="bday-sub">Bu site bugün “sadece sen” için biraz daha özel. Hazırsan sürprizi aç…</div>
+    <button class="bday-btn" type="button" onclick="closeBirthday()">Sürprizi Aç 💜</button>
+</div>
+
+<div id="bday-card-modal" aria-hidden="true">
+    <div class="backdrop" onclick="closeBdayCard()"></div>
+    <div class="card">
+        <button class="close" type="button" onclick="closeBdayCard()">×</button>
+        <h3>Doğum Günü Kartın</h3>
+        <p>İyi ki doğdun…</p>
+        <p>Seninle geçen her gün, bana “iyi ki” dedirtiyor. Uzak olsak bile; aynı hislerde buluştuğumuz o anlar var ya… işte onlar benim en sevdiğim yer.</p>
+        <p>Yeni yaşında; yüzün daha çok gülsün, kalbin daha az yorulsun, hayallerin sana daha hızlı gelsin. Ne olursa olsun, ben hep senin tarafındayım.</p>
+        <p style="margin-top:12px; font-family:'Playfair Display', serif; font-size:16px;">seni sevmeye sevgilim bi ömür yetmez ki</p>
+        <p style="opacity:0.8; margin-top:14px;">💜🩶</p>
+    </div>
+</div>
+
+
 <div class="lightbox" id="lightbox">
     <span class="close" onclick="closeLightbox()">×</span>
     <button id="autoplay-btn" class="autoplay-btn" type="button">otomatik: kapalı</button>
@@ -913,6 +1050,51 @@ let __lastHeartTap = 0;
 const MY_SECRET = "28112025";
 const START_DATE = new Date("2025-11-28T19:58:00");
 
+// --- DOĞUM GÜNÜ AYARI (İSTERSEN DEĞİŞTİR) ---
+const BDAY_DAY = 3;      // gün (1-31)
+const BDAY_MONTH = 3;    // ay (1-12)  -> Mart = 3
+
+function isBirthdayToday(){
+    const d = new Date();
+    return (d.getDate() === BDAY_DAY && (d.getMonth()+1) === BDAY_MONTH);
+}
+
+function showBirthday(){
+    const el = document.getElementById("birthday-surprise");
+    if(el) el.style.display = "flex";
+}
+
+function closeBirthday(){
+    const el = document.getElementById("birthday-surprise");
+    if(el) el.style.display = "none";
+    startConfetti();
+}
+
+function startConfetti(){
+    for(let i=0;i<90;i++){
+        const conf = document.createElement("div");
+        conf.textContent = (Math.random()<0.5 ? "🎉" : "✨");
+        conf.style.position = "fixed";
+        conf.style.left = (Math.random()*100) + "vw";
+        conf.style.top = "-60px";
+        conf.style.fontSize = (Math.random()*10 + 16) + "px";
+        conf.style.animation = "fall " + (Math.random()*1.5 + 2.2) + "s linear forwards";
+        conf.style.zIndex = "99999";
+        document.body.appendChild(conf);
+        setTimeout(()=>conf.remove(), 4200);
+    }
+}
+
+function openBdayCard(){
+    const m = document.getElementById("bday-card-modal");
+    if(m){ m.classList.add("show"); m.setAttribute("aria-hidden","false"); }
+}
+function closeBdayCard(){
+    const m = document.getElementById("bday-card-modal");
+    if(m){ m.classList.remove("show"); m.setAttribute("aria-hidden","true"); }
+}
+
+
 function checkPass() {
     const inputEl = document.getElementById("pass-input");
     const val = inputEl ? inputEl.value.trim() : "";
@@ -935,6 +1117,20 @@ function checkPass() {
 // ✅ Aşk sayacı bozulmasın: girişten sonra başlat
             setInterval(updateLiveTimer, 1000);
             updateLiveTimer();
+
+
+            // --- DOĞUM GÜNÜ MODU ---
+            if (isBirthdayToday()){
+                const bm = document.getElementById("birthday-message");
+                if(bm) bm.style.display = "block";
+                // sayaç yerine küçük mesaj
+                const timerEl = document.getElementById("live-timer");
+                if(timerEl) timerEl.innerHTML = "Bugün senin günün 💜";
+                // arka planı biraz farklılaştır
+                document.body.style.backgroundImage =
+                  'linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url("https://i.imgur.com/VqGB3wv.jpeg")';
+                showBirthday();
+            }
 
             // ✅ Kalp yağmuru da girişten sonra başlasın
             startHeartRain();
@@ -962,7 +1158,7 @@ function checkPass() {
     function createHeart() {
         const heart = document.createElement("div");
         heart.classList.add("heart");
-        heart.innerHTML = "❤️";
+        heart.innerHTML = isBirthdayToday() ? "🎈" : "❤️";
         heart.style.left = Math.random() * 95 + "vw";
         heart.style.fontSize = (Math.random() * 10 + 12) + "px";
         heart.style.animationDuration = Math.random() * 3 + 4 + "s";
@@ -1140,7 +1336,7 @@ function generateNote() {
         function spawnTapHeart(x, y) {
             const h = document.createElement("div");
             h.className = "tap-heart";
-            h.textContent = "❤";
+            h.textContent = isBirthdayToday() ? "🎈" : "❤";
             h.style.left = x + "px";
             h.style.top = y + "px";
             h.style.color = colors[Math.floor(Math.random() * colors.length)];
