@@ -882,7 +882,8 @@ body.logged-in #mini-game-btn{ display:block !important; }
     <button class="filter-btn" onclick="filterGallery('01.2026')">Ocak '26</button>
     <button class="filter-btn" onclick="filterGallery('02.2026')">Şubat '26</button>
     <button class="filter-btn" onclick="filterGallery('03.2026')">Mart '26</button>
-      <button class="filter-btn" onclick="filterGallery('04.2026')">Nisan '26</button>
+    <button class="filter-btn" onclick="filterGallery('04.2026')">Nisan '26</button>
+    <button class="filter-btn" onclick="filterGallery('05.2026')">Nisan '26</button>
 </div>
             <div class="gallery-scroll" id="gallery-scroll">
             <div class="gallery-item"><img src="11.2025/28.11.2025.png"><span class="gallery-date">28.11.2025</span></div>
@@ -2494,6 +2495,7 @@ function filterGallery(month) {
         else if (month === '02.2026' && (imgSrc.includes('02/') || imgSrc.includes('2026.02'))) isMatch = true;
         else if (month === '03.2026' && imgSrc.includes('03/')) isMatch = true;
         else if (month === '04.2026' && imgSrc.includes('04.2026')) isMatch = true;
+        else if (month === '05.2026' && imgSrc.includes('05.2026')) isMatch = true;
 
         item.style.display = isMatch ? 'block' : 'none';
     });
