@@ -121,20 +121,12 @@
         .yinyang .k{ color:#111; }
 
 /* --- GENEL TASARIM --- */
-      body {
-    margin: 0; 
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://i.imgur.com/PyNRVJW.jpeg");
-    background-size: cover; 
-    background-position: center; 
-    /* KRİTİK DEĞİŞİKLİK: fixed yerine scroll yaparak beyazlığı bitiriyoruz */
-    background-attachment: scroll;
-    color: #f5f5f5; 
-    overflow-x: hidden;
-    /* KASMA ÖNLEYİCİ: Ekran kartını devreye sokar */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-}
+        body {
+            margin: 0; font-family: 'Inter', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://i.imgur.com/PyNRVJW.jpeg");
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: #f5f5f5; overflow-x: hidden;
+        }
 
         .page {
             max-width: 720px; margin: auto; padding: 60px 16px;
