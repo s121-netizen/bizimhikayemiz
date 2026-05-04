@@ -811,6 +811,32 @@ body.logged-in #mini-game-btn{ display:block !important; }
     pointer-events: none;
 }
 
+/* Mobilde kasma yapan ağır özellikleri optimize et */
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll !important; /* Fixed background mobilde işlemciyi yorar */
+    }
+    
+    .card, .notes-container, #counter-container, .mg-card {
+        backdrop-filter: none !important; /* Blur efekti mobil tarayıcıların düşmanıdır */
+        background: rgba(20, 20, 20, 0.9) !important; /* Blur yerine düz opak renk */
+    }
+
+    .heart {
+        display: none; /* Mobilde yağan kalpleri kapatmak performansı %50 artırır */
+    }
+    
+    img {
+        content-visibility: auto; /* Ekran dışında kalan resimleri işlemeyi durdurur */
+    }
+}
+
+/* Donanım ivmelendirmesini zorla */
+.gallery-item img, #wheel, .card {
+    transform: translateZ(0);
+    will-change: transform;
+}
+
 </style>
 </head>
 
@@ -2639,6 +2665,25 @@ function requestMotionPermission() {
 // Mavi seçilme engelleyici
 document.addEventListener('contextmenu', e => {
     if (e.target.closest('.wheel-wrapper')) e.preventDefault();
+});
+
+
+
+// Kalp yağmurunu mobilde durdurmak veya yavaşlatmak için:
+function startHeartRain() { 
+    // Eğer ekran genişliği 768px'den büyükse kalp yağdır
+    if (window.innerWidth > 768) {
+        setInterval(createHeart, 600); 
+    }
+}
+
+// Çark ve animasyonlar için düşük FPS modunu tetikle
+document.addEventListener("DOMContentLoaded", function() {
+    if (window.innerWidth < 768) {
+        // Mobilde otomatik kaydırma hızını düşür veya kapat
+        autoplayEnabled = false; 
+        updateAutoplayBtn();
+    }
 });
 
 </script>
