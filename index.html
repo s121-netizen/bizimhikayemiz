@@ -872,6 +872,30 @@ html, body {
         <p>bugün, senin için yazdığım küçük bir kart var… 🎂💜</p>
         <button class="bday-card-btn" type="button" onclick="openBdayCard()">Kartı Aç</button>
     </div>
+    
+    
+<script>
+const items = document.querySelectorAll(".gallery-item");
+let visibleCount = 30;
+
+// başta sadece 30 göster
+items.forEach((item, index) => {
+    if (index >= visibleCount) item.style.display = "none";
+});
+
+window.addEventListener("scroll", () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+        // aşağı gelince +30 aç
+        visibleCount += 30;
+
+        items.forEach((item, index) => {
+            if (index < visibleCount) {
+                item.style.display = "block";
+            }
+        });
+    }
+});
+</script>
 
     <script>
 document.querySelectorAll("img").forEach(img => {
