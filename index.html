@@ -811,6 +811,13 @@ body.logged-in #mini-game-btn{ display:block !important; }
     pointer-events: none;
 }
 
+
+.gallery-item {
+    /* Tasarımı bozmadan performansı uçurur */
+    content-visibility: auto; 
+    contain-intrinsic-size: 180px 240px; 
+}
+
 </style>
 </head>
 
@@ -2640,6 +2647,17 @@ function requestMotionPermission() {
 document.addEventListener('contextmenu', e => {
     if (e.target.closest('.wheel-wrapper')) e.preventDefault();
 });
+
+
+if ('service-worker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      console.log('Kayıt başarılı!', reg);
+    }).catch(err => {
+      console.log('Kayıt başarısız!', err);
+    });
+  });
+}
 
 </script>
 
