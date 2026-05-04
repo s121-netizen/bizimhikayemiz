@@ -2794,16 +2794,44 @@ document.addEventListener('contextmenu', e => {
 
 <button id="heart-toggle" class="heart-toggle-btn" onclick="toggleHeartRain()">❤️ Akış: Açık</button>
 
-<script>
-    let heartInterval = null;
-    let isHeartRainActive = false;
+<!-- 1. Stil: Butonun tasarımı -->
+<style>
+    .heart-toggle-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 99999; /* En üstte durması için çok yüksek değer */
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 12px 18px;
+        border-radius: 15px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        display: none; /* Başlangıçta gizli */
+        font-family: 'Inter', sans-serif;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    .heart-toggle-btn.off {
+        background: rgba(123, 44, 191, 0.5);
+        border-color: #7b2cbf;
+    }
+</style>
 
+<!-- 2. HTML: Butonun kendisi -->
+<button id="heart-toggle" class="heart-toggle-btn" onclick="toggleHeartRain()">❤️ Akış: Açık</button>
+
+<!-- 3. JS: Çalıştırma mantığı -->
+<script>
+    var heartInterval = null;
+    var isHeartRainActive = false;
+
+    // Bu fonksiyonu hem buton tıklamasında hem giriş anında kullanacağız
     function toggleHeartRain() {
         const btn = document.getElementById("heart-toggle");
         if (!btn) return;
-        
-        // Butonu görünür yap (giriş anında tetiklendiği için)
-        btn.style.display = "block";
 
         if (isHeartRainActive) {
             clearInterval(heartInterval);
@@ -2812,15 +2840,30 @@ document.addEventListener('contextmenu', e => {
             btn.innerHTML = "💔 Akış: Kapalı";
             btn.classList.add("off");
         } else {
-            // createHeart fonksiyonunun mevcut olduğundan emin oluyoruz
-            heartInterval = setInterval(typeof createHeart === 'function' ? createHeart : () => {}, 600);
+            // Mevcut createHeart fonksiyonunu çağırır
+            heartInterval = setInterval(function() {
+                if (typeof createHeart === 'function') createHeart();
+            }, 600);
             isHeartRainActive = true;
             btn.innerHTML = "❤️ Akış: Açık";
             btn.classList.remove("off");
         }
     }
 
-    // Mevcut executeLogin fonksiyonunu bulup sonuna toggleHeartRain(); eklemeyi unutma!
+    // GİRİŞ SORUNUNU ÇÖZEN KRİTİK KISIM:
+    // Mevcut executeLogin fonksiyonunu genişletiyoruz
+    const originalExecuteLogin = window.executeLogin; 
+    window.executeLogin = function() {
+        // Önce orijinal giriş fonksiyonunu çalıştır
+        if (typeof originalExecuteLogin === 'function') originalExecuteLogin();
+        
+        // Sonra bizim butonu göster ve kalpleri başlat
+        const btn = document.getElementById("heart-toggle");
+        if (btn) {
+            btn.style.display = "block"; // Butonu görünür yap
+            toggleHeartRain(); // Kalpleri başlat
+        }
+    };
 </script>
 
 </body>
