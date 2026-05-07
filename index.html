@@ -819,6 +819,21 @@ body.logged-in #mini-game-btn{ display:block !important; }
     pointer-events: none;
 }
 
+
+/* Dokunma ve seçilme efektlerini tamamen kapatır */
+#counter-container, #live-timer, .counter-label {
+    -webkit-tap-highlight-color: transparent; /* Mobildeki mavi gölgeyi kapatır */
+    -webkit-touch-callout: none;                /* iOS'ta basılı tutunca çıkan menüyü kapatır */
+    user-select: none;                          /* Yazının seçilmesini engeller */
+    outline: none;                              /* Fokus çerçevesini kaldırır */
+}
+
+/* Sayacın tıklandığında hafif küçülüp büyüme efekti (Dokunma hissi için daha tatlı durur) */
+#counter-container:active {
+    transform: scale(0.96);
+    transition: transform 0.1s ease;
+}
+
 </style>
 </head>
 
