@@ -892,6 +892,38 @@ body.logged-in #mini-game-btn{ display:block !important; }
     transition: transform 0.1s ease;
 }
 
+.modern-dl-btn {
+    position: absolute;
+    top: 22px;
+    right: 140px; /* Otomatik kaydırın solunda durur */
+    background: rgba(123, 44, 191, 0.25); /* Soldurulmuş mor şeffaflık */
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #b0b0b0; /* Gri ikon rengi */
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 13000;
+}
+
+.modern-dl-btn:hover {
+    background: rgba(123, 44, 191, 0.5);
+    color: #fff; /* Üstüne gelince parlar */
+    transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+    .modern-dl-btn {
+        right: 20px;
+        top: 80px; /* Mobilde diğer butonlarla çakışmaması için aşağı aldık */
+    }
+}
+
 </style>
 </head>
 
@@ -1703,7 +1735,9 @@ body.logged-in #mini-game-btn{ display:block !important; }
 <div class="lightbox" id="lightbox">
     <span class="close" onclick="closeLightbox()">×</span>
     <button id="autoplay-btn" class="autoplay-btn" type="button">otomatik: kapalı</button>
-    <button id="download-btn" class="autoplay-btn" style="left:auto; right:140px;" onclick="downloadImage()">resmi indir ⬇️</button>
+ <button id="download-btn" class="modern-dl-btn" onclick="downloadImage()" aria-label="indir">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+</button>
     <div id="speed-controls" class="speed-controls">
         <button data-speed="1000">1s</button>
         <button data-speed="2000">2s</button>
