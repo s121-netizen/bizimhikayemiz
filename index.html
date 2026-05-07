@@ -198,6 +198,71 @@ h1 {
 }
 
 
+
+.settings-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 25000;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.settings-panel {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    background: rgba(15, 15, 15, 0.95);
+    border: 1px solid #7b2cbf;
+    padding: 20px;
+    border-radius: 18px;
+    z-index: 25000;
+    display: none; /* Varsayılan kapalı */
+    width: 250px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #b0b0b0;
+}
+
+/* Modern Switch Tasarımı */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #333;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+input:checked + .slider { background-color: #7b2cbf; }
+
+
         /* --- KARTLAR & SPOTIFY --- */
         .card {
             border-radius: 26px; padding: 48px 32px; margin-bottom: 40px; min-height: 250px;
@@ -2792,6 +2857,27 @@ function downloadImage() {
     document.body.removeChild(link);
 }
 
+function toggleSettings() {
+    const panel = document.getElementById('settings-panel');
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+}
+
+function updateSettings() {
+    // 1. Kalp Yağmuru Durdur/Başlat
+    const rainOn = document.getElementById('heart-rain-toggle').checked;
+    // Mevcut intervalini durduracak mantık buraya
+
+    // 2. Blur Kapat/Aç
+    const blurOn = document.getElementById('blur-toggle').checked;
+    document.querySelectorAll('.card, .notes-container, #counter-container').forEach(el => {
+        el.style.backdropFilter = blurOn ? "blur(10px)" : "none";
+    });
+
+    // 3. Işık Efekti (Body::before) Kapat/Aç
+    const glowOn = document.getElementById('glow-toggle').checked;
+    document.body.classList.toggle('no-glow', !glowOn);
+}
+
 </script>
 
 
@@ -2916,6 +3002,48 @@ function downloadImage() {
   </div>
 </div>
 
+
+<div class="settings-btn" onclick="toggleSettings()">⚙️</div>
+
+<div id="settings-panel" class="settings-panel">
+    <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #7b2cbf;">Performans & Tema</h3>
+    
+    <div class="setting-item">
+        <span>Kalp Yağmuru</span>
+        <label class="switch">
+            <input type="checkbox" id="heart-rain-toggle" checked onchange="updateSettings()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="setting-item">
+        <span>Dokunma Efekti</span>
+        <label class="switch">
+            <input type="checkbox" id="tap-heart-toggle" checked onchange="updateSettings()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="setting-item">
+        <span>Bulanıklık (Blur)</span>
+        <label class="switch">
+            <input type="checkbox" id="blur-toggle" checked onchange="updateSettings()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="setting-item">
+        <span>Mor/Gri Işık</span>
+        <label class="switch">
+            <input type="checkbox" id="glow-toggle" checked onchange="updateSettings()">
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+
 <button id="mini-game-btn" class="mini-game-btn" type="button" style="position:fixed;bottom:20px;right:20px;z-index:999999;pointer-events:auto;" onclick="(function(){var m=document.getElementById('mini-game-modal');if(m){m.classList.add('show');m.setAttribute('aria-hidden','false');}})();">mini oyun 🎮</button>
 </body>
 </html>
+
+
+    
