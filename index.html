@@ -265,27 +265,6 @@
             z-index: 13000;
         }
 
-
-        .download-btn{
-    position:absolute;
-    bottom:18px;
-    right:18px;
-    z-index:13000;
-    background:rgba(255,255,255,0.12);
-    color:#fff;
-    text-decoration:none;
-    padding:10px 14px;
-    border-radius:14px;
-    border:1px solid rgba(255,255,255,0.18);
-    backdrop-filter:blur(8px);
-    font-size:14px;
-    transition:0.2s;
-}
-.download-btn:hover{
-    background:rgba(255,255,255,0.2);
-}
-
-
         /* --- HOŞ GELDİN TOAST --- */
         #welcome-toast {
           position: fixed;
@@ -746,6 +725,14 @@ body.logged-in #mini-game-btn{ display:block !important; }
     padding: 10px;
     scroll-behavior: smooth;
 }
+
+#download-btn {
+    background: rgba(255, 255, 255, 0.12);
+    right: 140px; /* Otomatik kaydır butonunun solunda durur */
+}
+@media (max-width: 600px) {
+    #download-btn { right: 20px; top: 70px; } /* Mobilde alt alta binmemeleri için */
+}   
 
 /* ===== PROFESYONEL AŞK ÇARKI GÜNCEL ===== */
 .wheel-container {
@@ -1623,6 +1610,7 @@ body.logged-in #mini-game-btn{ display:block !important; }
 <div class="lightbox" id="lightbox">
     <span class="close" onclick="closeLightbox()">×</span>
     <button id="autoplay-btn" class="autoplay-btn" type="button">otomatik: kapalı</button>
+    <button id="download-btn" class="autoplay-btn" style="left:auto; right:140px;" onclick="downloadImage()">resmi indir ⬇️</button>
     <div id="speed-controls" class="speed-controls">
         <button data-speed="1000">1s</button>
         <button data-speed="2000">2s</button>
@@ -1631,7 +1619,6 @@ body.logged-in #mini-game-btn{ display:block !important; }
 <span class="nav-btn prev" onclick="changeImage(-1)">❮</span>
     <img id="lightbox-img" src="">
     <div id="lightbox-date" class="lightbox-date"></div>
-    <a id="download-btn" download class="download-btn">⬇ İndir</a>
     <span class="nav-btn next" onclick="changeImage(1)">❯</span>
 </div>
 
@@ -1771,17 +1758,36 @@ function logout() {
 
 
     function updateLiveTimer() {
-        const now = new Date();
-        const diff = now - START_DATE;
+    const now = new Date();
+    
+    // Yıl, Ay, Gün hesaplaması için başlangıç değerleri
+    let years = now.getFullYear() - START_DATE.getFullYear();
+    let months = now.getMonth() - START_DATE.getMonth();
+    let days = now.getDate() - START_DATE.getDate();
 
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const mins = Math.floor((diff / (1000 * 60)) % 60);
-        const secs = Math.floor((diff / 1000) % 60);
-
-        document.getElementById("live-timer").innerText = 
-            `${days} gün ${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    // Ay ve gün dengelemesi
+    if (days < 0) {
+        months--;
+        let lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        days += lastMonth.getDate();
     }
+    if (months < 0) {
+        years--;
+        months += 12;
+    }
+
+    // Saat, Dakika, Saniye (Mevcut mantık)
+    const diff = now - START_DATE;
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+
+    // Ekrana yazdırma (Eğer yıl 0 ise sadece ay/gün gösterir)
+    let yearText = years > 0 ? `${years} yıl ` : "";
+    
+    document.getElementById("live-timer").innerText = 
+        `${yearText}${months} ay ${days} gün ${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
 
     function createHeart() {
         const heart = document.createElement("div");
@@ -1847,8 +1853,6 @@ document.body.appendChild(heart);
         updateAutoplayBtn();
         startAutoSlide();
     }
-
-    document.getElementById("download-btn").href = images[currentIndex].src;
 
     function closeLightbox() { lightbox.style.display = "none"; stopAutoSlide(); }
 
@@ -2684,6 +2688,21 @@ function requestMotionPermission() {
 document.addEventListener('contextmenu', e => {
     if (e.target.closest('.wheel-wrapper')) e.preventDefault();
 });
+
+
+function downloadImage() {
+    const currentImgUrl = document.getElementById("lightbox-img").src;
+    const link = document.createElement("a");
+    link.href = currentImgUrl;
+    
+    // Dosya adını resmin adından çekelim
+    const fileName = currentImgUrl.split('/').pop();
+    link.download = "AK_Animiz_" + fileName;
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
 </script>
 
