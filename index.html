@@ -21,6 +21,32 @@
 
 
     <style>
+
+        body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    /* Mor ve gri geçişli derinlik katmanı */
+    background: radial-gradient(circle at 20% 30%, rgba(123, 44, 191, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(176, 176, 176, 0.1) 0%, transparent 40%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Başlıklar için mor-gri gradyan animasyonu */
+h1 {
+    background: linear-gradient(90deg, #b0b0b0, #7b2cbf, #b0b0b0);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 5s linear infinite;
+}
+
+@keyframes shine {
+    to { background-position: 200% center; }
+}
+
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap');
 
         * { box-sizing: border-box; }
@@ -235,7 +261,39 @@
         .lightbox {
             position: relative; position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 11000; padding: 10px; }
         .lightbox img { max-width: 100%; max-height: 80vh; border-radius: 10px; }
-        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); color: white; font-size: 40px; cursor: pointer; padding: 20px; z-index: 12000; }
+ /* Modern Ok Tasarımı */
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 45px; /* Okları biraz daha belirgin yaptık */
+    cursor: pointer;
+    padding: 20px;
+    z-index: 12000;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.3s ease;
+    opacity: 0.6; /* Normalde hafif transparan */
+}
+
+.nav-btn:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.15);
+}
+
+/* Sol Ok - Gri */
+.prev {
+    left: 15px;
+    color: #b0b0b0; /* Metalik Gri */
+    text-shadow: 0 0 15px rgba(176, 176, 176, 0.4);
+}
+
+/* Sağ Ok - Mor */
+.next {
+    right: 15px;
+    color: #7b2cbf; /* Senin Morun */
+    text-shadow: 0 0 15px rgba(123, 44, 191, 0.4);
+}
         .prev { left: 5px; } .next { right: 5px; }
         .close { position: absolute; top: 20px; right: 20px; font-size: 40px; color: white; cursor: pointer; }
 
@@ -1632,10 +1690,10 @@ body.logged-in #mini-game-btn{ display:block !important; }
         <button data-speed="2000">2s</button>
         <button data-speed="3000" class="active">3s</button>
     </div>
-<span class="nav-btn prev" onclick="changeImage(-1)">❮</span>
+<span class="nav-btn prev" onclick="changeImage(-1)">‹</span>
     <img id="lightbox-img" src="">
     <div id="lightbox-date" class="lightbox-date"></div>
-    <span class="nav-btn next" onclick="changeImage(1)">❯</span>
+    <span class="nav-btn next" onclick="changeImage(1)">›</span>
 </div>
 
 
