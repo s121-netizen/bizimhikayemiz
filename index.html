@@ -949,9 +949,10 @@ body.logged-in #mini-game-btn{ display:block !important; }
     <div class="subtitle">bir mesafeye değil, bir hisse aitiz.</div>
 
     <div id="counter-container">
-        <div id="counter-container" onclick="toggleTimerFormat()" style="cursor: pointer;"></div>
-        <span class="counter-label">Her Saniye Senleyim</span>
-        <div id="live-timer">Hesaplanıyor...</div>
+        <div id="counter-container" onclick="toggleTimerFormat()" style="cursor: pointer; user-select: none;">
+    <span class="counter-label" id="counter-title">Her Saniye Senleyim</span>
+    <div id="live-timer">Hesaplanıyor...</div>
+</div>
     </div>
 
     <div id="birthday-message">Bugün senin günün… İyi ki doğdun sevgilim. Dileklerinin içinde biraz ben olayım 💜</div>
@@ -1886,13 +1887,15 @@ function logout() {
 
 let showTotalDaysOnly = false; // Format durumunu tutan değişken
 
+let timerMode = 0; // 0: Ay/Gün, 1: Toplam Gün, 2: Detaylı (Saatli)
+
 function toggleTimerFormat() {
-    showTotalDaysOnly = !showTotalDaysOnly;
-    updateLiveTimer(); // Hemen güncelle
+    timerMode = (timerMode + 1) % 3; // 0, 1, 2 arasında döner
+    updateLiveTimer();
     
-    // Görsel geri bildirim için küçük bir kalp patlatması (opsiyonel)
+    // Tıklayınca görsel efekt
+    const rect = document.getElementById("live-timer").getBoundingClientRect();
     if (typeof noteBurstHearts === "function") {
-        const rect = document.getElementById("live-timer").getBoundingClientRect();
         noteBurstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2);
     }
 }
@@ -1900,33 +1903,53 @@ function toggleTimerFormat() {
 function updateLiveTimer() {
     const now = new Date();
     const diff = now - START_DATE;
+    const timerEl = document.getElementById("live-timer");
+    const titleEl = document.getElementById("counter-title");
 
-    if (showTotalDaysOnly) {
-        // Sadece Toplam Gün Formatı
-        const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
-        document.getElementById("live-timer").innerText = `${totalDays} GÜN`;
-    } else {
-        // Yıl - Ay - Gün Formatı (Saatler kaldırıldı)
-        let years = now.getFullYear() - START_DATE.getFullYear();
-        let months = now.getMonth() - START_DATE.getMonth();
-        let days = now.getDate() - START_DATE.getDate();
+    // Temel Zaman Birimleri
+    const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
+    const mins = Math.floor((diff / (1000 * 60)) % 60).toString().padStart(2, '0');
+    const secs = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
 
-        if (days < 0) {
-            months--;
-            let lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-            days += lastMonth.getDate();
-        }
-        if (months < 0) {
-            years--;
-            months += 12;
-        }
+    // Yıl/Ay/Gün Hesaplama
+    let years = now.getFullYear() - START_DATE.getFullYear();
+    let months = now.getMonth() - START_DATE.getMonth();
+    let days = now.getDate() - START_DATE.getDate();
 
-        let result = "";
-        if (years > 0) result += `${years} yıl `;
-        if (months > 0 || years > 0) result += `${months} ay `;
-        result += `${days} gün`;
+    if (days < 0) {
+        months--;
+        let lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        days += lastMonth.getDate();
+    }
+    if (months < 0) {
+        years--;
+        months += 12;
+    }
 
-        document.getElementById("live-timer").innerText = result;
+    // Formatları Uygula
+    if (timerMode === 0) {
+        // MOD 1: Kaç ay kaç gün
+        titleEl.innerText = "Zamanın Tadı";
+        let text = "";
+        if (years > 0) text += `${years} yıl `;
+        if (months > 0 || years > 0) text += `${months} ay `;
+        text += `${days} gün`;
+        timerEl.innerText = text;
+        
+    } else if (timerMode === 1) {
+        // MOD 2: Sadece toplam gün
+        titleEl.innerText = "Yolculuğumuz";
+        timerEl.innerText = `${totalDays} GÜN`;
+        
+    } else if (timerMode === 2) {
+        // MOD 3: Ay, Gün ve Saat (index 16'daki gibi)
+        titleEl.innerText = "Her Saniye Senleyim";
+        let text = "";
+        if (years > 0) text += `${years}y `;
+        text += `${months} ay ${days} gün `;
+        text += `${hours}:${mins}:${secs}`;
+        timerEl.innerText = text;
     }
 }
 
