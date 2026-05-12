@@ -1041,11 +1041,11 @@ body.logged-in #mini-game-btn{ display:block !important; }
 
 <div class="miss-you-container">
     <button id="miss-you-btn" class="miss-you-btn">
-        <span class="btn-icon">💜</span>
-        <span class="btn-text">Seni Özledim</span>
+        <span class="btn-icon">💜🩶</span>
+        <span class="btn-text">Sana Özlemimi Gönder</span>
     </button>
-    <p id="miss-count-msg" style="font-size: 12px; opacity: 0.7; margin-top: 12px; display: none; font-style: italic;">
-        Özlemin Atakan'a ulaştı sevgilim... 🩶
+    <p id="miss-count-msg" style="font-size: 13px; opacity: 0.8; margin-top: 15px; display: none; font-style: italic; color: #b57edc;">
+        Hislerimiz birbirimize ulaştı sevgilim... 🩶
     </p>
 </div>
 
@@ -3061,36 +3061,33 @@ function downloadImage() {
 
 
 document.getElementById('miss-you-btn').addEventListener('click', function() {
+    const btn = this;
     const msg = document.getElementById('miss-count-msg');
     
-    // Senin Bot Bilgilerin
+    // Senin Bot Bilgilerin (Güncel tutmayı unutma)
     const botToken = "8637374659:AAG_hMNTd86vvCD33yYLA4SDKcKdc7Hy_Tk";
     const chatId = "6548616471";
-    const text = "💜 Kevser seni özledi sevgilim, site üzerinden butona bastı! 🩶";
+    const text = "💜 Seni özledim hayatım 🩶";
 
-    // Ekranda kalp patlatma (Senin kodundaki mevcut fonksiyonu tetikler)
-    const rect = this.getBoundingClientRect();
+    // Kalp patlatma efekti (Mevcut fonksiyonun)
+    const rect = btn.getBoundingClientRect();
     if (typeof noteBurstHearts === "function") {
         noteBurstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2);
     }
 
-    // Telegram'a veri gönder
-    const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`;
-
-    fetch(url)
+    // Telegram'a sadece bildirimi atıyoruz
+    fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`)
         .then(response => {
             if (response.ok) {
                 msg.style.display = "block";
-                this.disabled = true;
+                btn.disabled = true; // 10 saniye boyunca tekrar basamasın (spam önleme)
                 
-                // 10 saniye sonra butonun kilidini açar
                 setTimeout(() => {
-                    this.disabled = false;
+                    btn.disabled = false;
                     msg.style.display = "none";
                 }, 10000);
             }
-        })
-        .catch(err => console.error("Hata:", err));
+        });
 });
 
 </script>
