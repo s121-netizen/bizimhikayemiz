@@ -804,55 +804,72 @@ body.logged-in #mini-game-btn{ display:block !important; }
     outline: none;
 }
 
+/* Çarkın kapsayıcısı - Mobilde daha iyi sığması için 260px yapıldı */
+/* Çarkın genel boyutu ve gölgesi */
 .wheel-wrapper {
     position: relative;
-    width: min(300px, 80vw); 
-    height: min(300px, 80vw);
-    border-radius: 50%;
+    width: 260px;
+    height: 260px;
     margin: 20px auto;
+    border-radius: 50%;
+    border: 6px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 25px rgba(123, 44, 191, 0.5);
 }
 
-#wheel {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    position: relative;
-    overflow: hidden;
-    /* KASMA ÖNLEYİCİ AYARLAR */
-    will-change: transform;
-    backface-visibility: hidden;
-    transform: translateZ(0); 
-    transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
-    background: conic-gradient(
-        #7b2cbf 0deg 45deg, #b0b0b0 45deg 90deg, #9d4edd 90deg 135deg, 
-        #8e8e8e 135deg 180deg, #5a189a 180deg 225deg, #ced4da 225deg 270deg,
-        #480ca8 270deg 315deg, #adb5bd 315deg 360deg
-    );
-    border: 4px solid rgba(255, 255, 255, 0.2);
+/* Marker (Ok) - En üste alındı */
+.wheel-marker {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000; /* Kesinlikle en üstte */
+    color: #ff4d6d;
+    font-size: 32px;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+    pointer-events: none;
+}
+
+/* Dilim Yapısı */
+.wheel-slice {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    left: 50%;
+    top: 50%;
+    transform-origin: 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Yazıyı kenara yaslar */
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Dilim Metni - Merkeze yığılmayı önler */
+.wheel-slice span {
+    position: absolute;
+    right: 12px; /* Merkeze değil, dış kenara yakın durmasını sağlar */
+    top: 50%;
+    width: 85px; /* Yazı alanı genişletildi */
+    text-align: right;
+    white-space: nowrap;
 }
 
 .wheel-center-btn {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 65px;
-    height: 65px;
+    width: 55px; height: 55px;
     background: #ff4d6d;
-    border: 4px solid #fff;
+    border: 3px solid white;
     border-radius: 50%;
-    z-index: 105;
+    z-index: 500;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
     color: white;
     font-size: 11px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    /* MOBİL MAVİ EFEKT ÖNLEYİCİ */
-    outline: none !important;
-    -webkit-tap-highlight-color: transparent !important;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    font-weight: bold;
 }
 
 .wheel-center-btn:active {
@@ -2927,47 +2944,79 @@ let isSpinning = false;
 let motionInited = false;
 
 const rewards = [
-    "5 dakika rol yaparak konuş 🎭",
-    "Bizimle ilgili güzel bir anını anlat 📖",
-    "Sana verdiğim mini challenge’ı yap ⚡",
-    "Bana yeni bir lakap bul 🏷️",
-    "Bana küçük bir itiraf yap 😳",
-    "Bana sadece emojilerle mesaj at 😍",
-    "Bana kısa bir şiir yaz 📝",
-    "Bana kısa bir video çek 🎥"
+    { text: "Rol Yap 🎭", color: "#7b2cbf" },
+    { text: "Bir Anı 📖", color: "#b0b0b0" },
+    { text: "Meydan Oku ⚡", color: "#9d4edd" },
+    { text: "Yeni Lakap 🏷️", color: "#8e8e8e" },
+    { text: "İtiraf Et 😳", color: "#5a189a" },
+    { text: "Emoji Modu 😍", color: "#ced4da" },
+    { text: "Şiir Yaz 📝", color: "#480ca8" },
+    { text: "Video Çek 🎥", color: "#adb5bd" }
 ];
 
+// Çarkı oluşturma fonksiyonu
+function initWheel() {
+    const wheel = document.getElementById('wheel');
+    if(!wheel) return;
+    wheel.innerHTML = '';
+    const sliceAngle = 360 / rewards.length;
+
+    rewards.forEach((reward, i) => {
+        const slice = document.createElement('div');
+        slice.className = 'wheel-slice';
+        slice.style.backgroundColor = reward.color;
+        
+        // Dilimi şekillendir
+        slice.style.transform = `rotate(${i * sliceAngle}deg) skewY(${sliceAngle - 90}deg)`;
+        
+        // Metni yerleştir ve skew etkisini sıfırla
+        const textSpan = document.createElement('span');
+        textSpan.style.transform = `skewY(${-(sliceAngle - 90)}deg) rotate(${-sliceAngle / 2}deg)`;
+        textSpan.innerText = reward.text;
+        
+        slice.appendChild(textSpan);
+        wheel.appendChild(slice);
+    });
+}
+
+let wheelRotation = 0;
 function spinWheel() {
     if (isSpinning) return;
-    if (!motionInited) requestMotionPermission();
-
     isSpinning = true;
-    const wheel = document.getElementById('wheel');
+
     const resultText = document.getElementById('wheel-result');
+    resultText.innerText = "Dönüyor... ✨";
+
+    // En az 5 tam tur + rastgele açı
+    const extraDegree = Math.floor(Math.random() * 360);
+    wheelRotation += (360 * 5) + extraDegree;
     
-    if (resultText) resultText.innerText = "Kaderin dönüyor... ✨";
-    
-    // Rastgele dönüş (GPU dostu miktar)
-    const randomExtra = Math.floor(Math.random() * 360) + 1800; 
-    currentRotation += randomExtra; 
-    
-    if (wheel) {
-        wheel.style.transform = `rotate(${currentRotation}deg)`;
-    }
-    
+    document.getElementById('wheel').style.transform = `rotate(${wheelRotation}deg)`;
+
     setTimeout(() => {
         isSpinning = false;
-        const actualAngle = currentRotation % 360;
-        const prizeIndex = Math.floor(((360 - (actualAngle % 360)) % 360) / 45);
+        // Kazananı marker'a (tepeye) göre hesapla
+        // (Toplam derece / 360'tan kalan) -> hangi dilime denk geldiği
+        const actualAngle = (360 - (wheelRotation % 360)) % 360;
+        const prizeIdx = Math.floor(actualAngle / (360 / rewards.length));
         
-        if (resultText) resultText.innerText = rewards[prizeIndex];
+        resultText.innerText = "Kaderin: " + rewards[prizeIdx].text;
         
-        const rect = wheel.getBoundingClientRect();
-        if (typeof noteBurstHearts === "function") {
-            noteBurstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        // Kalp patlatma efekti (varsa)
+        if(typeof noteBurstHearts === "function") {
+            const btn = document.querySelector('.wheel-center-btn');
+            const rect = btn.getBoundingClientRect();
+            noteBurstHearts(rect.left + rect.width/2, rect.top + rect.height/2);
         }
     }, 4000);
 }
+
+// Modal açıldığında çarkı hazırla
+document.addEventListener("click", (e) => {
+    if (e.target.id === "mini-game-btn" || e.target.closest("#mini-game-btn")) {
+        setTimeout(initWheel, 100);
+    }
+});
 
 // SALLAMA AYARLARI (Gelişmiş)
 let lastShake = 0;
@@ -3117,24 +3166,18 @@ function downloadImage() {
 
    <section class="mg-panel" data-panel="wheel" role="tabpanel">
     <div class="mg-panel-top">
-        <div class="mg-hint">çarkın ortasına bas veya telefonu sertçe salla! 💜</div>
+        <div class="mg-hint">Çevir butonuna bas veya telefonu salla! 💜</div>
     </div>
     <div class="wheel-container">
         <div class="wheel-wrapper">
-            <div class="wheel-pointer"></div>
+            <div class="wheel-marker">▼</div>
+            
             <div id="wheel">
-                <div class="wheel-label" style="transform: rotate(22.5deg)">Rol 🎭</div>
-    <div class="wheel-label" style="transform: rotate(67.5deg)">Anı 📖</div>
-    <div class="wheel-label" style="transform: rotate(112.5deg)">Challenge ⚡</div>
-    <div class="wheel-label" style="transform: rotate(157.5deg)">Lakap 🏷️</div>
-    <div class="wheel-label" style="transform: rotate(202.5deg)">İtiraf 😳</div>
-    <div class="wheel-label" style="transform: rotate(247.5deg)">Emoji 😍</div>
-    <div class="wheel-label" style="transform: rotate(292.5deg)">Şiir 📝</div>
-    <div class="wheel-label" style="transform: rotate(337.5deg)">Video 🎥</div>
-            </div>
+                </div>
+            
             <div class="wheel-center-btn" onclick="spinWheel()">ÇEVİR</div>
         </div>
-        <div id="wheel-result"></div>
+        <div id="wheel-result">Kaderini bekliyor... ✨</div>
     </div>
 </section>
 
