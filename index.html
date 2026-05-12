@@ -3018,6 +3018,15 @@ function downloadImage() {
     document.body.removeChild(link);
 }
 
+
+// Sayfa yüklendiğinde tüm galeri resimlerine lazy loading ekler
+document.addEventListener("DOMContentLoaded", function() {
+    const galleryImages = document.querySelectorAll(".gallery-item img");
+    galleryImages.forEach(img => {
+        img.setAttribute("loading", "lazy");
+    });
+});
+
 </script>
 
 
