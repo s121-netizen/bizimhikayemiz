@@ -1012,10 +1012,11 @@ body.logged-in #mini-game-btn{ display:block !important; }
 
 
 /* Haftalık Not Kartları Izgara Düzeni */
+/* Haftalık Not Kartları Izgara Düzeni */
 .tatil-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 12px;
+    gap: 10px;
     margin-top: 15px;
 }
 
@@ -1023,7 +1024,7 @@ body.logged-in #mini-game-btn{ display:block !important; }
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    padding: 18px 10px;
+    padding: 14px 6px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: flex;
@@ -1038,7 +1039,7 @@ body.logged-in #mini-game-btn{ display:block !important; }
 /* Kilitli Gün Tasarımı */
 .tatil-not-karti.kilitli {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
 /* Açılmış / Geçmiş Gün Tasarımı */
@@ -1053,9 +1054,23 @@ body.logged-in #mini-game-btn{ display:block !important; }
     box-shadow: 0 6px 20px rgba(123, 44, 191, 0.25);
 }
 
-.kart-icon { font-size: 24px; margin-bottom: 6px; }
-.kart-baslik { font-size: 13px; font-weight: 600; opacity: 0.9; text-align: center; }
-.kart-sayac { font-size: 11px; opacity: 0.7; margin-top: 5px; color: #b0b0b0; text-align: center; }
+.kart-icon { font-size: 20px; margin-bottom: 4px; }
+.kart-baslik { font-size: 11px; font-weight: 600; opacity: 0.9; text-align: center; line-height: 1.2; }
+.kart-sayac { font-size: 10px; opacity: 0.7; margin-top: 4px; color: #b0b0b0; text-align: center; }
+
+/* Mobil Telefonlar İçin Yatayda 3'lü Gösterme Ayarı */
+@media (max-width: 600px) {
+    .tatil-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px;
+    }
+    .kart-baslik {
+        font-size: 10px;
+    }
+    .kart-icon {
+        font-size: 18px;
+    }
+}
 
 </style>
 </head>
@@ -1122,13 +1137,9 @@ body.logged-in #mini-game-btn{ display:block !important; }
     <div class="card card-three"><p>mesafeler kalbi güçlendirir.</p></div>
 
 
-    <div class="notes-container" style="margin-top: 30px;">
-    <h2 style="font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 5px; text-align: center;">💜 Yurt & Tatil Günlüğü 🩶</h2>
+<div class="notes-container" style="margin-top: 30px;">
+    <h2 style="font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 15px; text-align: center;">💜 Yurt & Tatil Günlüğü 🩶</h2>
     
-    <div id="yurt-status-box" style="margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.04); border-radius: 14px; font-size: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.08);">
-        <span id="yurt-status-text">Durum Hesaplanıyor...</span>
-    </div>
-
     <div class="tatil-grid" id="tatil-notlari-konteyner">
         </div>
 </div>
@@ -3169,6 +3180,8 @@ document.getElementById('miss-you-btn').addEventListener('click', function() {
 
 // HER HAFTA BURADAKİ GERÇEK TARİHLERİ VE NOTLARI YENİLEYEBİLİRSİN
 // 1. Gün Pazar saat 14:00'te açılır. Diğer günler (2,3,4,5,6) gece 00:00'da açılır.
+// HER HAFTA BURADAKİ GERÇEK TARİHLERİ VE NOTLARI YENİLEYEBİLİRSİN
+// 1. Gün Pazar saat 14:00'te açılır. Diğer günler (2,3,4,5,6) gece 00:00'da açılır.
 const haftalikNotlar = [
     { tarih: "2026-05-17T14:00:00", baslik: "1. Gün (Pazar)", not: "Yurda dönüş yolu başladı ama bu notun sevgisi hep seninle sevgilim... 💜" },
     { tarih: "2026-05-18T00:00:00", baslik: "2. Gün (Pazartesi)", not: "Yeni hafta başladı, yurttayken sesini duymak için sabırsızlanıyorum! 🩶" },
@@ -3178,30 +3191,8 @@ const haftalikNotlar = [
     { tarih: "2026-05-22T00:00:00", baslik: "6. Gün (Cuma)", not: "Veee Cuma geldi! Evine hoş geldin sevgilim, nihayet yan yanayız..." }
 ];
 
-function yurtVeNotSisteminiYönet() {
+function haftalikNotSisteminiYonet() {
     const simdi = new Date(); // Gerçek anlık zaman verisini çeker
-    const gun = simdi.getDay(); // 0: Pazar, 5: Cuma, 6: Cumartesi
-    const statusText = document.getElementById("yurt-status-text");
-
-    // ANLIK YURT DURUMU HESAPLAMA (Cuma ve Cumartesi Evde, Diğer Günler Yurtta)
-    if (gun === 5 || gun === 6) {
-        let pazarGünü = new Date();
-        pazarGünü.setDate(simdi.getDate() + (7 - gun) % 7);
-        pazarGünü.setHours(18, 0, 0, 0); // Pazar 18:00 yurda dönüş hedefi
-
-        let fark = pazarGünü - simdi;
-        if (fark > 0) {
-            let saatler = Math.floor((fark / (1000 * 60 * 60)) % 24);
-            let dakikalar = Math.floor((fark / 1000 / 60) % 60);
-            statusText.innerHTML = `🏡 Sevgilim Şu An Evde. Yurda dönmesine ve kesintisiz konuşmamıza: <b>${saatler} saat ${dakikalar} dakika</b> kaldı!`;
-        } else {
-            statusText.innerHTML = "💜 Sevgilim Yurtta! Kesintisiz Konuşma Dönemi Aktif! 📱✨";
-        }
-    } else {
-        statusText.innerHTML = "💜 Sevgilim Yurtta! Kesintisiz Konuşma Dönemi Aktif! 📱✨";
-    }
-
-    // DİNAMİK SAYAÇLI NOT KARTLARINI OLUŞTURMA
     const konteyner = document.getElementById("tatil-notlari-konteyner");
     if (!konteyner) return;
     konteyner.innerHTML = "";
@@ -3214,31 +3205,19 @@ function yurtVeNotSisteminiYönet() {
         // Gerçek zaman, kartın açılış zamanından önce mi? (KİLİTLİ DURUMU)
         if (simdi < acilisZamani) {
             kart.classList.add("kilitli");
-            
-            let kalanSure = acilisZamani - simdi;
-            let kalanGun = Math.floor(kalanSure / (1000 * 60 * 60 * 24));
-            let kalanSaat = Math.floor((kalanSure / (1000 * 60 * 60)) % 24);
-
-            let sayacMetni = "";
-            if (kalanGun > 0) {
-                sayacMetni = `${kalanGun} gün ${kalanSaat}s kaldı`;
-            } else {
-                sayacMetni = `${kalanSaat} saat kaldı`;
-            }
-
             kart.innerHTML = `
                 <div class="kart-icon">🔒</div>
-                <div class="kart-baslik">${item.baslik}</div>
-                <div class="kart-sayac">${sayacMetni}</div>
+                <div class="kart-baslik">${item.baslik.split(" ")[0]} ${item.baslik.split(" ")[1] || ""}</div>
+                <div class="kart-sayac">Kilitli</div>
             `;
             kart.onclick = () => alert(`Bu not henüz kilitli! 🔒 Açılış saati: ${acilisZamani.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'})}`);
         } else {
-            // ZAMANI GELMİŞ VEYA GEÇMİŞ GÜNLER (Her zaman tıklanıp okunabilir)
+            // ZAMANI GELMİŞ VEYA GEÇMİŞ GÜNLER (Açık durum)
             kart.classList.add("acik");
             kart.innerHTML = `
                 <div class="kart-icon">💌</div>
-                <div class="kart-baslik">${item.baslik}</div>
-                <div class="kart-sayac" style="color:#7b2cbf; font-weight:bold;">Tıkla Oku</div>
+                <div class="kart-baslik">${item.baslik.split(" ")[0]} ${item.baslik.split(" ")[1] || ""}</div>
+                <div class="kart-sayac" style="color:#7b2cbf; font-weight:bold;">Oku</div>
             `;
             kart.onclick = () => {
                 alert(`💌 [${item.baslik} Notu]:\n\n"${item.not}"`);
@@ -3248,10 +3227,9 @@ function yurtVeNotSisteminiYönet() {
     });
 }
 
-// Sayfa açıldığında tetikle ve her 60 saniyede bir süreleri yenile
+// Sayfa açıldığında sistemi tetikle
 document.addEventListener("DOMContentLoaded", () => {
-    yurtVeNotSisteminiYönet();
-    setInterval(yurtVeNotSisteminiYönet, 60000);
+    haftalikNotSisteminiYonet();
 });
 
 
