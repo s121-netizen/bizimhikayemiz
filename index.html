@@ -2160,56 +2160,6 @@ body.logged-in #mini-game-btn{ display:block !important; }
 
 
 <script>
-
-
-    // ===== ANA EKRAN BİLEŞEN KONTROLLERİ =====
-const EkranAyarlari = {
-    sayaciGoster: false,       // false yapılırsa sayaç gizlenir
-    notlariGoster: false,      // false yapılırsa günlük notlar alanı gizlenir
-    kartlariGoster: false,     // false yapılırsa card-one, card-two vb. kartlar gizlenir
-    galeriyiGoster: false,     // false yapılırsa fotoğraf galerisi gizlenir
-    miniOyunButonu: false      // false yapılırsa mini oyun giriş butonu tamamen kapanır
-};
-
-// Ayarlara göre elementleri devre dışı bırakan (gizleyen) fonksiyon
-function ekranBilesenleriniGuncelle() {
-    // Sayaç Kontrolü
-    const counter = document.getElementById('counter-container');
-    if (counter) counter.style.display = EkranAyarlari.sayaciGoster ? 'inline-block' : 'none';
-
-    // Notlar Bölümü Kontrolü
-    const notes = document.querySelector('.notes-container');
-    if (notes) notes.style.display = EkranAyarlari.notlariGoster ? 'block' : 'none';
-
-    // Kartlar Kontrolü (Bütün .card sınıfına sahip elementler)
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        // Eğer doğum günü modalı içindeki kart değilse gizle/göster
-        if (!card.closest('#bday-card-modal')) {
-            card.style.display = EkranAyarlari.kartlariGoster ? 'flex' : 'none';
-        }
-    });
-
-    // Galeri Kontrolü
-    const gallery = document.querySelector('.gallery');
-    if (gallery) gallery.style.display = EkranAyarlari.galeriyiGoster ? 'block' : 'none';
-
-    // Mini Oyun Butonu Kontrolü
-    const gameBtn = document.getElementById('mini-game-btn');
-    if (gameBtn) {
-        if (!EkranAyarlari.miniOyunButonu) {
-            // Ayar false ise CSS kurallarını ezerek kesin olarak gizler
-            gameBtn.style.setProperty('display', 'none', 'important');
-        }
-    }
-}
-
-// Sayfa yüklendiğinde ayarları uygula
-document.addEventListener("DOMContentLoaded", () => {
-    ekranBilesenleriniGuncelle();
-});
-
-
 let slideSpeed = 3000;
 let __lastHeartTap = 0;
 
