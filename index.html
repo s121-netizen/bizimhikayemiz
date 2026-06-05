@@ -781,10 +781,12 @@ body.logged-in #mini-game-btn{ display:block !important; }
     display: flex;
     gap: 14px;
     overflow-x: auto;
+    overflow-y: hidden;
     padding: 10px 10px 25px 10px;
-    /* smooth özelliğini kaldırdık çünkü JS sürükleme mantığıyla çakışıyor, akıcılığı touch sağlar */
-    -webkit-overflow-scrolling: touch; 
-    scroll-snap-type: x proximity; /* Mobilde resimlerin cuk diye oturmasını sağlar */
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
 }
 
 /* 2. Kaydırma çubuğunun gövdesi (Yüksekliği mobilde biraz artırıyoruz ki dokunma alanı genişlesin) */
@@ -3634,6 +3636,31 @@ function startOfflineCaching() {
             });
     }
 }
+
+const gallery = document.getElementById('gallery-scroll');
+
+let isDragging = false;
+let startX;
+let scrollStart;
+
+gallery.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    startX = e.touches[0].pageX;
+    scrollStart = gallery.scrollLeft;
+}, { passive: true });
+
+gallery.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+
+    const x = e.touches[0].pageX;
+    const walk = (startX - x) * 1.2;
+
+    gallery.scrollLeft = scrollStart + walk;
+}, { passive: true });
+
+gallery.addEventListener('touchend', () => {
+    isDragging = false;
+});
 
 </script>
 
