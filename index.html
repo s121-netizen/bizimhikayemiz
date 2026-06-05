@@ -3302,56 +3302,35 @@ function filterGallery(month) {
     });
 }
 
-function setView(mode) {
-    const gallery = document.getElementById('gallery-scroll');
-    const btnScroll = document.getElementById('btn-scroll');
-    const btnGrid = document.getElementById('btn-grid');
+const slider = document.getElementById("gallery-scroll");
 
-    if (mode === 'grid') {
-        gallery.classList.add('gallery-grid-mode');
-        btnGrid.classList.add('active');
-        btnScroll.classList.remove('active');
-    } else {
-        gallery.classList.remove('gallery-grid-mode');
-        btnScroll.classList.add('active');
-        btnGrid.classList.remove('active');
-    }
-}
-
-const slider = document.querySelector('.gallery-filters');
 let isDown = false;
-let startDate;
+let sliderStartX;
 let scrollLeft;
 
-slider.addEventListener('mousedown', (e) => {
+slider.addEventListener("pointerdown", (e) => {
     isDown = true;
-    slider.classList.add('active');
-    startX = e.pageX - slider.offsetLeft;
+    sliderStartX = e.pageX;
     scrollLeft = slider.scrollLeft;
 });
 
-slider.addEventListener('mouseleave', () => {
-    isDown = false;
-});
-
-slider.addEventListener('mouseup', () => {
-    isDown = false;
-});
-
-slider.addEventListener('mousemove', (e) => {
+slider.addEventListener("pointermove", (e) => {
     if (!isDown) return;
+
     e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
-    const walk = (x - startX) * 2; // Kaydırma hızı (2 katı)
+
+    const x = e.pageX;
+    const walk = (x - sliderStartX) * 2;
+
     slider.scrollLeft = scrollLeft - walk;
 });
 
-// Fare tekerleği ile yatay kaydırma desteği
-slider.addEventListener('wheel', (e) => {
-    if (e.deltaY !== 0) {
-        e.preventDefault();
-        slider.scrollLeft += e.deltaY;
-    }
+slider.addEventListener("pointerup", () => {
+    isDown = false;
+});
+
+slider.addEventListener("pointerleave", () => {
+    isDown = false;
 });
 
 /* ===== AŞK ÇARKI TÜM MANTIK (PRO) ===== */
