@@ -262,6 +262,34 @@
             header h1 { font-size: 24px; }
             .card-love-text { font-size: 16px; }
         }
+
+        * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    
+    /* Metin seçilmeyi her tarayıcıda tamamen kapatır (Maviye boyanmayı önler) */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    
+    /* Mobil cihazlarda tıklayınca çıkan o geçici mavi/gri gölgeyi tamamen siler */
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Kart ve Butonlar için ekstra önlem */
+.card-container, .suite-btn, .arrow-btn {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+/* Butonlara tıklandığında (active) mobilde odaklanıp mavi/beyaz border kalmaması için */
+.suite-btn:focus, .arrow-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
     </style>
 </head>
 <body>
