@@ -25,11 +25,6 @@
             outline: none;
         }
 
-        .suite-btn:focus, .arrow-btn:focus {
-            outline: none;
-            box-shadow: none;
-        }
-
         body {
             font-family: 'Inter', sans-serif;
             background: radial-gradient(circle at 50% 50%, #1a0f26 0%, #0d0d0f 100%);
@@ -43,10 +38,80 @@
             overflow-x: hidden;
         }
 
-        /* Üst Başlık Alanı */
+        /* Üst Menü Düzeni (Koleksiyon Sol, Göz Sağ) */
+        .top-bar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .collection-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(123, 44, 191, 0.3);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+        .collection-btn.active {
+            background: #7b2cbf;
+            box-shadow: 0 0 15px rgba(123, 44, 191, 0.5);
+        }
+
+        /* İnteraktif Göz Alanı */
+        .eye-container {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+        
+        /* Ritmik Glow Işık Efekti */
+        .eye-glow {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(123, 44, 191, 0.8) 0%, rgba(0,0,0,0) 70%);
+            opacity: 0;
+            transform: scale(1);
+            transition: opacity 0.2s, transform 0.1s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .eye-img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            opacity: 0.3; /* Varsayılan kapalı mat görünüm */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scaleY(0.1); /* Göz kapalı efekti */
+            z-index: 2;
+        }
+        .eye-container.open .eye-img {
+            opacity: 1;
+            transform: scaleY(1); /* Göz açılma efekti */
+            filter: drop-shadow(0 0 8px rgba(123, 44, 191, 0.8));
+        }
+
         header {
             text-align: center;
-            margin-top: 10px;
+            margin-top: 60px;
             z-index: 10;
         }
 
@@ -69,7 +134,7 @@
             line-height: 1.4;
         }
 
-        /* Ana Kart Alanı (3D Sahne) */
+        /* Ana Kart Alanı */
         .main-stage {
             flex: 1;
             display: flex;
@@ -79,6 +144,7 @@
             max-width: 400px;
             perspective: 1200px;
             margin: 20px 0;
+            animation: dealCard 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
         }
 
         .card-container {
@@ -90,9 +156,7 @@
             cursor: pointer;
         }
 
-        .card-container.flipped {
-            transform: rotateY(180deg);
-        }
+        .card-container.flipped { transform: rotateY(180deg); }
 
         .card-face {
             position: absolute;
@@ -108,16 +172,11 @@
             padding: 22px;
         }
 
-        /* KARTIN ARKASI (Kapalı Hali) */
         .card-front {
             background: linear-gradient(135deg, #120a1c 0%, #1c112e 50%, #09050e 100%);
             border: 2px solid rgba(123, 44, 191, 0.4);
             align-items: center;
             justify-content: center;
-        }
-
-        .card-front-design {
-            text-align: center;
         }
 
         .card-front-logo {
@@ -135,11 +194,27 @@
             opacity: 0.5;
         }
 
-        /* KARTIN ÖNÜ (Açık Hali) */
         .card-back {
             background: linear-gradient(145deg, #ffffff 0%, #f5f5f7 100%);
             transform: rotateY(180deg);
             border: 2px solid #b0b0b0;
+        }
+
+        .fav-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #ccc;
+            transition: transform 0.2s, color 0.2s;
+            z-index: 5;
+        }
+        .fav-btn.favorited {
+            color: #d90429 !important;
+            filter: drop-shadow(0 0 5px rgba(217, 4, 41, 0.5));
         }
 
         .suite-corner {
@@ -174,12 +249,10 @@
             color: #1a1a1a;
         }
 
-        /* Renk Sınıfları */
         .red-suite { color: #d90429; }
         .black-suite { color: #1c1c1e; }
         .joker-suite { color: #7b2cbf; }
 
-        /* Alt Gösterge ve Navigasyon Bölümü */
         .controls-section {
             width: 100%;
             max-width: 420px;
@@ -219,12 +292,8 @@
             visibility: hidden;
         }
 
-        .arrow-btn:active {
-            transform: scale(0.9);
-            background: #7b2cbf;
-        }
+        .arrow-btn:active { transform: scale(0.9); background: #7b2cbf; }
 
-        /* Seri Seçim Butonları Grid */
         .suite-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -258,16 +327,80 @@
             border: 1px dashed rgba(123, 44, 191, 0.5);
         }
 
-        .suite-btn.random-btn:active {
+        /* Yenilenen Gelişmiş Şarkı Çalar Kutusu (Sol Alt) */
+        .audio-player-container {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(20, 20, 25, 0.75);
+            padding: 8px 18px;
+            border-radius: 30px;
+            border: 1px solid rgba(123, 44, 191, 0.2);
+            backdrop-filter: blur(15px);
+            z-index: 9999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .player-nav-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.2s, transform 0.1s;
+        }
+        .player-nav-btn:hover { color: #fff; }
+        .player-nav-btn:active { transform: scale(0.85); }
+
+        .music-btn {
             background: #7b2cbf;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            box-shadow: 0 0 10px rgba(123, 44, 191, 0.4);
+            transition: transform 0.2s;
+        }
+        .music-btn:active { transform: scale(0.9); }
+
+        .track-info {
+            font-size: 11px;
+            color: #b0b0b0;
+            font-weight: 500;
+            min-width: 55px;
+            text-align: center;
+            letter-spacing: 0.5px;
         }
 
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.6; transform: scale(1); filter: drop-shadow(0 0 10px rgba(123, 44, 191, 0.4)); }
-            50% { opacity: 1; transform: scale(1.06); filter: drop-shadow(0 0 20px rgba(123, 44, 191, 0.7)); }
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 20px;
+            width: 25px;
         }
+        .bar {
+            width: 3px;
+            height: 4px;
+            background: #7b2cbf;
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+        .visualizer.playing .bar {
+            animation: bounce 0.6s ease infinite alternate;
+        }
+        .visualizer.playing .bar:nth-child(2) { animation-delay: 0.15s; }
+        .visualizer.playing .bar:nth-child(3) { animation-delay: 0.3s; }
 
-        /* Not Butonu */
+        /* Sağ Alt Mektup Butonu */
         #loveNoteBtn {
             position: fixed;
             right: 20px;
@@ -287,9 +420,8 @@
             justify-content: center;
             transition: transform 0.2s ease;
         }
-        #loveNoteBtn:active { transform: scale(0.9); }
 
-        /* Yeni Modal & Sayfalı Mektup Tasarımı */
+        /* Kitapçık / Sayfalı Modal */
         #loveNoteModal {
             position: fixed;
             inset: 0;
@@ -297,7 +429,7 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            background: rgba(13, 13, 15, 0.85);
+            background: rgba(13, 13, 15, 0.88);
             backdrop-filter: blur(8px);
             padding: 20px;
         }
@@ -307,10 +439,9 @@
         .love-note-content {
             width: 100%;
             max-width: 400px;
-            height: 500px;
+            height: 520px;
             border-radius: 24px;
-            /* Arka plan resmi artık tüm ekranı değil, sadece mektup kartını kaplıyor */
-            background: linear-gradient(rgba(20, 20, 25, 0.82), rgba(20, 20, 25, 0.82)), url('./background.jpg');
+            background: linear-gradient(rgba(20, 20, 25, 0.85), rgba(20, 20, 25, 0.85)), url('./background.jpg');
             background-size: cover;
             background-position: center;
             border: 1px solid rgba(123, 44, 191, 0.3);
@@ -321,6 +452,7 @@
             justify-content: space-between;
             padding: 25px;
             position: relative;
+            transition: background 0.5s ease;
         }
 
         .note-header {
@@ -343,11 +475,8 @@
             color: rgba(255,255,255,0.6);
             font-size: 22px;
             cursor: pointer;
-            transition: color 0.2s;
         }
-        #closeLoveNote:hover { color: white; }
 
-        /* Sayfa Gösterim Alanı */
         .note-body {
             flex: 1;
             display: flex;
@@ -359,7 +488,6 @@
 
         .note-page {
             display: none;
-            font-family: 'Inter', sans-serif;
             font-size: 15px;
             line-height: 1.6;
             color: rgba(255, 255, 255, 0.95);
@@ -369,7 +497,40 @@
 
         .note-page.active { display: block; }
 
-        /* Not Alt Navigasyon */
+        /* İlişki Sayacı Alanı */
+        .countdown-wrapper {
+            margin-top: 15px;
+            background: rgba(123, 44, 191, 0.15);
+            border: 1px solid rgba(123, 44, 191, 0.3);
+            padding: 12px;
+            border-radius: 16px;
+        }
+        .countdown-title {
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: #b0b0b0;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+        .countdown-box {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .countdown-box span {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 9px;
+            color: #b0b0b0;
+            font-weight: 400;
+        }
+
         .note-footer {
             display: flex;
             justify-content: space-between;
@@ -386,34 +547,41 @@
             border-radius: 12px;
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s;
         }
-        .note-nav-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
+        .note-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        #notePageIndicator {
-            font-size: 12px;
-            color: rgba(255,255,255,0.5);
-            letter-spacing: 1px;
-        }
+        #notePageIndicator { font-size: 12px; color: rgba(255,255,255,0.5); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes bounce { 0% { height: 4px; } 100% { height: 20px; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; transform: scale(1); filter: drop-shadow(0 0 10px rgba(123, 44, 191, 0.4)); }
+            50% { opacity: 1; transform: scale(1.06); filter: drop-shadow(0 0 20px rgba(123, 44, 191, 0.7)); }
+        }
+        @keyframes dealCard {
+            0% { opacity: 0; transform: translate3d(0, 100px, -400px) rotateX(-45deg); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(0); }
         }
 
         @media (max-height: 700px) {
             .card-container { width: 220px; height: 330px; }
             header h1 { font-size: 24px; }
             .card-love-text { font-size: 16px; }
-            .love-note-content { height: 420px; }
+            .love-note-content { height: 450px; }
             .note-page { font-size: 13.5px; }
         }
     </style>
 </head>
 <body>
+
+    <div class="top-bar">
+        <button class="collection-btn" id="collectionBtn" onclick="toggleCollectionMode()">Koleksiyonum (0)</button>
+        
+        <div class="eye-container" id="eyeModule" onclick="toggleEye()">
+            <div class="eye-glow" id="eyeGlowArea"></div>
+            <img src="./eyes.jpg" class="eye-img" id="eyeImage" alt="Gözler">
+        </div>
+    </div>
 
     <header>
         <h1>Sevgi Destesi</h1>
@@ -429,6 +597,7 @@
                 </div>
             </div>
             <div class="card-face card-back" id="cardBackView">
+                <button class="fav-btn" id="favBtn" onclick="toggleFavorite(event)">♥</button>
                 <div class="suite-corner red-suite">♥</div>
                 <div class="card-center-content">
                     <div class="card-love-text" style="font-style: italic; opacity:0.5;">Aşağıdan bir mod seçerek başla...</div>
@@ -456,45 +625,47 @@
         </div>
     </div>
 
+    <div class="audio-player-container">
+        <button class="player-nav-btn" onclick="navigateTrack(-1)">⏮</button>
+        <button class="music-btn" id="musicBtn" onclick="toggleMusic()">▶</button>
+        <button class="player-nav-btn" onclick="navigateTrack(1)">⏭</button>
+        <div class="track-info" id="trackDisplay">Şarkı 1</div>
+        <div class="visualizer" id="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </div>
+    <audio id="bgSong" crossorigin="anonymous"></audio>
+
     <button id="loveNoteBtn">❤️</button>
 
     <div id="loveNoteModal">
-        <div class="love-note-content">
+        <div class="love-note-content" id="noteContentCard">
             <div class="note-header">
                 <h2>💌 Sana Bir Not</h2>
                 <button id="closeLoveNote">✕</button>
             </div>
             
             <div class="note-body">
-                <div class="note-page active">
-                    Aşkım,<br><br>
-                    Bu notu okurken belki gülümsüyorsundur, belki de "bu çocuk yine ne hazırlamış?" diye düşünüyorsundur. Ama şunu bilmeni istiyorum ki bu sayfadaki her kartı hazırlarken aklımda sadece sen vardın.
-                </div>
+                <div class="note-page active">Aşkım,<br><br>Bu notu okurken belki gülümsüyorsundur, belki de "bu çocuk yine ne hazırlamış?" diye düşünüyorsundur. Ama şunu bilmeni istiyorum ki bu sayfadaki her kartı hazırlarken aklımda sadece sen vardın.</div>
+                <div class="note-page">Bazen sana ne kadar değer verdiğimi anlatmakta zorlanıyorum. Çünkü bazı duygular kelimelere sığmıyor.<br><br>Sen benim için sadece sevdiğim biri değilsin; gün içinde aklıma ilk gelen, güzel bir şey olduğunda paylaşmak istediğim ilk kişi, kötü hissettiğimde sesini duymak istediğim ilk kişisin.</div>
+                <div class="note-page">Hayayıma girdiğin gün her şey değişti. Daha çok gülmeye başladım, geleceği daha güzel hayal etmeye başladım. En sıradan günler bile senin bir mesajınla özel hale geliyor.<br><br>Belki kilometrelerce uzaktayız, belki her istediğimiz an yan yana olamıyoruz ama buna rağmen kalbimdeki yerin hiç değişmiyor.</div>
+                <div class="note-page">Bu destedeki her kartta sana dair bir şey yazdım. Bazıları bir anımız, bazıları bir teşekkür, bazıları ise sana söylemek istediğim ama bazen söyleyemediğim şeyler.<br><br>Fakat aslında bütün kartların özeti tek bir cümle:<br><strong>İyi ki varsın.</strong></div>
+                <div class="note-page">Bazen geleceği düşünüyorum. Birlikte gezeceğimiz yerleri, edeceğimiz sohbetleri, güleceğimiz saçma şeyleri ve bir gün dönüp bugünleri hatırlayışımızı... Bunları düşünmek bile beni mutlu ediyor. Çünkü o hayallerin içinde sen varsın.</div>
+                <div class="note-page">Sana mükemmel olduğun için değil, seni sen olduğun için değer veriyorum. Gülüşünle, huylarınla, bazen inatçılığınla, bazen aşırı tatlı oluşunla... Kısacası her halinle.</div>
+                <div class="note-page">Eğer bir gün moralin bozulursa, kendini yalnız hissedersen veya seni ne kadar sevdiğimi merak edersen bu notu tekrar oku. Çünkü burada yazan hiçbir şey bir anlık duygu değil. Bunlar kalbimden geçen gerçek şeyler.</div>
                 <div class="note-page">
-                    Bazen sana ne kadar değer verdiğimi anlatmakta zorlanıyorum. Çünkü bazı duygular kelimelere sığmıyor.<br><br>
-                    Sen benim için sadece sevdiğim biri değilsin; gün içinde aklıma ilk gelen, güzel bir şey olduğunda paylaşmak istediğim ilk kişi, kötü hissettiğimde sesini duymak istediğim ilk kişisin.
-                </div>
-                <div class="note-page">
-                    Hayayıma girdiğin gün her şey değişti. Daha çok gülmeye başladım, geleceği daha güzel hayal etmeye başladım. En sıradan günler bile senin bir mesajınla özel hale geliyor.<br><br>
-                    Belki kilometrelerce uzaktayız, belki her istediğimiz an yan yana olamıyoruz ama buna rağmen kalbimdeki yerin hiç değişmiyor.
-                </div>
-                <div class="note-page">
-                    Bu destedeki her kartta sana dair bir şey yazdım. Bazıları bir anımız, bazıları bir teşekkür, bazıları ise sana söylemek istediğim ama bazen söyleyemediğim şeyler.<br><br>
-                    Fakat aslında bütün kartların özeti tek bir cümle:<br><strong>İyi ki varsın.</strong>
-                </div>
-                <div class="note-page">
-                    Bazen geleceği düşünüyorum. Birlikte gezeceğimiz yerleri, edeceğimiz sohbetleri, güleceğimiz saçma şeyleri ve bir gün dönüp bugünleri hatırlayışımızı...<br><br>
-                    Bunları düşünmek bile beni mutlu ediyor. Çünkü o hayallerin içinde sen varsın.
-                </div>
-                <div class="note-page">
-                    Sana mükemmel olduğun için değil, seni sen olduğun için değer veriyorum. Gülüşünle, huylarınla, bazen inatçılığınla, bazen aşırı tatlı oluşunla... Kısacası her halinle.
-                </div>
-                <div class="note-page">
-                    Eğer bir gün moralin bozulursa, kendini yalnız hissedersen veya seni ne kadar sevdiğimi merak edersen bu notu tekrar oku. Çünkü burada yazan hiçbir şey bir anlık duygu değil. Bunlar kalbimden geçen gerçek şeyler.
-                </div>
-                <div class="note-page">
-                    Bu destenin bir sonu var. Kartlar bitecek. Bu yazı da bitecek.<br><br>
-                    Ama sana olan sevgim burada bitmeyecek.<br><br><strong>Seni çok seviyorum. ❤️</strong>
+                    Bu destenin bir sonu var. Kartlar bitecek. Bu yazı da bitecek.<br><br>Ama sana olan sevgim burada bitmeyecek.<br><br><strong>Seni çok seviyorum. ❤️</strong>
+                    <div class="countdown-wrapper">
+                        <div class="countdown-title">⏳ Kalbimin Attığı O Günden Beri...</div>
+                        <div class="countdown-grid">
+                            <div class="countdown-box" id="cd-day">00<span>Gün</span></div>
+                            <div class="countdown-box" id="cd-hour">00<span>Saat</span></div>
+                            <div class="countdown-box" id="cd-min">00<span>Dk</span></div>
+                            <div class="countdown-box" id="cd-sec">00<span>Sn</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -507,71 +678,70 @@
     </div>
 
     <script>
-        // Eksiksiz Veri Kümesi
         const deckData = {
             kupa: [
-                { n: "A", t: "Hayayıma girdiğin gün her şey değişti." },
-                { n: "2", t: "Seninle konuşmak günümün en güzel kısmı." },
-                { n: "3", t: "Gülüşün beni mutlu etmeye yetiyor." },
-                { n: "4", t: "Sesini duyunca içim huzur doluyor." },
-                { n: "5", t: "Bana kendimi değerli hissettiriyorsun." },
-                { n: "6", t: "Seninle geçirdiğim her an özel." },
-                { n: "7", t: "İyi ki varsın." },
-                { n: "8", t: "En kötü günümde bile yüzümü güldürebiliyorsun." },
-                { n: "9", t: "Sana güveniyorum." },
-                { n: "10", t: "Seninle daha nice güzel günler yaşamak istiyorum." },
-                { n: "Vale", t: "İlk konuşmalarimizi unutamıyorum." },
-                { n: "Kız", t: "Gözlerin çok güzel." },
-                { n: "Papaz", t: "Kalbimin sahibi sensin." }
+                { id: "ku_A", n: "A", t: "Hayayıma girdiğin gün her şey değişti." },
+                { id: "ku_2", n: "2", t: "Seninle konuşmak günümün en güzel kısmı." },
+                { id: "ku_3", n: "3", t: "Gülüşün beni mutlu etmeye yetiyor." },
+                { id: "ku_4", n: "4", t: "Sesini duyunca içim huzur doluyor." },
+                { id: "ku_5", n: "5", t: "Bana kendimi değerli hissettiriyorsun." },
+                { id: "ku_6", n: "6", t: "Seninle geçirdiğim her an özel." },
+                { id: "ku_7", n: "7", t: "İyi ki varsın." },
+                { id: "ku_8", n: "8", t: "En kötü günümde bile yüzümü güldürebiliyorsun." },
+                { id: "ku_9", n: "9", t: "Sana güveniyorum." },
+                { id: "ku_10", n: "10", t: "Seninle daha nice güzel günler yaşamak istiyorum." },
+                { id: "ku_J", n: "Vale", t: "İlk konuşmalarımızı unutamıyorum." },
+                { id: "ku_Q", n: "Kız", t: "Gözlerin çok güzel." },
+                { id: "ku_K", n: "Papaz", t: "Kalbimin sahibi sensin." }
             ],
             karo: [
-                { n: "A", t: "Hayatımdaki en değerli şeylerden birisin." },
-                { n: "2", t: "Bana verdiğin sevgiyi hissediyorum." },
-                { n: "3", t: "Her mesajın yüzümde gülümseme bırakıyor." },
-                { n: "4", t: "Seninle kurduğumuz bağ benim için çok özel." },
-                { n: "5", t: "Beni anladığını hissediyorum." },
-                { n: "6", t: "Uzakta olsan bile yakınımda gibisin." },
-                { n: "7", t: "Bu kart senin en sevdiğin sayı için." },
-                { n: "8", t: "Hayallerimi seninle paylaşmayı seviyorum." },
-                { n: "9", t: "Seninle gelecek düşünmek hoşuma gidiyor." },
-                { n: "10", t: "Birlikte daha çok anı biriktireceğiz." },
-                { n: "Vale", t: "Tanıştığımız gün için şanslı hissediyorum." },
-                { n: "Kız", t: "Zarafetine hayranım." },
-                { n: "Papaz", t: "Bana güç veriyorsun." }
+                { id: "ka_A", n: "A", t: "Hayatımdaki en değerli şeylerden birisin." },
+                { id: "ka_2", n: "2", t: "Bana verdiğin sevgiyi hissediyorum." },
+                { id: "ka_3", n: "3", t: "Her mesajın yüzümde gülümseme bırakıyor." },
+                { id: "ka_4", n: "4", t: "Seninle kurduğumuz bağ benim için çok özel." },
+                { id: "ka_5", n: "5", t: "Beni anladığını hissediyorum." },
+                { id: "ka_6", n: "6", t: "Uzakta olsan bile yakınımda gibisin." },
+                { id: "ka_7", n: "7", t: "Bu kart senin en sevdiğin sayı için." },
+                { id: "ka_8", n: "8", t: "Hayallerimi seninle paylaşmayı seviyorum." },
+                { id: "ka_9", n: "9", t: "Seninle gelecek düşünmek hoşuma gidiyor." },
+                { id: "ka_10", n: "10", t: "Birlikte daha çok anı biriktireceğiz." },
+                { id: "ka_J", n: "Vale", t: "Tanıştığımız gün için şanslı hissediyorum." },
+                { id: "ka_Q", n: "Kız", t: "Zarafetine hayranım." },
+                { id: "ka_K", n: "Papaz", t: "Bana güç veriyorsun." }
             ],
             sinek: [
-                { n: "A", t: "En iyi arkadaşım gibisin." },
-                { n: "2", t: "Seninle her şey daha eğlenceli." },
-                { n: "3", t: "Birlikte güldüğümüz anları seviyorum." },
-                { n: "4", t: "Muhabbetin hiç sıkmıyor." },
-                { n: "5", t: "Benimle ilgilenmen hoşuma gidiyor." },
-                { n: "6", t: "Küçük şeyleri hatırlaman çok tatlı." },
-                { n: "7", t: "Seninle geçen zamanın nasıl geçtiğini anlamıyorum." },
-                { n: "8", t: "Beni motive ediyorsun." },
-                { n: "9", t: "Beraberken kendim gibi olabiliyorum." },
-                { n: "10", t: "Seninle her konu konuşuluyor." },
-                { n: "Vale", t: "Komik anılarımızı seviyorum." },
-                { n: "Kız", t: "Tatlılığın başlı başına bir sebep." },
-                { n: "Papaz", t: "Hayatımda olman büyük bir şans." }
+                { id: "si_A", n: "A", t: "En iyi arkadaşım gibisin." },
+                { id: "si_2", n: "2", t: "Seninle her şey daha eğlenceli." },
+                { id: "si_3", n: "3", t: "Birlikte güldüğümüz anları seviyorum." },
+                { id: "si_4", n: "4", t: "Muhabbetin hiç sıkmıyor." },
+                { id: "si_5", n: "5", t: "Benimle ilgilenmen hoşuma gidiyor." },
+                { id: "si_6", n: "6", t: "Küçük şeyleri hatırlaman çok tatlı." },
+                { id: "si_7", n: "7", t: "Seninle geçen zamanın nasıl geçtiğini anlamıyorum." },
+                { id: "si_8", n: "8", t: "Beni motive ediyorsun." },
+                { id: "si_9", n: "9", t: "Beraberken kendim gibi olabiliyorum." },
+                { id: "si_10", n: "10", t: "Seninle her konu konuşuluyor." },
+                { id: "si_J", n: "Vale", t: "Komik anılarımızı seviyorum." },
+                { id: "si_Q", n: "Kız", t: "Tatlılığın başlı başına bir sebep." },
+                { id: "si_K", n: "Papaz", t: "Hayatımda olman büyük bir şans." }
             ],
             maca: [
-                { n: "A", t: "Ne olursa olsun yanında olmak istiyorum." },
-                { n: "2", t: "Zor zamanlarda aklıma gelen ilk kişisin." },
-                { n: "3", t: "Seni özlemek bile güzel geliyor." },
-                { n: "4", t: "Mesafeler sevgimi azaltmıyor." },
-                { n: "5", t: "Birlikte her zorluğun üstesinden gelebiliriz." },
-                { n: "6", t: "Sana karşı her zaman dürüst olmak istiyorum." },
-                { n: "7", t: "Senin mutluluğun benim için önemli." },
-                { n: "8", t: "Beni daha iyi biri yapıyorsun." },
-                { n: "9", t: "Sana her gün biraz daha bağlanıyorum." },
-                { n: "10", t: "Gelecekte de seni yanımda görmek istiyorum." },
-                { n: "Vale", t: "Bana umut veriyorsun." },
-                { n: "Kız", t: "Her halinle güzelsin." },
-                { n: "Papaz", t: "Seni çok seviyorum." }
+                { id: "ma_A", n: "A", t: "Ne olursa olsun yanında olmak istiyorum." },
+                { id: "ma_2", n: "2", t: "Zor zamanlarda aklıma gelen ilk kişisin." },
+                { id: "ma_3", n: "3", t: "Seni özlemek bile güzel geliyor." },
+                { id: "ma_4", n: "4", t: "Mesafeler sevgimi azaltmıyor." },
+                { id: "ma_5", n: "5", t: "Birlikte her zorluğun üstesinden gelebiliriz." },
+                { id: "ma_6", n: "6", t: "Sana karşı her zaman dürüst olmak istiyorum." },
+                { id: "ma_7", n: "7", t: "Senin mutluluğun benim için önemli." },
+                { id: "ma_8", n: "8", t: "Beni daha iyi biri yapıyorsun." },
+                { id: "ma_9", n: "9", t: "Sana her gün biraz daha bağlanıyorum." },
+                { id: "ma_10", n: "10", t: "Gelecekte de seni yanımda görmek istiyorum." },
+                { id: "ma_J", n: "Vale", t: "Bana umut veriyorsun." },
+                { id: "ma_Q", n: "Kız", t: "Her halinle güzelsin." },
+                { id: "ma_K", n: "Papaz", t: "Seni çok seviyorum." }
             ],
             joker: [
-                { n: "Jkr", t: "Hayatıma gelen en güzel tesadüfsün. 🃏" },
-                { n: "Jkr", t: "Bu destedeki tüm kartları toplasan da senin yerini tutmaz. ❤️" }
+                { id: "jk_1", n: "Jkr", t: "Hayatıma gelen en güzel tesadüfsün. 🃏" },
+                { id: "jk_2", n: "Jkr", t: "Bu destedeki tüm kartları toplasan da senin yerini tutmaz. ❤️" }
             ]
         };
 
@@ -581,42 +751,188 @@
         let currentSuite = null;
         let currentIndex = 0;
         let isRandomMode = false;
+        let isCollectionMode = false;
+        let activeCardGlobal = null;
+        let activeSuiteGlobal = null;
+        let favorites = JSON.parse(localStorage.getItem('love_favorites')) || [];
 
+        // Playlist Verileri (love1.mp3 - love5.mp3 arası)
+        const playlist = ["./love1.mp3", "./love2.mp3", "./love3.mp3", "./love4.mp3", "./love5.mp3"];
+        let currentTrackIndex = 0;
+        let musicStarted = false;
+
+        // Web Audio API Değişkenleri (Frekans analizi için)
+        let audioCtx = null;
+        let analyser = null;
+        let source = null;
+        let dataArray = null;
+        let isEyeOpen = false;
+
+        const audio = document.getElementById('bgSong');
+        const musicBtn = document.getElementById('musicBtn');
+        const visualizer = document.getElementById('visualizer');
+
+        function initAudioSource() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 64; // Düşük boyut yüksek performans ve net bas tespiti sunar
+                source = audioCtx.createMediaElementSource(audio);
+                source.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                
+                // Ritim analiz loop'unu başlat
+                analyzeAudio();
+            }
+        }
+
+        function loadTrack(index) {
+            audio.src = playlist[index];
+            document.getElementById('trackDisplay').innerText = `Şarkı ${index + 1}`;
+            if (musicStarted) {
+                audio.play().catch(()=>{});
+            }
+        }
+
+        function toggleMusic() {
+            initAudioSource();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (audio.paused) {
+                audio.play();
+                musicBtn.innerText = "⏸";
+                visualizer.classList.add('playing');
+                musicStarted = true;
+            } else {
+                audio.pause();
+                musicBtn.innerText = "▶";
+                visualizer.classList.remove('playing');
+            }
+        }
+
+        function navigateTrack(direction) {
+            initAudioSource();
+            currentTrackIndex = (currentTrackIndex + direction + playlist.length) % playlist.length;
+            const wasPlaying = !audio.paused;
+            loadTrack(currentTrackIndex);
+            if (wasPlaying || !musicStarted) {
+                audio.play().then(() => {
+                    musicBtn.innerText = "⏸";
+                    visualizer.classList.add('playing');
+                    musicStarted = true;
+                }).catch(()=>{});
+            }
+        }
+
+        // Şarkı bittiğinde otomatiğe bağlama
+        audio.addEventListener('ended', () => {
+            navigateTrack(1);
+        });
+
+        function startMusicOnInteraction() {
+            if (!musicStarted) {
+                initAudioSource();
+                loadTrack(currentTrackIndex);
+                audio.play().then(() => {
+                    musicBtn.innerText = "⏸";
+                    visualizer.classList.add('playing');
+                    musicStarted = true;
+                }).catch(() => {});
+            }
+        }
+
+        // İnteraktif Göz Emojisi Fonksiyonları
+        function toggleEye() {
+            startMusicOnInteraction();
+            const eyeModule = document.getElementById('eyeModule');
+            isEyeOpen = !isEyeOpen;
+
+            if (isEyeOpen) {
+                eyeModule.classList.add('open');
+            } else {
+                eyeModule.classList.remove('open');
+                document.getElementById('eyeGlowArea').style.opacity = 0;
+                document.getElementById('eyeImage').style.transform = "scaleY(0.1)";
+            }
+        }
+
+        // Gerçek Zamanlı Ritim ve Frekans Analizi
+        function analyzeAudio() {
+            requestAnimationFrame(analyzeAudio);
+            if (!analyser || !isEyeOpen || audio.paused) return;
+
+            analyser.getByteFrequencyData(dataArray);
+
+            // Bas ve alt-orta frekans tonlarını ölçelim (Müzikteki vuruşlar)
+            let sum = 0;
+            const sampleCount = 10; // İlk 10 frekans bandı bas vuruşlarını yakalar
+            for (let i = 0; i < sampleCount; i++) {
+                sum += dataArray[i];
+            }
+            let averageVolume = sum / sampleCount; // 0 - 255 arası değer döner
+
+            const glowArea = document.getElementById('eyeGlowArea');
+            const eyeImg = document.getElementById('eyeImage');
+
+            if (averageVolume > 40) {
+                // Ton şiddetine göre ışık parlaklığını ayarla
+                let intensity = (averageVolume / 255) * 1.3;
+                glowArea.style.opacity = Math.min(intensity, 1);
+                
+                // Ritmin vuruş gücüne göre göz kırpma/küçülme (pulsing) efekti yarat
+                let scaleFactor = 1 - (averageVolume / 255) * 0.3;
+                eyeImg.style.transform = `scaleY(${scaleFactor})`;
+            } else {
+                glowArea.style.opacity = 0.1;
+                eyeImg.style.transform = "scaleY(1)";
+            }
+        }
+
+        // Kart ve Arayüz Yönetimi
         function toggleFlip() {
             document.getElementById('loveCard').classList.toggle('flipped');
+            startMusicOnInteraction();
         }
 
         function updateCardUI(card, suite) {
+            activeCardGlobal = card;
+            activeSuiteGlobal = suite;
             const cardElement = document.getElementById('loveCard');
             const backView = document.getElementById('cardBackView');
-            
             cardElement.classList.remove('flipped');
             
             setTimeout(() => {
                 const icon = suiteIcons[suite];
                 const cssClass = suiteClasses[suite];
+                const isFav = favorites.includes(card.id);
                 
                 backView.className = `card-face card-back ${cssClass}`;
                 backView.innerHTML = `
+                    <button class="fav-btn ${isFav ? 'favorited' : ''}" onclick="toggleFavorite(event)">♥</button>
                     <div class="suite-corner">${card.n}<span style="font-size:18px;">${icon}</span></div>
                     <div class="card-center-content">
                         <div class="card-love-text">${card.t}</div>
                     </div>
                     <div class="suite-corner bottom">${card.n}<span style="font-size:18px;">${icon}</span></div>
                 `;
-                
                 cardElement.classList.add('flipped');
             }, 200);
         }
 
         function selectSuite(suite) {
+            isCollectionMode = false;
+            document.getElementById('collectionBtn').classList.remove('active');
             currentSuite = suite;
             currentIndex = 0;
             isRandomMode = false;
 
             document.querySelectorAll('.suite-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${suite}`).classList.add('active');
-
             document.getElementById('prevBtn').style.visibility = "visible";
             document.getElementById('nextBtn').style.visibility = "visible";
 
@@ -627,17 +943,20 @@
 
         function navigateCard(direction, event) {
             if(event) event.stopPropagation(); 
+            if (isCollectionMode) { navigateCollection(direction); return; }
             if (!currentSuite || isRandomMode) return;
 
             const suiteLength = deckData[currentSuite].length;
             currentIndex = (currentIndex + direction + suiteLength) % suiteLength;
-
             const activeCard = deckData[currentSuite][currentIndex];
             updateCardUI(activeCard, currentSuite);
             updateIndicator();
         }
 
         function triggerRandomCard() {
+            startMusicOnInteraction();
+            isCollectionMode = false;
+            document.getElementById('collectionBtn').classList.remove('active');
             isRandomMode = true;
             currentSuite = null;
             
@@ -655,14 +974,75 @@
         }
 
         function updateIndicator() {
-            if (currentSuite) {
+            if (isCollectionMode) {
+                const favCards = getFavCardsObjects();
+                document.getElementById('cardIndicator').innerText = `❤️ Koleksiyonun — Kart: ${currentIndex + 1} / ${favCards.length}`;
+            } else if (currentSuite) {
                 const total = deckData[currentSuite].length;
-                document.getElementById('cardIndicator').innerText = 
-                    `${currentSuite.toUpperCase()} Serisi — Kart: ${currentIndex + 1} / ${total}`;
+                document.getElementById('cardIndicator').innerText = `${currentSuite.toUpperCase()} Serisi — Kart: ${currentIndex + 1} / ${total}`;
             }
         }
 
-        // Mektup Modal ve Sayfa Değiştirme Mantığı
+        function toggleFavorite(event) {
+            event.stopPropagation();
+            if (!activeCardGlobal) return;
+            const cardId = activeCardGlobal.id;
+            const index = favorites.indexOf(cardId);
+            
+            if (index > -1) {
+                favorites.splice(index, 1);
+                event.target.classList.remove('favorited');
+            } else {
+                favorites.push(cardId);
+                event.target.classList.add('favorited');
+            }
+            localStorage.setItem('love_favorites', JSON.stringify(favorites));
+            updateCollectionBtnText();
+            if(isCollectionMode) { setTimeout(() => { toggleCollectionMode(); }, 300); }
+        }
+
+        function getFavCardsObjects() {
+            let list = [];
+            for (let suite in deckData) {
+                deckData[suite].forEach(c => { if(favorites.includes(c.id)) list.push({card: c, suite: suite}); });
+            }
+            return list;
+        }
+
+        function toggleCollectionMode() {
+            if (favorites.length === 0) {
+                alert("Henüz hiç kart favorilemedin! Kartların üzerindeki kalbe basarak koleksiyon oluşturabilirsin. ❤️");
+                return;
+            }
+            isCollectionMode = true;
+            isRandomMode = false;
+            currentSuite = null;
+            currentIndex = 0;
+            
+            document.getElementById('collectionBtn').classList.add('active');
+            document.querySelectorAll('.suite-btn').forEach(b => b.classList.remove('active'));
+            
+            const favs = getFavCardsObjects();
+            document.getElementById('prevBtn').style.visibility = favs.length > 1 ? "visible" : "hidden";
+            document.getElementById('nextBtn').style.visibility = favs.length > 1 ? "visible" : "hidden";
+            
+            updateCardUI(favs[currentIndex].card, favs[currentIndex].suite);
+            updateIndicator();
+        }
+
+        function navigateCollection(direction) {
+            const favs = getFavCardsObjects();
+            if(favs.length === 0) return;
+            currentIndex = (currentIndex + direction + favs.length) % favs.length;
+            updateCardUI(favs[currentIndex].card, favs[currentIndex].suite);
+            updateIndicator();
+        }
+
+        function updateCollectionBtnText() {
+            document.getElementById('collectionBtn').innerText = `Koleksiyonum (${favorites.length})`;
+        }
+
+        // Mektup Sayfa Kontrolleri
         let currentNotePage = 0;
         const notePages = document.querySelectorAll('.note-page');
         const totalNotePages = notePages.length;
@@ -671,32 +1051,49 @@
             notePages[currentNotePage].classList.remove('active');
             currentNotePage += direction;
             notePages[currentNotePage].classList.add('active');
-
-            // Alt göstergeyi güncelle
             document.getElementById('notePageIndicator').innerText = `${currentNotePage + 1} / ${totalNotePages}`;
-
-            // Buton aktiflik durumları
             document.getElementById('notePrevBtn').disabled = (currentNotePage === 0);
             document.getElementById('noteNextBtn').disabled = (currentNotePage === totalNotePages - 1);
+
+            const noteCard = document.getElementById('noteContentCard');
+            if (currentNotePage < totalNotePages - 1 && currentNotePage > 0) {
+                noteCard.style.background = `linear-gradient(rgba(20, 20, 25, 0.88), rgba(20, 20, 25, 0.88)), url('./${currentNotePage}.jpg') center/cover`;
+            } else {
+                noteCard.style.background = `linear-gradient(rgba(20, 20, 25, 0.85), rgba(20, 20, 25, 0.85)), url('./background.jpg') center/cover`;
+            }
+        }
+
+        function updateLoveCountdown() {
+            const startDate = new Date("2025-11-28T00:00:00").getTime();
+            const now = new Date().getTime();
+            const diff = now - startDate;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById("cd-day").innerHTML = days + "<span>Gün</span>";
+            document.getElementById("cd-hour").innerHTML = (hours < 10 ? "0" + hours : hours) + "<span>Saat</span>";
+            document.getElementById("cd-min").innerHTML = (mins < 10 ? "0" + mins : mins) + "<span>Dk</span>";
+            document.getElementById("cd-sec").innerHTML = (secs < 10 ? "0" + secs : secs) + "<span>Sn</span>";
         }
 
         window.addEventListener("load", () => {
+            updateCollectionBtnText();
+            loadTrack(currentTrackIndex); // İlk şarkıyı hazırla
+            setInterval(updateLoveCountdown, 1000);
+
             const noteBtn = document.getElementById("loveNoteBtn");
             const noteModal = document.getElementById("loveNoteModal");
             const closeNote = document.getElementById("closeLoveNote");
 
             if(noteBtn) noteBtn.addEventListener("click", (e) => {
                 e.stopPropagation();
+                startMusicOnInteraction();
                 noteModal.classList.add("active");
             });
-
-            if(closeNote) closeNote.addEventListener("click", () => {
-                noteModal.classList.remove("active");
-            });
-
-            if(noteModal) noteModal.addEventListener("click", (e) => {
-                if(e.target === noteModal) noteModal.classList.remove("active");
-            });
+            if(closeNote) closeNote.addEventListener("click", () => { noteModal.classList.remove("active"); });
+            if(noteModal) noteModal.addEventListener("click", (e) => { if(e.target === noteModal) noteModal.classList.remove("active"); });
         });
     </script>
 </body>
