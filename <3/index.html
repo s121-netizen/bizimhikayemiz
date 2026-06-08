@@ -290,7 +290,62 @@
     box-shadow: none;
 }
 
-    </style>
+    
+#loveNoteBtn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 52px;
+    height: 52px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(123,44,191,0.9);
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 0 20px rgba(123,44,191,0.5);
+}
+
+#loveNoteModal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    background:
+        linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
+        url('./background.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+#loveNoteModal.active { display:flex; }
+
+.love-note-content {
+    width:90%;
+    max-width:500px;
+    max-height:80vh;
+    overflow-y:auto;
+    padding:25px;
+    border-radius:20px;
+    background:rgba(20,20,25,0.85);
+    backdrop-filter:blur(10px);
+    color:white;
+    text-align:center;
+}
+
+#closeLoveNote{
+    float:right;
+    border:none;
+    background:transparent;
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+}
+
+</style>
 </head>
 <body>
 
@@ -495,6 +550,62 @@
                     `${currentSuite.toUpperCase()} Serisi — Kart: ${currentIndex + 1} / ${total}`;
             }
         }
-    </script>
+    
+
+window.addEventListener("load", () => {
+    const noteBtn = document.getElementById("loveNoteBtn");
+    const noteModal = document.getElementById("loveNoteModal");
+    const closeNote = document.getElementById("closeLoveNote");
+
+    if(noteBtn) noteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        noteModal.classList.add("active");
+    });
+
+    if(closeNote) closeNote.addEventListener("click", () => {
+        noteModal.classList.remove("active");
+    });
+
+    if(noteModal) noteModal.addEventListener("click", (e) => {
+        if(e.target === noteModal) noteModal.classList.remove("active");
+    });
+});
+
+</script>
+
+
+<button id="loveNoteBtn">❤️</button>
+
+<div id="loveNoteModal">
+    <div class="love-note-content">
+        <button id="closeLoveNote">✕</button>
+        <h2>💌 Sana Bir Not</h2>
+        <p>Aşkım,
+
+Bu notu okurken belki gülümsüyorsundur, belki de "bu çocuk yine ne hazırlamış?" diye düşünüyorsundur. Ama şunu bilmeni istiyorum ki bu sayfadaki her kartı hazırlarken aklımda sadece sen vardın.
+
+Bazen sana ne kadar değer verdiğimi anlatmakta zorlanıyorum. Çünkü bazı duygular kelimelere sığmıyor. Sen benim için sadece sevdiğim biri değilsin; gün içinde aklıma ilk gelen, güzel bir şey olduğunda paylaşmak istediğim ilk kişi, kötü hissettiğimde sesini duymak istediğim ilk kişisin.
+
+Hayatıma girdiğinden beri birçok şey değişti. Daha çok gülmeye başladım, geleceği daha güzel hayal etmeye başladım. En sıradan günler bile senin bir mesajınla özel hale geliyor. Belki kilometrelerce uzaktayız, belki her istediğimiz an yan yana olamıyoruz ama buna rağmen kalbimdeki yerin hiç değişmiyor.
+
+Bu destedeki her kartta sana dair bir şey yazdım. Bazıları bir anımız, bazıları bir teşekkür, bazıları ise sana söylemek istediğim ama bazen söyleyemediğim şeyler. Fakat aslında bütün kartların özeti tek bir cümle:
+
+İyi ki varsın.
+
+Bazen geleceği düşünüyorum. Birlikte gezeceğimiz yerleri, edeceğimiz sohbetleri, güleceğimiz saçma şeyleri ve bir gün dönüp bugünleri hatırlayışımızı... Bunları düşünmek bile beni mutlu ediyor. Çünkü o hayallerin içinde sen varsın.
+
+Sana mükemmel olduğun için değil, seni sen olduğun için değer veriyorum. Gülüşünle, huylarınla, bazen inatçılığınla, bazen aşırı tatlı oluşunla... Kısacası her halinle.
+
+Eğer bir gün moralin bozulursa, kendini yalnız hissedersen veya seni ne kadar sevdiğimi merak edersen bu notu tekrar oku. Çünkü burada yazan hiçbir şey bir anlık duygu değil. Bunlar kalbimden geçen gerçek şeyler.
+
+Bu destenin bir sonu var. Kartlar bitecek. Bu yazı da bitecek.
+
+Ama sana olan sevgim burada bitmeyecek.
+
+Seni çok seviyorum. ❤️
+</p>
+    </div>
+</div>
+
 </body>
 </html>
