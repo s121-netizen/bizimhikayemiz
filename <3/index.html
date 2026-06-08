@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>28.11.2025 🩶 Sevgi Destesi</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 50% 50%, #1a0f26 0%, #0d0d0f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Üst Başlık Alanı */
+        header {
+            text-align: center;
+            margin-top: 10px;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff 30%, #b0b0b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 13px;
+            color: #b0b0b0;
+            opacity: 0.8;
+            max-width: 320px;
+            line-height: 1.4;
+        }
+
+        /* Ana Kart Alanı (3D Sahne) */
+        .main-stage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 400px;
+            perspective: 1200px;
+            margin: 20px 0;
+        }
+
+        .card-container {
+            width: 260px;
+            height: 390px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card-container.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px rgba(123, 44, 191, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 22px;
+        }
+
+        /* KARTIN ARKASI (Kapalı Hali) - Gizemli Premium Mor & Gri */
+        .card-front {
+            background: linear-gradient(135deg, #120a1c 0%, #1c112e 50%, #09050e 100%);
+            border: 2px solid rgba(123, 44, 191, 0.4);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-front-design {
+            text-align: center;
+        }
+
+        .card-front-logo {
+            font-size: 55px;
+            filter: drop-shadow(0 0 15px rgba(123, 44, 191, 0.6));
+            animation: pulseGlow 2.5s infinite ease-in-out;
+            color: #7b2cbf;
+        }
+
+        .card-front-hint {
+            font-size: 11px;
+            color: #b0b0b0;
+            letter-spacing: 2px;
+            margin-top: 20px;
+            opacity: 0.5;
+        }
+
+        /* KARTIN ÖNÜ (Açık Hali) - Beyaz/Açık Gri Zarif Kağıt Dokusu */
+        .card-back {
+            background: linear-gradient(145deg, #ffffff 0%, #f5f5f7 100%);
+            transform: rotateY(180deg);
+            border: 2px solid #b0b0b0;
+        }
+
+        .suite-corner {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: fit-content;
+        }
+
+        .suite-corner.bottom {
+            align-self: flex-end;
+            transform: rotate(180deg);
+        }
+
+        .card-center-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            text-align: center;
+        }
+
+        .card-love-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #1a1a1a;
+        }
+
+        /* Renk Sınıfları */
+        .red-suite { color: #d90429; }
+        .black-suite { color: #1c1c1e; }
+        .joker-suite { color: #7b2cbf; }
+
+        /* Alt Gösterge ve Navigasyon Bölümü */
+        .controls-section {
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .card-indicator {
+            font-size: 13px;
+            color: #b0b0b0;
+            margin-bottom: 15px;
+            font-style: italic;
+            min-height: 20px;
+        }
+
+        .nav-arrows {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .arrow-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden; /* Sadece bir seri seçildiğinde görünecek */
+        }
+
+        .arrow-btn:active {
+            transform: scale(0.9);
+            background: #7b2cbf;
+        }
+
+        /* Seri Seçim Butonları Grid */
+        .suite-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            padding: 0 10px;
+        }
+
+        .suite-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            padding: 12px 5px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .suite-btn:hover, .suite-btn.active {
+            background: linear-gradient(135deg, #7b2cbf 0%, rgba(123,44,191,0.6) 100%);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(123, 44, 191, 0.3);
+        }
+
+        .suite-btn.random-btn {
+            grid-column: span 3;
+            background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
+            font-weight: 600;
+            border: 1px dashed rgba(123, 44, 191, 0.5);
+        }
+
+        .suite-btn.random-btn:active {
+            background: #7b2cbf;
+        }
+
+        /* Animasyonlar */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; transform: scale(1); filter: drop-shadow(0 0 10px rgba(123, 44, 191, 0.4)); }
+            50% { opacity: 1; transform: scale(1.06); filter: drop-shadow(0 0 20px rgba(123, 44, 191, 0.7)); }
+        }
+
+        /* Mobil Optimizasyon */
+        @media (max-height: 700px) {
+            .card-container { width: 220px; height: 330px; }
+            header h1 { font-size: 24px; }
+            .card-love-text { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sevgi Destesi</h1>
+        <p>Bizim için özel hazırlanan 52 kartlık aşk destesi. Şansını dene ya da serileri keşfet... 💜</p>
+    </header>
+
+    <div class="main-stage">
+        <div class="card-container" id="loveCard" onclick="toggleFlip()">
+            <div class="card-face card-front">
+                <div class="card-front-design">
+                    <div class="card-front-logo">🩶</div>
+                    <div class="card-front-hint">KARTI ÇEVİR</div>
+                </div>
+            </div>
+            <div class="card-face card-back" id="cardBackView">
+                <div class="suite-corner red-suite">♥</div>
+                <div class="card-center-content">
+                    <div class="card-love-text" style="font-style: italic; opacity:0.5;">Aşağıdan bir mod seçerek başla...</div>
+                </div>
+                <div class="suite-corner bottom red-suite">♥</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls-section">
+        <div class="card-indicator" id="cardIndicator">Kaderini belirlemek için bir kart seç.</div>
+        
+        <div class="nav-arrows">
+            <button class="arrow-btn" id="prevBtn" onclick="navigateCard(-1, event)">◀</button>
+            <button class="arrow-btn" id="nextBtn" onclick="navigateCard(1, event)">▶</button>
+        </div>
+
+        <div class="suite-grid">
+            <button class="suite-btn random-btn" onclick="triggerRandomCard()">🎲 Rastgele Bir Kart Çek</button>
+            <button class="suite-btn" id="btn-kupa" onclick="selectSuite('kupa')">♥ Kupa</button>
+            <button class="suite-btn" id="btn-karo" onclick="selectSuite('karo')">♦ Karo</button>
+            <button class="suite-btn" id="btn-sinek" onclick="selectSuite('sinek')">♣ Sinek</button>
+            <button class="suite-btn" id="btn-maca" onclick="selectSuite('maca')">♠ Maça</button>
+            <button class="suite-btn" id="btn-joker" onclick="selectSuite('joker')">🃏 Joker</button>
+        </div>
+    </div>
+
+    <script>
+        // Eksiksiz Veri Kümesi
+        const deckData = {
+            kupa: [
+                { n: "A", t: "Hayayıma girdiğin gün her şey değişti." },
+                { n: "2", t: "Seninle konuşmak günümün en güzel kısmı." },
+                { n: "3", t: "Gülüşün beni mutlu etmeye yetiyor." },
+                { n: "4", t: "Sesini duyunca içim huzur doluyor." },
+                { n: "5", t: "Bana kendimi değerli hissettiriyorsun." },
+                { n: "6", t: "Seninle geçirdiğim her an özel." },
+                { n: "7", t: "İyi ki varsın." },
+                { n: "8", t: "En kötü günümde bile yüzümü güldürebiliyorsun." },
+                { n: "9", t: "Sana güveniyorum." },
+                { n: "10", t: "Seninle daha nice güzel günler yaşamak istiyorum." },
+                { n: "Vale", t: "İlk konuşmalarımızı unutamıyorum." },
+                { n: "Kız", t: "Gözlerin çok güzel." },
+                { n: "Papaz", t: "Kalbimin sahibi sensin." }
+            ],
+            karo: [
+                { n: "A", t: "Hayatımdaki en değerli şeylerden birisin." },
+                { n: "2", t: "Bana verdiğin sevgiyi hissediyorum." },
+                { n: "3", t: "Her mesajın yüzümde gülümseme bırakıyor." },
+                { n: "4", t: "Seninle kurduğumuz bağ benim için çok özel." },
+                { n: "5", t: "Beni anladığını hissediyorum." },
+                { n: "6", t: "Uzakta olsan bile yakınımda gibisin." },
+                { n: "7", t: "Bu kart senin en sevdiğin sayı için." },
+                { n: "8", t: "Hayallerimi seninle paylaşmayı seviyorum." },
+                { n: "9", t: "Seninle gelecek düşünmek hoşuma gidiyor." },
+                { n: "10", t: "Birlikte daha çok anı biriktireceğiz." },
+                { n: "Vale", t: "Tanıştığımız gün için şanslı hissediyorum." },
+                { n: "Kız", t: "Zarafetine hayranım." },
+                { n: "Papaz", t: "Bana güç veriyorsun." }
+            ],
+            sinek: [
+                { n: "A", t: "En iyi arkadaşım gibisin." },
+                { n: "2", t: "Seninle her şey daha eğlenceli." },
+                { n: "3", t: "Birlikte güldüğümüz anları seviyorum." },
+                { n: "4", t: "Muhabbetin hiç sıkmıyor." },
+                { n: "5", t: "Benimle ilgilenmen hoşuma gidiyor." },
+                { n: "6", t: "Küçük şeyleri hatırlaman çok tatlı." },
+                { n: "7", t: "Seninle geçen zamanın nasıl geçtiğini anlamıyorum." },
+                { n: "8", t: "Beni motive ediyorsun." },
+                { n: "9", t: "Beraberken kendim gibi olabiliyorum." },
+                { n: "10", t: "Seninle her konu konuşuluyor." },
+                { n: "Vale", t: "Komik anılarımızı seviyorum." },
+                { n: "Kız", t: "Tatlılığın başlı başına bir sebep." },
+                { n: "Papaz", t: "Hayatımda olman büyük bir şans." }
+            ],
+            maca: [
+                { n: "A", t: "Ne olursa olsun yanında olmak istiyorum." },
+                { n: "2", t: "Zor zamanlarda aklıma gelen ilk kişisin." },
+                { n: "3", t: "Seni özlemek bile güzel geliyor." },
+                { n: "4", t: "Mesafeler sevgimi azaltmıyor." },
+                { n: "5", t: "Birlikte her zorluğun üstesinden gelebiliriz." },
+                { n: "6", t: "Sana karşı her zaman dürüst olmak istiyorum." },
+                { n: "7", t: "Senin mutluluğun benim için önemli." },
+                { n: "8", t: "Beni daha iyi biri yapıyorsun." },
+                { n: "9", t: "Sana her gün biraz daha bağlanıyorum." },
+                { n: "10", t: "Gelecekte de seni yanımda görmek istiyorum." },
+                { n: "Vale", t: "Bana umut veriyorsun." },
+                { n: "Kız", t: "Her halinle güzelsin." },
+                { n: "Papaz", t: "Seni çok seviyorum." }
+            ],
+            joker: [
+                { n: "Jkr", t: "Hayatıma gelen en güzel tesadüfsün. 🃏" },
+                { n: "Jkr", t: "Bu destedeki tüm kartları toplasan da senin yerini tutmaz. ❤️" }
+            ]
+        };
+
+        const suiteIcons = { kupa: "♥", karo: "♦", sinek: "♣", maca: "♠", joker: "🃏" };
+        const suiteClasses = { kupa: "red-suite", karo: "red-suite", sinek: "black-suite", maca: "black-suite", joker: "joker-suite" };
+
+        let currentSuite = null;
+        let currentIndex = 0;
+        let isRandomMode = false;
+
+        function toggleFlip() {
+            document.getElementById('loveCard').classList.toggle('flipped');
+        }
+
+        function updateCardUI(card, suite) {
+            const cardElement = document.getElementById('loveCard');
+            const backView = document.getElementById('cardBackView');
+            
+            // Eğer kart açıksa önce kapat, pürüzsüz geçiş sağla
+            cardElement.classList.remove('flipped');
+            
+            setTimeout(() => {
+                const icon = suiteIcons[suite];
+                const cssClass = suiteClasses[suite];
+                
+                backView.className = `card-face card-back ${cssClass}`;
+                backView.innerHTML = `
+                    <div class="suite-corner">${card.n}<span style="font-size:18px;">${icon}</span></div>
+                    <div class="card-center-content">
+                        <div class="card-love-text">${card.t}</div>
+                    </div>
+                    <div class="suite-corner bottom">${card.n}<span style="font-size:18px;">${icon}</span></div>
+                `;
+                
+                // Bilgiler güncellendikten sonra kartı otomatik çevirerek göster
+                cardElement.classList.add('flipped');
+            }, 200);
+        }
+
+        function selectSuite(suite) {
+            currentSuite = suite;
+            currentIndex = 0;
+            isRandomMode = false;
+
+            // Aktif buton görselini güncelle
+            document.querySelectorAll('.suite-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${suite}`).classList.add('active');
+
+            // Navigasyon oklarını görünür kıl
+            document.getElementById('prevBtn').style.visibility = "visible";
+            document.getElementById('nextBtn').style.visibility = "visible";
+
+            const activeCard = deckData[suite][currentIndex];
+            updateCardUI(activeCard, suite);
+            updateIndicator();
+        }
+
+        function navigateCard(direction, event) {
+            if(event) event.stopPropagation(); // Kartın tıklama ile kendi kendine dönmesini önler
+            
+            if (!currentSuite || isRandomMode) return;
+
+            const suiteLength = deckData[currentSuite].length;
+            currentIndex = (currentIndex + direction + suiteLength) % suiteLength;
+
+            const activeCard = deckData[currentSuite][currentIndex];
+            updateCardUI(activeCard, currentSuite);
+            updateIndicator();
+        }
+
+        function triggerRandomCard() {
+            isRandomMode = true;
+            currentSuite = null;
+            
+            document.querySelectorAll('.suite-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('prevBtn').style.visibility = "hidden";
+            document.getElementById('nextBtn').style.visibility = "hidden";
+
+            const suites = ['kupa', 'karo', 'sinek', 'maca', 'joker'];
+            const randomSuite = suites[Math.floor(Math.random() * suites.length)];
+            const cards = deckData[randomSuite];
+            const randomCard = cards[Math.floor(Math.random() * cards.length)];
+
+            updateCardUI(randomCard, randomSuite);
+            document.getElementById('cardIndicator').innerText = `🎲 Kaderine düşen kart: ${randomSuite.toUpperCase()} Serisi`;
+        }
+
+        function updateIndicator() {
+            if (currentSuite) {
+                const total = deckData[currentSuite].length;
+                document.getElementById('cardIndicator').innerText = 
+                    `${currentSuite.toUpperCase()} Serisi — Kart: ${currentIndex + 1} / ${total}`;
+            }
+        }
+    </script>
+</body>
+</html>
