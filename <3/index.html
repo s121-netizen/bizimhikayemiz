@@ -38,7 +38,7 @@
             overflow-x: hidden;
         }
 
-        /* Üst Bar Düzeni (Koleksiyon Sol, Göz Sağ) */
+        /* Üst Bar Düzeni */
         .top-bar {
             position: absolute;
             top: 20px;
@@ -66,7 +66,6 @@
             box-shadow: 0 0 15px rgba(123, 44, 191, 0.5);
         }
 
-        /* Sağ Üstteki Tetikleyici Buton */
         .eye-trigger-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(123, 44, 191, 0.3);
@@ -94,22 +93,20 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            background: rgba(13, 13, 15, 0.95);
-            backdrop-filter: blur(15px);
-            padding: 0; /* Pencere kenar boşluğunu sıfırla */
+            background: #000000;
+            padding: 0;
         }
         #eyeModal.active {
             display: flex;
         }
 
         .eye-modal-content {
-            width: 100%; /* Pencere genişliği tam ekran */
-            height: 100%; /* Pencere yüksekliği tam ekran */
-            background: #120a1c;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: hidden; /* Resmi kırpmak için */
+            overflow: hidden;
         }
 
         .eye-modal-header {
@@ -117,47 +114,65 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 20px; /* Başlık alanına iç boşluk ver */
-            position: absolute; /* Resmi kapatmamak için üzerine konumlandır */
+            padding: 25px;
+            position: absolute;
             top: 0;
             left: 0;
-            z-index: 10; /* Resmin üzerinde kalması için */
-            background: linear-gradient(to bottom, rgba(18, 10, 28, 0.8), transparent); /* Üstte hafif karartma */
+            z-index: 15;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
         }
         .eye-modal-header h3 {
             font-size: 14px;
-            letter-spacing: 1px;
-            color: #b0b0b0;
-            font-weight: 500;
+            letter-spacing: 2px;
+            color: #ffffff;
+            font-weight: 600;
             text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
         .close-eye-modal {
             border: none;
             background: transparent;
-            color: rgba(255,255,255,0.6);
-            font-size: 22px;
+            color: rgba(255,255,255,0.8);
+            font-size: 26px;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: color 0.2s, transform 0.2s;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
-        .close-eye-modal:hover { color: #fff; }
+        .close-eye-modal:hover { 
+            color: #fff; 
+            transform: scale(1.1);
+        }
 
         /* Pencereyi Kaplayan Resim Alanı */
         .eye-display-container {
-            flex: 1;
+            width: 100%;
+            height: 100%;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100%;
+            background: #000;
         }
 
         .eye-img {
-            width: 100%; /* Resim genişliği tam ekran */
-            height: 100%; /* Resim yüksekliği tam ekran */
-            object-fit: cover; /* Resmi en-boy oranını koruyarak sığdır */
-            object-position: center; /* Resmi ortala */
-            transition: transform 0.08s ease;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
             z-index: 2;
+            transition: transform 0.04s ease-out; /* Tepki süresi aşırı hızlandırıldı */
+        }
+
+        /* Mor Ritme Göre Yanıp Sönen Parlama Efekti */
+        #eyeGlowArea {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            mix-blend-mode: screen;
+            box-shadow: inset 0 0 100px rgba(168, 85, 247, 0.8), 0 0 60px rgba(168, 85, 247, 0.4);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.04s ease-out;
         }
 
         header {
@@ -378,7 +393,7 @@
             border: 1px dashed rgba(123, 44, 191, 0.5);
         }
 
-        /* 🎵 Sarılabilir ve İlerletilebilir Profesyonel Müzik Çalar Paneli */
+        /* Müzik Çalar Paneli */
         .audio-player-container {
             position: fixed;
             left: 20px;
@@ -634,6 +649,14 @@
 
         #notePageIndicator { font-size: 12px; color: rgba(255,255,255,0.5); }
 
+        @media (max-height: 700px) {
+            .card-container { width: 220px; height: 330px; }
+            header h1 { font-size: 24px; }
+            .card-love-text { font-size: 16px; }
+            .love-note-content { height: 450px; }
+            .note-page { font-size: 13.5px; }
+        }
+
         @keyframes bounce { 0% { height: 3px; } 100% { height: 14px; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulseGlow {
@@ -644,21 +667,12 @@
             0% { opacity: 0; transform: translate3d(0, 100px, -400px) rotateX(-45deg); }
             100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(0); }
         }
-
-        @media (max-height: 700px) {
-            .card-container { width: 220px; height: 330px; }
-            header h1 { font-size: 24px; }
-            .card-love-text { font-size: 16px; }
-            .love-note-content { height: 450px; }
-            .note-page { font-size: 13.5px; }
-        }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
         <button class="collection-btn" id="collectionBtn" onclick="toggleCollectionMode()">Koleksiyonum (0)</button>
-        
         <button class="eye-trigger-btn" onclick="openEyeModal()">👁️ Ritmi Gör</button>
     </div>
 
@@ -670,7 +684,7 @@
             </div>
             <div class="eye-display-container">
                 <img src="./eyes.jpg" class="eye-img" id="eyeImage" alt="Gözler">
-            </div>
+                <div id="eyeGlowArea"></div> </div>
         </div>
     </div>
 
@@ -781,7 +795,7 @@
     <script>
         const deckData = {
             kupa: [
-                { id: "ku_A", n: "A", t: "Hayayıma girdiğin gün her şey değişti." },
+                { id: "ku_A", n: "A", t: "Hayatıma girdiğin gün her şey değişti." },
                 { id: "ku_2", n: "2", t: "Seninle konuşmak günümün en güzel kısmı." },
                 { id: "ku_3", n: "3", t: "Gülüşün beni mutlu etmeye yetiyor." },
                 { id: "ku_4", n: "4", t: "Sesini duyunca içim huzur doluyor." },
@@ -857,12 +871,10 @@
         let activeSuiteGlobal = null;
         let favorites = JSON.parse(localStorage.getItem('love_favorites')) || [];
 
-        // Playlist Verileri (love1.mp3 - love5.mp3 arası)
         const playlist = ["./love.mp3", "./love2.mp3", "./love3.mp3", "./love4.mp3", "./love5.mp3"];
         let currentTrackIndex = 0;
         let musicStarted = false;
 
-        // Web Audio API Değişkenleri (Frekans analizi için)
         let audioCtx = null;
         let analyser = null;
         let source = null;
@@ -877,7 +889,7 @@
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 64; // Düşük boyut yüksek performans ve net bas tespiti sunar
+                analyser.fftSize = 64; 
                 source = audioCtx.createMediaElementSource(audio);
                 source.connect(analyser);
                 analyser.connect(audioCtx.destination);
@@ -885,7 +897,6 @@
                 const bufferLength = analyser.frequencyBinCount;
                 dataArray = new Uint8Array(bufferLength);
                 
-                // Ritim analiz loop'unu başlat
                 analyzeAudio();
             }
         }
@@ -930,10 +941,33 @@
             }
         }
 
-        // Şarkı bittiğinde otomatiğe bağlama
-        audio.addEventListener('ended', () => {
-            navigateTrack(1);
+        audio.addEventListener('ended', () => { navigateTrack(1); });
+
+        // Şarkı Zaman Güncellemesi
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const pct = (audio.currentTime / audio.duration) * 100;
+                document.getElementById('progressBar').style.width = pct + '%';
+                
+                const curMins = Math.floor(audio.currentTime / 60);
+                const curSecs = Math.floor(audio.currentTime % 60);
+                const durMins = Math.floor(audio.duration / 60);
+                const durSecs = Math.floor(audio.duration % 60);
+                
+                document.getElementById('timeDisplay').innerText = 
+                    `${curMins}:${curSecs < 10 ? '0'+curSecs : curSecs} / ${durMins}:${durSecs < 10 ? '0'+durSecs : durSecs}`;
+            }
         });
+
+        function setSongPosition(e) {
+            if (!audio.duration) return;
+            const container = document.getElementById('progressContainer');
+            const rect = container.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            const percentage = clickX / width;
+            audio.currentTime = percentage * audio.duration;
+        }
 
         function startMusicOnInteraction() {
             if (!musicStarted) {
@@ -947,7 +981,7 @@
             }
         }
 
-        // 👀 Göz Penceresi (Modal) Tetikleyicileri
+        // 👀 Göz Penceresi Kontrolleri
         function openEyeModal() {
             startMusicOnInteraction();
             document.getElementById('eyeModal').classList.add('active');
@@ -957,11 +991,11 @@
         function closeEyeModal() {
             document.getElementById('eyeModal').classList.remove('active');
             isEyeOpen = false;
-            document.getElementById('eyeGlowArea').style.opacity = 0.1;
+            document.getElementById('eyeGlowArea').style.opacity = 0;
             document.getElementById('eyeImage').style.transform = "scale(1)";
         }
 
-        // Gerçek Zamanlı Ritim ve Frekans Analiz Döngüsü
+        // 🎵 MÜZİK RİTMİNE GÖRE GERÇEK ZAMANLI PARLAMA VE KÜÇÜLME/BÜYÜME DÖNGÜSÜ
         function analyzeAudio() {
             requestAnimationFrame(analyzeAudio);
             if (!analyser || !isEyeOpen || audio.paused) return;
@@ -969,24 +1003,25 @@
             analyser.getByteFrequencyData(dataArray);
 
             let sum = 0;
-            const sampleCount = 10; 
+            const sampleCount = 12; // Net ritim yakalamak için bas frekansları alıyoruz
             for (let i = 0; i < sampleCount; i++) {
-                sum += dataArray[iax];
+                sum += dataArray[i];
             }
             let averageVolume = sum / sampleCount; 
 
             const glowArea = document.getElementById('eyeGlowArea');
             const eyeImg = document.getElementById('eyeImage');
 
-            if (averageVolume > 35) {
-                let intensity = (averageVolume / 255) * 1.5;
+            if (averageVolume > 30) { // Hassasiyet eşiği
+                // Mor Parlamayı Ritme Göre Yak
+                let intensity = (averageVolume / 255) * 1.3;
                 glowArea.style.opacity = Math.min(intensity, 1);
                 
-                // Ritim vuruşunun gücüne göre gözün anlık dinamik küçülüp büyümesi (Göz kırpma / Pulsing efekti)
-                let scaleFactor = 1 - (averageVolume / 255) * 0.35;
+                // Ritmin vuruş gücüne göre resmi dinamik olarak büyüt/küçült (Pulsing / Bass Pump)
+                let scaleFactor = 1 + (averageVolume / 255) * 0.08; 
                 eyeImg.style.transform = `scale(${scaleFactor})`;
             } else {
-                glowArea.style.opacity = 0.1;
+                glowArea.style.opacity = 0;
                 eyeImg.style.transform = "scale(1)";
             }
         }
