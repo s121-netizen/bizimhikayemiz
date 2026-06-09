@@ -86,7 +86,7 @@
             box-shadow: 0 0 10px rgba(123, 44, 191, 0.3);
         }
 
-        /* 👁️ GÖZ PENCERESİ (MODAL ALANI) */
+        /* 👁️ TAM EKRAN GÖZ MODU PENCERESİ */
         #eyeModal {
             position: fixed;
             inset: 0;
@@ -94,26 +94,22 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            background: rgba(13, 13, 15, 0.92);
-            backdrop-filter: blur(10px);
-            padding: 20px;
+            background: rgba(13, 13, 15, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 0; /* Pencere kenar boşluğunu sıfırla */
         }
         #eyeModal.active {
             display: flex;
         }
 
         .eye-modal-content {
-            width: 100%;
-            max-width: 360px;
-            height: 360px;
-            border-radius: 24px;
-            background: linear-gradient(135deg, #120a1c 0%, #1c112e 100%);
-            border: 1px solid rgba(123, 44, 191, 0.4);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(123, 44, 191, 0.2);
+            width: 100%; /* Pencere genişliği tam ekran */
+            height: 100%; /* Pencere yüksekliği tam ekran */
+            background: #120a1c;
             display: flex;
             flex-direction: column;
-            padding: 20px;
             position: relative;
+            overflow: hidden; /* Resmi kırpmak için */
         }
 
         .eye-modal-header {
@@ -121,6 +117,12 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
+            padding: 20px; /* Başlık alanına iç boşluk ver */
+            position: absolute; /* Resmi kapatmamak için üzerine konumlandır */
+            top: 0;
+            left: 0;
+            z-index: 10; /* Resmin üzerinde kalması için */
+            background: linear-gradient(to bottom, rgba(18, 10, 28, 0.8), transparent); /* Üstte hafif karartma */
         }
         .eye-modal-header h3 {
             font-size: 14px;
@@ -139,32 +141,21 @@
         }
         .close-eye-modal:hover { color: #fff; }
 
-        /* Pencere İçindeki İnteraktif Göz Alanı */
+        /* Pencereyi Kaplayan Resim Alanı */
         .eye-display-container {
             flex: 1;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .eye-glow {
-            position: absolute;
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(123, 44, 191, 0.8) 0%, rgba(0,0,0,0) 70%);
-            opacity: 0.1;
-            pointer-events: none;
-            z-index: 1;
-            transition: opacity 0.1s ease;
+            height: 100%;
         }
 
         .eye-img {
-            width: 130px;
-            height: 130px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 10px rgba(123, 44, 191, 0.4));
+            width: 100%; /* Resim genişliği tam ekran */
+            height: 100%; /* Resim yüksekliği tam ekran */
+            object-fit: cover; /* Resmi en-boy oranını koruyarak sığdır */
+            object-position: center; /* Resmi ortala */
             transition: transform 0.08s ease;
             z-index: 2;
         }
@@ -678,7 +669,6 @@
                 <button class="close-eye-modal" onclick="closeEyeModal()">✕</button>
             </div>
             <div class="eye-display-container">
-                <div class="eye-glow" id="eyeGlowArea"></div>
                 <img src="./eyes.jpg" class="eye-img" id="eyeImage" alt="Gözler">
             </div>
         </div>
@@ -867,12 +857,12 @@
         let activeSuiteGlobal = null;
         let favorites = JSON.parse(localStorage.getItem('love_favorites')) || [];
 
-        // 5 Şarkılık Playlist Yönetimi
+        // Playlist Verileri (love1.mp3 - love5.mp3 arası)
         const playlist = ["./love.mp3", "./love2.mp3", "./love3.mp3", "./love4.mp3", "./love5.mp3"];
         let currentTrackIndex = 0;
         let musicStarted = false;
 
-        // Web Audio API
+        // Web Audio API Değişkenleri (Frekans analizi için)
         let audioCtx = null;
         let analyser = null;
         let source = null;
@@ -887,7 +877,7 @@
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 64; 
+                analyser.fftSize = 64; // Düşük boyut yüksek performans ve net bas tespiti sunar
                 source = audioCtx.createMediaElementSource(audio);
                 source.connect(analyser);
                 analyser.connect(audioCtx.destination);
@@ -895,6 +885,7 @@
                 const bufferLength = analyser.frequencyBinCount;
                 dataArray = new Uint8Array(bufferLength);
                 
+                // Ritim analiz loop'unu başlat
                 analyzeAudio();
             }
         }
@@ -902,7 +893,9 @@
         function loadTrack(index) {
             audio.src = playlist[index];
             document.getElementById('trackDisplay').innerText = `Şarkı ${index + 1}`;
-            resetTimeline();
+            if (musicStarted) {
+                audio.play().catch(()=>{});
+            }
         }
 
         function toggleMusic() {
@@ -937,42 +930,7 @@
             }
         }
 
-        audio.addEventListener('timeupdate', () => {
-            const currentTime = audio.currentTime;
-            const duration = audio.duration || 0;
-            
-            if (duration > 0) {
-                const percentage = (currentTime / duration) * 100;
-                document.getElementById('progressBar').style.width = `${percentage}%`;
-            }
-            document.getElementById('timeDisplay').innerText = `${formatTime(currentTime)} / ${formatTime(duration)}`;
-        });
-
-        function setSongPosition(event) {
-            initAudioSource();
-            const container = document.getElementById('progressContainer');
-            const rect = container.getBoundingClientRect();
-            const clickX = event.clientX - rect.left;
-            const width = rect.width;
-            const duration = audio.duration || 0;
-
-            if (duration > 0) {
-                audio.currentTime = (clickX / width) * duration;
-                startMusicOnInteraction();
-            }
-        }
-
-        function formatTime(seconds) {
-            const min = Math.floor(seconds / 60);
-            const sec = Math.floor(seconds % 60);
-            return `${min}:${sec < 10 ? '0' + sec : sec}`;
-        }
-
-        function resetTimeline() {
-            document.getElementById('progressBar').style.width = '0%';
-            document.getElementById('timeDisplay').innerText = '0:00 / 0:00';
-        }
-
+        // Şarkı bittiğinde otomatiğe bağlama
         audio.addEventListener('ended', () => {
             navigateTrack(1);
         });
@@ -989,7 +947,7 @@
             }
         }
 
-        // 👁️ Göz Penceresi (Modal) Tetikleyicileri
+        // 👀 Göz Penceresi (Modal) Tetikleyicileri
         function openEyeModal() {
             startMusicOnInteraction();
             document.getElementById('eyeModal').classList.add('active');
@@ -1013,7 +971,7 @@
             let sum = 0;
             const sampleCount = 10; 
             for (let i = 0; i < sampleCount; i++) {
-                sum += dataArray[i];
+                sum += dataArray[iax];
             }
             let averageVolume = sum / sampleCount; 
 
