@@ -86,7 +86,7 @@
             box-shadow: 0 0 10px rgba(123, 44, 191, 0.3);
         }
 
-        /* 👁️ GÖZ PENCERESİ (MODAL ALANI) */
+        /* 👁️ GÖZ PENCERESİ */
         #eyeModal {
             position: fixed;
             inset: 0;
@@ -139,7 +139,6 @@
         }
         .close-eye-modal:hover { color: #fff; }
 
-        /* Pencere İçindeki İnteraktif Göz Alanı */
         .eye-display-container {
             flex: 1;
             position: relative;
@@ -194,7 +193,6 @@
             line-height: 1.4;
         }
 
-        /* Ana Kart Alanı */
         .main-stage {
             flex: 1;
             display: flex;
@@ -387,7 +385,7 @@
             border: 1px dashed rgba(123, 44, 191, 0.5);
         }
 
-        /* 🎵 Profesyonel Müzik Çalar Paneli ve Ses Kontrolü */
+        /* 🎵 Profesyonel Müzik Çalar Paneli (Gizlenebilir) */
         .audio-player-container {
             position: fixed;
             left: 20px;
@@ -395,14 +393,41 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            background: rgba(20, 20, 25, 0.85);
-            padding: 12px 16px;
+            background: rgba(20, 20, 25, 0.9);
+            padding: 14px 16px;
             border-radius: 20px;
-            border: 1px solid rgba(123, 44, 191, 0.25);
+            border: 1px solid rgba(123, 44, 191, 0.35);
             backdrop-filter: blur(15px);
             z-index: 9999;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             width: 260px;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+        }
+        
+        .audio-player-container.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Çarpı Kapatma Butonu */
+        .close-player-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 22px;
+            height: 22px;
+            background: #7b2cbf;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 50%;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
         .player-top-row {
@@ -499,7 +524,6 @@
             transition: width 0.1s linear;
         }
 
-        /* Mobil Uyumlu Ses Slider Alanı */
         .volume-control-panel {
             display: flex;
             align-items: center;
@@ -539,9 +563,8 @@
             cursor: pointer;
             transition: transform 0.1s;
         }
-        .volume-slider::-webkit-slider-thumb:active {
-            transform: scale(1.3);
-        }
+        .volume-slider::-webkit-slider-thumb:active { transform: scale(1.3); }
+        
         .volume-slider::-moz-range-thumb {
             width: 12px;
             height: 12px;
@@ -552,25 +575,45 @@
             border: none;
         }
 
-        /* Sağ Alt Mektup Butonu */
-        #loveNoteBtn {
+        /* Sağ Alt Kontrol Butonları Alanı (Müzik + Kalp) */
+        .right-actions-holder {
             position: fixed;
             right: 20px;
             bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 9999;
+        }
+
+        .action-circle-btn {
             width: 52px;
             height: 52px;
             border: none;
             border-radius: 50%;
-            background: rgba(123,44,191,0.9);
             color: white;
-            font-size: 22px;
             cursor: pointer;
-            z-index: 9999;
-            box-shadow: 0 0 20px rgba(123,44,191,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, background 0.2s;
+            box-shadow: 0 0 20px rgba(123,44,191,0.4);
+        }
+        .action-circle-btn:active { transform: scale(0.92); }
+
+        #sideMusicToggleBtn {
+            background: rgba(28, 20, 38, 0.9);
+            border: 1px solid rgba(123, 44, 191, 0.4);
+            font-size: 18px;
+        }
+        #sideMusicToggleBtn.playing {
+            background: rgba(123, 44, 191, 0.85);
+            box-shadow: 0 0 20px rgba(123, 44, 191, 0.6);
+        }
+
+        #loveNoteBtn {
+            background: rgba(123,44,191,0.9);
+            font-size: 22px;
         }
 
         /* Mektup Modalı */
@@ -723,7 +766,6 @@
 
     <div class="top-bar">
         <button class="collection-btn" id="collectionBtn" onclick="toggleCollectionMode()">Koleksiyonum (0)</button>
-        
         <button class="eye-trigger-btn" onclick="openEyeModal()">👁️ Ritmi Gör</button>
     </div>
 
@@ -782,7 +824,8 @@
         </div>
     </div>
 
-    <div class="audio-player-container">
+    <div class="audio-player-container" id="mainAudioPlayer">
+        <button class="close-player-btn" onclick="hideAudioPlayer()">✕</button>
         <div class="player-top-row">
             <div class="player-controls">
                 <button class="player-nav-btn" onclick="navigateTrack(-1)">⏮</button>
@@ -790,7 +833,7 @@
                 <button class="player-nav-btn" onclick="navigateTrack(1)">⏭</button>
             </div>
             <div class="track-info-block">
-                <div class="track-info" id="trackDisplay">Şarkı 1</div>
+                <div class="track-info" id="trackDisplay">seni seviyorum</div>
                 <div class="track-time" id="timeDisplay">0:00 / 0:00</div>
             </div>
             <div class="visualizer" id="visualizer">
@@ -810,7 +853,10 @@
     </div>
     <audio id="bgSong" crossorigin="anonymous"></audio>
 
-    <button id="loveNoteBtn">❤️</button>
+    <div class="right-actions-holder">
+        <button id="sideMusicToggleBtn" class="action-circle-btn" onclick="toggleAudioPlayerView()">🎵</button>
+        <button id="loveNoteBtn" class="action-circle-btn">❤️</button>
+    </div>
 
     <div id="loveNoteModal">
         <div class="love-note-content" id="noteContentCard">
@@ -892,7 +938,7 @@
                 { id: "si_8", n: "8", t: "Beni motive ediyorsun." },
                 { id: "si_9", n: "9", t: "Beraberken kendim gibi olabiliyorum." },
                 { id: "si_10", n: "10", t: "Seninle her konu konuşuluyor." },
-                { id: "si_J", n: "Vale", t: "Komik anılarımızı seviyorum." },
+                { id: "si_J", n: "Vale", t: "Komik anılarimizi seviyorum." },
                 { id: "si_Q", n: "Kız", t: "Tatlılığın başlı başına bir sebep." },
                 { id: "si_K", n: "Papaz", t: "Hayatımda olman büyük bir şans." }
             ],
@@ -928,13 +974,13 @@
         let activeSuiteGlobal = null;
         let favorites = JSON.parse(localStorage.getItem('love_favorites')) || [];
 
-        // 5 Şarkılık Playlist Yönetimi
+        // Yenilenmiş Şarkı İsimleri Listesi
+        const trackNames = ["seni seviyorum", "sana asigim", "hayatımsın", "makavelim", "oleiste"];
         const playlist = ["./love.mp3", "./love2.mp3", "./love3.mp3", "./love4.mp3", "./love5.mp3"];
         let currentTrackIndex = 0;
         let musicStarted = false;
         let preMuteVolume = 1;
 
-        // Web Audio API
         let audioCtx = null;
         let analyser = null;
         let source = null;
@@ -943,6 +989,7 @@
 
         const audio = document.getElementById('bgSong');
         const musicBtn = document.getElementById('musicBtn');
+        const sideMusicToggleBtn = document.getElementById('sideMusicToggleBtn');
         const visualizer = document.getElementById('visualizer');
 
         function initAudioSource() {
@@ -963,7 +1010,7 @@
 
         function loadTrack(index) {
             audio.src = playlist[index];
-            document.getElementById('trackDisplay').innerText = `Şarkı ${index + 1}`;
+            document.getElementById('trackDisplay').innerText = trackNames[index];
             resetTimeline();
         }
 
@@ -976,12 +1023,28 @@
             if (audio.paused) {
                 audio.play();
                 musicBtn.innerText = "⏸";
+                sideMusicToggleBtn.classList.add('playing');
                 visualizer.classList.add('playing');
                 musicStarted = true;
             } else {
                 audio.pause();
                 musicBtn.innerText = "▶";
+                sideMusicToggleBtn.classList.remove('playing');
                 visualizer.classList.remove('playing');
+            }
+        }
+
+        // Sağ alttaki mini butona tıklandığında paneli açan ve müziği kontrol eden fonksiyon
+        function toggleAudioPlayerView() {
+            const player = document.getElementById('mainAudioPlayer');
+            if (player.classList.contains('hidden')) {
+                player.classList.remove('hidden');
+                // Panel açıldığında müzik çalmıyorsa başlatmak için ideal tetikleyici
+                if(audio.paused) {
+                    toggleMusic();
+                }
+            } else {
+                toggleMusic();
             }
         }
 
@@ -993,13 +1056,13 @@
             if (wasPlaying || !musicStarted) {
                 audio.play().then(() => {
                     musicBtn.innerText = "⏸";
+                    sideMusicToggleBtn.classList.add('playing');
                     visualizer.classList.add('playing');
                     musicStarted = true;
                 }).catch(()=>{});
             }
         }
 
-        // Ses Ayarlama Fonksiyonu
         function adjustVolume(val) {
             audio.volume = val;
             const volIcon = document.getElementById('volumeIcon');
@@ -1014,7 +1077,6 @@
             }
         }
 
-        // Ses Simgesine Basınca Sessize Alma / Açma
         function toggleMute() {
             const slider = document.getElementById('volumeSlider');
             if (audio.volume > 0) {
@@ -1027,6 +1089,10 @@
                 slider.value = preMuteVolume;
                 adjustVolume(preMuteVolume);
             }
+        }
+
+        function hideAudioPlayer() {
+            document.getElementById('mainAudioPlayer').classList.add('hidden');
         }
 
         audio.addEventListener('timeupdate', () => {
@@ -1075,13 +1141,13 @@
                 loadTrack(currentTrackIndex);
                 audio.play().then(() => {
                     musicBtn.innerText = "⏸";
+                    sideMusicToggleBtn.classList.add('playing');
                     visualizer.classList.add('playing');
                     musicStarted = true;
                 }).catch(() => {});
             }
         }
 
-        // 👁️ Göz Penceresi (Modal) Tetikleyicileri
         function openEyeModal() {
             startMusicOnInteraction();
             document.getElementById('eyeModal').classList.add('active');
@@ -1095,7 +1161,6 @@
             document.getElementById('eyeImage').style.transform = "scale(1)";
         }
 
-        // Gerçek Zamanlı Ritim ve Frekans Analiz Döngüsü
         function analyzeAudio() {
             requestAnimationFrame(analyzeAudio);
             if (!analyser || !isEyeOpen || audio.paused) return;
@@ -1124,7 +1189,6 @@
             }
         }
 
-        // Kart Yönetimi
         function toggleFlip() {
             document.getElementById('loveCard').classList.toggle('flipped');
             startMusicOnInteraction();
@@ -1273,7 +1337,6 @@
             document.getElementById('collectionBtn').innerText = `Koleksiyonum (${favorites.length})`;
         }
 
-        // Mektup Sayfa Kontrolleri (Arka planların dinamik değiştirilmesi)
         let currentNotePage = 0;
         const notePages = document.querySelectorAll('.note-page');
         const totalNotePages = notePages.length;
@@ -1287,7 +1350,6 @@
             document.getElementById('noteNextBtn').disabled = (currentNotePage === totalNotePages - 1);
 
             const noteCard = document.getElementById('noteContentCard');
-            // 1. sayfa (index 0) ve 8. sayfa (index 7) background.jpg kalır, diğerleri background2.jpg, background3.jpg... şeklinde gider
             if (currentNotePage === 0 || currentNotePage === totalNotePages - 1) {
                 noteCard.style.background = `linear-gradient(rgba(20, 20, 25, 0.85), rgba(20, 20, 25, 0.85)), url('./background.jpg') center/cover`;
             } else {
