@@ -33,21 +33,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             padding: 20px;
             overflow-x: hidden;
         }
 
         /* Üst Bar Düzeni */
         .top-bar {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
+            width: 100%;
+            max-width: 420px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 100;
+            margin-bottom: 15px;
         }
 
         .collection-btn {
@@ -85,7 +84,7 @@
             box-shadow: 0 0 10px rgba(123, 44, 191, 0.3);
         }
 
-        /* 👁️ TAM EKRAN GÖZ MODU PENCERESİ */
+        /* 👁️ WIDGET GÖZ MODU PENCERESİ */
         #eyeModal {
             position: fixed;
             inset: 0;
@@ -93,20 +92,24 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            background: #000000;
-            padding: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            padding: 20px;
         }
         #eyeModal.active {
             display: flex;
         }
 
         .eye-modal-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+            width: 90%;
+            max-width: 350px;
+            height: 350px;
+            border-radius: 28px;
+            border: 1px solid rgba(123, 44, 191, 0.4);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(123, 44, 191, 0.2);
             position: relative;
             overflow: hidden;
+            background: #000000;
         }
 
         .eye-modal-header {
@@ -114,36 +117,30 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 25px;
+            padding: 15px 20px;
             position: absolute;
             top: 0;
             left: 0;
             z-index: 15;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
         }
         .eye-modal-header h3 {
-            font-size: 14px;
+            font-size: 12px;
             letter-spacing: 2px;
             color: #ffffff;
             font-weight: 600;
             text-transform: uppercase;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
         .close-eye-modal {
             border: none;
             background: transparent;
             color: rgba(255,255,255,0.8);
-            font-size: 26px;
+            font-size: 22px;
             cursor: pointer;
-            transition: color 0.2s, transform 0.2s;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-        .close-eye-modal:hover { 
-            color: #fff; 
-            transform: scale(1.1);
+            transition: color 0.2s;
         }
 
-        /* Pencereyi Kaplayan Resim Alanı */
+        /* Widget Resim Alanı */
         .eye-display-container {
             width: 100%;
             height: 100%;
@@ -160,16 +157,16 @@
             object-fit: cover;
             object-position: center;
             z-index: 2;
-            transition: transform 0.04s ease-out; /* Tepki süresi aşırı hızlandırıldı */
+            transition: transform 0.04s ease-out;
         }
 
-        /* Mor Ritme Göre Yanıp Sönen Parlama Efekti */
+        /* Ritme Göre Parlama Efekti */
         #eyeGlowArea {
             position: absolute;
             inset: 0;
             z-index: 3;
             mix-blend-mode: screen;
-            box-shadow: inset 0 0 100px rgba(168, 85, 247, 0.8), 0 0 60px rgba(168, 85, 247, 0.4);
+            box-shadow: inset 0 0 60px rgba(168, 85, 247, 0.9), 0 0 40px rgba(168, 85, 247, 0.5);
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.04s ease-out;
@@ -177,45 +174,46 @@
 
         header {
             text-align: center;
-            margin-top: 60px;
+            margin-top: 10px;
+            margin-bottom: 15px;
             z-index: 10;
         }
 
         header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 600;
             letter-spacing: 1px;
             background: linear-gradient(135deg, #fff 30%, #b0b0b0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         header p {
-            font-size: 13px;
+            font-size: 12px;
             color: #b0b0b0;
             opacity: 0.8;
             max-width: 320px;
             line-height: 1.4;
+            margin: 0 auto;
         }
 
         /* Ana Kart Alanı */
         .main-stage {
-            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
             max-width: 400px;
             perspective: 1200px;
-            margin: 20px 0;
+            margin-bottom: 15px;
             animation: dealCard 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
         }
 
         .card-container {
-            width: 260px;
-            height: 390px;
+            width: 240px;
+            height: 360px;
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
@@ -309,9 +307,9 @@
 
         .card-love-text {
             font-family: 'Playfair Display', serif;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 500;
-            line-height: 1.6;
+            line-height: 1.5;
             color: #1a1a1a;
         }
 
@@ -324,14 +322,15 @@
             max-width: 420px;
             text-align: center;
             z-index: 10;
+            margin-bottom: 15px;
         }
 
         .card-indicator {
-            font-size: 13px;
+            font-size: 12px;
             color: #b0b0b0;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-style: italic;
-            min-height: 20px;
+            min-height: 18px;
         }
 
         .nav-arrows {
@@ -339,7 +338,7 @@
             justify-content: center;
             align-items: center;
             gap: 30px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
 
         .arrow-btn {
@@ -363,7 +362,7 @@
         .suite-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
             width: 100%;
             padding: 0 10px;
         }
@@ -372,9 +371,9 @@
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: #ffffff;
-            padding: 12px 5px;
-            border-radius: 14px;
-            font-size: 13px;
+            padding: 10px 5px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -393,22 +392,21 @@
             border: 1px dashed rgba(123, 44, 191, 0.5);
         }
 
-        /* Müzik Çalar Paneli */
+        /* 🎵 MÜZİK ÇALAR PANELI (Artık Fixed Değil, Bloklamıyor) */
         .audio-player-container {
-            position: fixed;
-            left: 20px;
-            bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin: 5px auto 20px auto;
             display: flex;
             flex-direction: column;
             gap: 6px;
             background: rgba(20, 20, 25, 0.85);
-            padding: 10px 16px;
+            padding: 12px 16px;
             border-radius: 20px;
             border: 1px solid rgba(123, 44, 191, 0.25);
             backdrop-filter: blur(15px);
-            z-index: 9999;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            width: 240px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
 
         .player-top-row {
@@ -432,13 +430,12 @@
             font-size: 13px;
             transition: color 0.2s;
         }
-        .player-nav-btn:hover { color: #fff; }
 
         .music-btn {
             background: #7b2cbf;
             border: none;
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             color: white;
             cursor: pointer;
@@ -451,19 +448,19 @@
 
         .track-info-block {
             text-align: right;
+            flex: 1;
+            margin-right: 12px;
         }
 
         .track-info {
             font-size: 11px;
             color: #ffffff;
             font-weight: 600;
-            letter-spacing: 0.3px;
         }
 
         .track-time {
             font-size: 9px;
             color: #b0b0b0;
-            margin-top: 1px;
         }
 
         .progress-container {
@@ -484,7 +481,6 @@
             position: absolute;
             left: 0;
             top: 0;
-            transition: width 0.1s linear;
         }
 
         .visualizer {
@@ -508,20 +504,19 @@
             position: fixed;
             right: 20px;
             bottom: 20px;
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border: none;
             border-radius: 50%;
             background: rgba(123,44,191,0.9);
             color: white;
-            font-size: 22px;
+            font-size: 20px;
             cursor: pointer;
-            z-index: 9999;
+            z-index: 999;
             box-shadow: 0 0 20px rgba(123,44,191,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease;
         }
 
         /* Mektup Modalı */
@@ -541,7 +536,7 @@
         .love-note-content {
             width: 100%;
             max-width: 400px;
-            height: 520px;
+            height: 500px;
             border-radius: 24px;
             background: linear-gradient(rgba(20, 20, 25, 0.85), rgba(20, 20, 25, 0.85)), url('./background.jpg');
             background-size: cover;
@@ -552,8 +547,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 25px;
-            position: relative;
+            padding: 22px;
         }
 
         .note-header {
@@ -561,18 +555,18 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 12px;
+            padding-bottom: 10px;
         }
         .note-header h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
         }
         #closeLoveNote {
             border: none;
             background: transparent;
             color: rgba(255,255,255,0.6);
-            font-size: 22px;
+            font-size: 20px;
             cursor: pointer;
         }
 
@@ -581,13 +575,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px 5px;
+            padding: 15px 5px;
             overflow-y: auto;
         }
 
         .note-page {
             display: none;
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.6;
             color: rgba(255, 255, 255, 0.95);
             text-align: center;
@@ -596,36 +590,35 @@
         .note-page.active { display: block; }
 
         .countdown-wrapper {
-            margin-top: 15px;
+            margin-top: 12px;
             background: rgba(123, 44, 191, 0.15);
             border: 1px solid rgba(123, 44, 191, 0.3);
-            padding: 12px;
-            border-radius: 16px;
+            padding: 10px;
+            border-radius: 14px;
         }
         .countdown-title {
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: 1px;
             color: #b0b0b0;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
         }
         .countdown-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
+            gap: 4px;
         }
         .countdown-box {
             font-family: 'Playfair Display', serif;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #fff;
         }
         .countdown-box span {
             display: block;
             font-family: 'Inter', sans-serif;
-            font-size: 9px;
+            font-size: 8px;
             color: #b0b0b0;
-            font-weight: 400;
         }
 
         .note-footer {
@@ -633,38 +626,37 @@
             justify-content: space-between;
             align-items: center;
             border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 15px;
+            padding-top: 12px;
         }
 
         .note-nav-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 12px;
             cursor: pointer;
         }
         .note-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        #notePageIndicator { font-size: 12px; color: rgba(255,255,255,0.5); }
+        #notePageIndicator { font-size: 11px; color: rgba(255,255,255,0.5); }
 
         @media (max-height: 700px) {
-            .card-container { width: 220px; height: 330px; }
-            header h1 { font-size: 24px; }
-            .card-love-text { font-size: 16px; }
-            .love-note-content { height: 450px; }
-            .note-page { font-size: 13.5px; }
+            .card-container { width: 210px; height: 315px; }
+            header h1 { font-size: 22px; }
+            .card-love-text { font-size: 15px; }
+            .love-note-content { height: 420px; }
         }
 
         @keyframes bounce { 0% { height: 3px; } 100% { height: 14px; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulseGlow {
             0%, 100% { opacity: 0.6; transform: scale(1); filter: drop-shadow(0 0 10px rgba(123, 44, 191, 0.4)); }
-            50% { opacity: 1; transform: scale(1.06); filter: drop-shadow(0 0 20px rgba(123, 44, 191, 0.7)); }
+            50% { opacity: 1; transform: scale(1.04); filter: drop-shadow(0 0 20px rgba(123, 44, 191, 0.7)); }
         }
         @keyframes dealCard {
-            0% { opacity: 0; transform: translate3d(0, 100px, -400px) rotateX(-45deg); }
+            0% { opacity: 0; transform: translate3d(0, 60px, -300px) rotateX(-45deg); }
             100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(0); }
         }
     </style>
@@ -679,18 +671,19 @@
     <div id="eyeModal">
         <div class="eye-modal-content">
             <div class="eye-modal-header">
-                <h3>Göz Modu</h3>
+                <h3>Göz Ritmi</h3>
                 <button class="close-eye-modal" onclick="closeEyeModal()">✕</button>
             </div>
             <div class="eye-display-container">
                 <img src="./eyes.jpg" class="eye-img" id="eyeImage" alt="Gözler">
-                <div id="eyeGlowArea"></div> </div>
+                <div id="eyeGlowArea"></div>
+            </div>
         </div>
     </div>
 
     <header>
         <h1>Sevgi Destesi</h1>
-        <p>Bizim için özel hazırlanan 52 kartlık aşk destesi. Şansını dene ya da serileri keşfet... 💜</p>
+        <p>Bizim için özel hazırlanan 52 kartlık aşk destesi. 💜</p>
     </header>
 
     <div class="main-stage">
@@ -751,6 +744,7 @@
             <div class="progress-bar" id="progressBar"></div>
         </div>
     </div>
+
     <audio id="bgSong" crossorigin="anonymous"></audio>
 
     <button id="loveNoteBtn">❤️</button>
@@ -943,7 +937,6 @@
 
         audio.addEventListener('ended', () => { navigateTrack(1); });
 
-        // Şarkı Zaman Güncellemesi
         audio.addEventListener('timeupdate', () => {
             if (audio.duration) {
                 const pct = (audio.currentTime / audio.duration) * 100;
@@ -981,7 +974,6 @@
             }
         }
 
-        // 👀 Göz Penceresi Kontrolleri
         function openEyeModal() {
             startMusicOnInteraction();
             document.getElementById('eyeModal').classList.add('active');
@@ -995,7 +987,6 @@
             document.getElementById('eyeImage').style.transform = "scale(1)";
         }
 
-        // 🎵 MÜZİK RİTMİNE GÖRE GERÇEK ZAMANLI PARLAMA VE KÜÇÜLME/BÜYÜME DÖNGÜSÜ
         function analyzeAudio() {
             requestAnimationFrame(analyzeAudio);
             if (!analyser || !isEyeOpen || audio.paused) return;
@@ -1003,7 +994,7 @@
             analyser.getByteFrequencyData(dataArray);
 
             let sum = 0;
-            const sampleCount = 12; // Net ritim yakalamak için bas frekansları alıyoruz
+            const sampleCount = 12;
             for (let i = 0; i < sampleCount; i++) {
                 sum += dataArray[i];
             }
@@ -1012,12 +1003,10 @@
             const glowArea = document.getElementById('eyeGlowArea');
             const eyeImg = document.getElementById('eyeImage');
 
-            if (averageVolume > 30) { // Hassasiyet eşiği
-                // Mor Parlamayı Ritme Göre Yak
+            if (averageVolume > 30) {
                 let intensity = (averageVolume / 255) * 1.3;
                 glowArea.style.opacity = Math.min(intensity, 1);
                 
-                // Ritmin vuruş gücüne göre resmi dinamik olarak büyüt/küçült (Pulsing / Bass Pump)
                 let scaleFactor = 1 + (averageVolume / 255) * 0.08; 
                 eyeImg.style.transform = `scale(${scaleFactor})`;
             } else {
@@ -1026,7 +1015,6 @@
             }
         }
 
-        // Kart Yönetimi
         function toggleFlip() {
             document.getElementById('loveCard').classList.toggle('flipped');
             startMusicOnInteraction();
@@ -1175,7 +1163,6 @@
             document.getElementById('collectionBtn').innerText = `Koleksiyonum (${favorites.length})`;
         }
 
-        // Mektup Sayfa Kontrolleri
         let currentNotePage = 0;
         const notePages = document.querySelectorAll('.note-page');
         const totalNotePages = notePages.length;
