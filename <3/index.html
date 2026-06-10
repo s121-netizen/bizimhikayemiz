@@ -36,9 +36,13 @@
             justify-content: space-between;
             padding: 20px;
             overflow-x: hidden;
+            transition: background 1s ease;
         }
 
-        /* Üst Bar Düzeni (Koleksiyon Sol, Göz Sağ) */
+        body.golden-era {
+            background: radial-gradient(circle at 50% 50%, #2a1b08 0%, #0a0703 100%) !important;
+        }
+
         .top-bar {
             position: absolute;
             top: 20px;
@@ -48,42 +52,41 @@
             justify-content: space-between;
             align-items: center;
             z-index: 100;
+            gap: 10px;
         }
 
-        .collection-btn {
+        .top-left-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .collection-btn, .tracker-badge, .eye-trigger-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(123, 44, 191, 0.3);
             color: white;
             padding: 8px 14px;
             border-radius: 20px;
             font-size: 12px;
-            cursor: pointer;
             backdrop-filter: blur(5px);
             transition: all 0.3s;
         }
+        .collection-btn, .eye-trigger-btn { cursor: pointer; }
         .collection-btn.active {
             background: #7b2cbf;
             box-shadow: 0 0 15px rgba(123, 44, 191, 0.5);
         }
 
-        /* Sağ Üstteki Tetikleyici Buton */
-        .eye-trigger-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(123, 44, 191, 0.3);
-            color: white;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .tracker-badge {
+            border-color: rgba(0, 240, 255, 0.3);
+            color: #00f0ff;
+            font-weight: 500;
         }
-        .eye-trigger-btn:hover {
-            background: rgba(123, 44, 191, 0.2);
-            box-shadow: 0 0 10px rgba(123, 44, 191, 0.3);
+
+        body.golden-era .tracker-badge {
+            border-color: #ffd700;
+            color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.1);
         }
 
         /* 👁️ GÖZ PENCERESİ */
@@ -94,42 +97,41 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            background: rgba(13, 13, 15, 0.92);
+            background: rgba(13, 13, 15, 0.94);
             backdrop-filter: blur(10px);
             padding: 20px;
         }
-        #eyeModal.active {
-            display: flex;
-        }
+        #eyeModal.active { display: flex; }
 
         .eye-modal-content {
             width: 100%;
-            max-width: 360px;
-            height: 360px;
+            max-width: 380px;
+            height: 420px;
             border-radius: 24px;
             background: linear-gradient(135deg, #120a1c 0%, #1c112e 100%);
             border: 1px solid rgba(123, 44, 191, 0.4);
             box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(123, 44, 191, 0.2);
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 25px;
             position: relative;
         }
 
         .eye-modal-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             width: 100%;
-            gap: 10px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
         .eye-modal-header h3 {
-            font-size: 11px;
+            font-size: 13px;
             letter-spacing: 0.5px;
             color: #d8b4fe;
             font-weight: 500;
             text-transform: uppercase;
-            line-height: 1.4;
+            line-height: 1.5;
             flex: 1;
         }
         .close-eye-modal {
@@ -138,6 +140,7 @@
             color: rgba(255,255,255,0.6);
             font-size: 22px;
             cursor: pointer;
+            line-height: 1;
             transition: color 0.2s;
         }
         .close-eye-modal:hover { color: #fff; }
@@ -148,12 +151,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            overflow: hidden;
         }
 
         .eye-glow {
             position: absolute;
-            width: 180px;
-            height: 180px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(123, 44, 191, 0.8) 0%, rgba(0,0,0,0) 70%);
             opacity: 0.1;
@@ -163,8 +169,8 @@
         }
 
         .eye-img {
-            width: 130px;
-            height: 130px;
+            width: 85%;
+            height: 85%;
             object-fit: contain;
             filter: drop-shadow(0 0 10px rgba(123, 44, 191, 0.4));
             transition: transform 0.08s ease;
@@ -173,7 +179,7 @@
 
         header {
             text-align: center;
-            margin-top: 60px;
+            margin-top: 80px;
             z-index: 10;
         }
 
@@ -186,6 +192,13 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 6px;
+            transition: all 0.5s;
+        }
+
+        body.golden-era header h1 {
+            background: linear-gradient(135deg, #ffd700 30%, #ffa500 100%);
+            -webkit-background-clip: text;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
         }
 
         header p {
@@ -238,6 +251,12 @@
             border: 2px solid rgba(123, 44, 191, 0.4);
             align-items: center;
             justify-content: center;
+            transition: border 0.5s;
+        }
+
+        body.golden-era .card-front {
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), 0 15px 35px rgba(0, 0, 0, 0.7);
         }
 
         .card-front-logo {
@@ -245,6 +264,11 @@
             filter: drop-shadow(0 0 15px rgba(123, 44, 191, 0.6));
             animation: pulseGlow 2.5s infinite ease-in-out;
             color: #7b2cbf;
+            transition: all 0.5s;
+        }
+        body.golden-era .card-front-logo {
+            color: #ffd700;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
         }
 
         .card-front-hint {
@@ -259,6 +283,16 @@
             background: linear-gradient(145deg, #ffffff 0%, #f5f5f7 100%);
             transform: rotateY(180deg);
             border: 2px solid #b0b0b0;
+        }
+
+        .card-back.gold-infinity-card {
+            background: linear-gradient(135deg, #fffdf0 0%, #fbf3cc 50%, #f5e493 100%) !important;
+            border: 3px solid #ffd700 !important;
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.5);
+        }
+        .card-back.gold-infinity-card .card-love-text {
+            color: #5c4308 !important;
+            font-weight: 600;
         }
 
         .fav-btn {
@@ -313,6 +347,7 @@
         .red-suite { color: #d90429; }
         .black-suite { color: #1c1c1e; }
         .joker-suite { color: #7b2cbf; }
+        .gold-suite { color: #b59410; text-shadow: 0 0 5px rgba(255,215,0,0.5); }
 
         .controls-section {
             width: 100%;
@@ -352,7 +387,6 @@
             justify-content: center;
             visibility: hidden;
         }
-
         .arrow-btn:active { transform: scale(0.9); background: #7b2cbf; }
 
         .suite-grid {
@@ -388,7 +422,18 @@
             border: 1px dashed rgba(123, 44, 191, 0.5);
         }
 
-        /* 🎵 Profesyonel Müzik Çalar Paneli (Gizlenebilir) */
+        .suite-btn.infinity-btn {
+            grid-column: span 3;
+            background: linear-gradient(135deg, #ffd700 0%, #b59410 100%);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            display: none;
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        /* 🎵 Müzik Çalar */
         .audio-player-container {
             position: fixed;
             left: 20px;
@@ -406,7 +451,6 @@
             width: 260px;
             transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
         }
-        
         .audio-player-container.hidden {
             opacity: 0;
             transform: translateY(20px);
@@ -414,7 +458,6 @@
             pointer-events: none;
         }
 
-        /* Çarpı Kapatma Butonu */
         .close-player-btn {
             position: absolute;
             top: -8px;
@@ -430,7 +473,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
         .player-top-row {
@@ -452,9 +494,7 @@
             color: rgba(255, 255, 255, 0.6);
             cursor: pointer;
             font-size: 13px;
-            transition: color 0.2s;
         }
-        .player-nav-btn:hover { color: #fff; }
 
         .music-btn {
             background: #7b2cbf;
@@ -468,7 +508,6 @@
             align-items: center;
             justify-content: center;
             font-size: 11px;
-            box-shadow: 0 0 10px rgba(123, 44, 191, 0.4);
         }
 
         .track-info-block {
@@ -477,31 +516,11 @@
             padding-right: 8px;
         }
 
-        .track-info {
-            font-size: 11px;
-            color: #ffffff;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
+        .track-info { font-size: 11px; color: #ffffff; font-weight: 600; }
+        .track-time { font-size: 9px; color: #b0b0b0; }
 
-        .track-time {
-            font-size: 9px;
-            color: #b0b0b0;
-            margin-top: 1px;
-        }
-
-        .visualizer {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 14px;
-        }
-        .bar {
-            width: 2px;
-            height: 3px;
-            background: #7b2cbf;
-            border-radius: 1px;
-        }
+        .visualizer { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+        .bar { width: 2px; height: 3px; background: #7b2cbf; border-radius: 1px; }
         .visualizer.playing .bar { animation: bounce 0.6s ease infinite alternate; }
         .visualizer.playing .bar:nth-child(2) { animation-delay: 0.15s; }
         .visualizer.playing .bar:nth-child(3) { animation-delay: 0.3s; }
@@ -513,7 +532,6 @@
             border-radius: 2px;
             cursor: pointer;
             position: relative;
-            margin-top: 2px;
         }
 
         .progress-bar {
@@ -522,9 +540,6 @@
             background: linear-gradient(90deg, #7b2cbf, #b07dff);
             border-radius: 2px;
             position: absolute;
-            left: 0;
-            top: 0;
-            transition: width 0.1s linear;
         }
 
         .volume-control-panel {
@@ -537,13 +552,6 @@
             padding-top: 6px;
         }
 
-        .volume-icon {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            width: 15px;
-        }
-
         .volume-slider {
             flex: 1;
             -webkit-appearance: none;
@@ -551,34 +559,13 @@
             height: 4px;
             border-radius: 2px;
             background: rgba(255, 255, 255, 0.15);
-            outline: none;
-            cursor: pointer;
         }
-
         .volume-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #7b2cbf;
-            box-shadow: 0 0 6px rgba(123, 44, 191, 0.8);
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .volume-slider::-webkit-slider-thumb:active { transform: scale(1.3); }
-        
-        .volume-slider::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #7b2cbf;
-            box-shadow: 0 0 6px rgba(123, 44, 191, 0.8);
-            cursor: pointer;
-            border: none;
+            width: 12px; height: 12px; border-radius: 50%; background: #7b2cbf;
         }
 
-        /* Sağ Alt Kontrol Butonları Alanı (Müzik + Kalp) */
+        /* Sağ Alt Aksiyon Butonları */
         .right-actions-holder {
             position: fixed;
             right: 20px;
@@ -599,27 +586,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease, background 0.2s;
             box-shadow: 0 0 20px rgba(123,44,191,0.4);
         }
-        .action-circle-btn:active { transform: scale(0.92); }
 
-        #sideMusicToggleBtn {
-            background: rgba(28, 20, 38, 0.9);
-            border: 1px solid rgba(123, 44, 191, 0.4);
-            font-size: 18px;
-        }
-        #sideMusicToggleBtn.playing {
-            background: rgba(123, 44, 191, 0.85);
-            box-shadow: 0 0 20px rgba(123, 44, 191, 0.6);
-        }
+        #sideMusicToggleBtn { background: rgba(28, 20, 38, 0.9); border: 1px solid rgba(123, 44, 191, 0.4); font-size: 18px; }
+        #sideMusicToggleBtn.playing { background: rgba(123, 44, 191, 0.85); box-shadow: 0 0 20px rgba(123, 44, 191, 0.6); }
+        #loveNoteBtn { background: rgba(123,44,191,0.9); font-size: 22px; }
 
-        #loveNoteBtn {
-            background: rgba(123,44,191,0.9);
-            font-size: 22px;
-        }
-
-        /* Mektup Modalı */
+        /* 💌 MEKTUP MODALI */
         #loveNoteModal {
             position: fixed;
             inset: 0;
@@ -627,29 +601,26 @@
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            background: rgba(13, 13, 15, 0.88);
-            backdrop-filter: blur(8px);
+            background: rgba(13, 13, 15, 0.92);
+            backdrop-filter: blur(10px);
             padding: 20px;
         }
         #loveNoteModal.active { display: flex; }
 
         .love-note-content {
             width: 100%;
-            max-width: 400px;
-            height: 520px;
+            max-width: 420px;
+            height: 540px;
             border-radius: 24px;
-            background: linear-gradient(rgba(20, 20, 25, 0.85), rgba(20, 20, 25, 0.85)), url('./background.jpg');
+            background: linear-gradient(rgba(20, 20, 25, 0.9), rgba(20, 20, 25, 0.9)), url('./background.jpg');
             background-size: cover;
             background-position: center;
-            border: 1px solid rgba(123, 44, 191, 0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            border: 1px solid rgba(123, 44, 191, 0.35);
             color: white;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             padding: 25px;
             position: relative;
-            transition: background 0.3s ease;
             overflow: hidden;
         }
 
@@ -658,100 +629,80 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 12px;
+            padding-bottom: 15px;
+            margin-bottom: 5px;
             z-index: 5;
+            flex-shrink: 0;
         }
         .note-header h2 {
-            font-family: 'Playfair Display', serif;
             font-size: 20px;
-            font-weight: 600;
+            font-family: 'Playfair Display', serif;
         }
-        #closeLoveNote {
-            border: none;
-            background: transparent;
-            color: rgba(255,255,255,0.6);
-            font-size: 22px;
+        #closeLoveNote { 
+            border: none; 
+            background: transparent; 
+            color: rgba(255,255,255,0.6); 
+            font-size: 24px; 
             cursor: pointer;
+            line-height: 1;
         }
 
-        .note-body {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 5px;
+        .note-body { 
+            flex: 1; 
+            width: 100%;
             overflow-y: auto;
+            padding: 15px 5px;
             z-index: 5;
+            display: block;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(123, 44, 191, 0.5) transparent;
         }
+        
+        .note-body::-webkit-scrollbar { width: 4px; }
+        .note-body::-webkit-scrollbar-thumb { background: rgba(123, 44, 191, 0.5); border-radius: 2px; }
 
-        .note-page {
-            display: none;
-            font-size: 15px;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.95);
-            text-align: center;
-            animation: fadeIn 0.4s ease;
+        .note-page { 
+            display: none; 
+            font-size: 15px; 
+            line-height: 1.6; 
+            color: rgba(255, 255, 255, 0.95); 
+            text-align: center; 
+            animation: fadeIn 0.4s ease; 
+            width: 100%;
         }
         .note-page.active { display: block; }
 
+        /* Sayaç Kutusu */
         .countdown-wrapper {
-            margin-top: 15px;
-            background: rgba(123, 44, 191, 0.15);
-            border: 1px solid rgba(123, 44, 191, 0.3);
-            padding: 12px;
+            margin-top: 20px;
+            background: rgba(123, 44, 191, 0.12);
+            border: 1px solid rgba(123, 44, 191, 0.25);
+            padding: 12px 8px;
             border-radius: 16px;
-            position: relative;
-            z-index: 6;
+            width: 100%;
         }
-        .countdown-title {
-            font-size: 11px;
-            letter-spacing: 1px;
-            color: #b0b0b0;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-        .countdown-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-        }
-        .countdown-box {
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            font-weight: 600;
-            color: #fff;
-        }
-        .countdown-box span {
-            display: block;
-            font-family: 'Inter', sans-serif;
-            font-size: 9px;
-            color: #b0b0b0;
-            font-weight: 400;
-        }
+        .countdown-title { font-size: 11px; color: #b0b0b0; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .countdown-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .countdown-box { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; color: #ffd700; }
+        .countdown-box span { display: block; font-family: 'Inter', sans-serif; font-size: 9px; color: #b0b0b0; margin-top: 2px; }
 
-        .note-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 15px;
-            z-index: 5;
+        .note-footer { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-top: 1px solid rgba(255,255,255,0.1); 
+            padding-top: 15px; 
+            margin-top: 5px;
+            z-index: 5; 
+            flex-shrink: 0;
         }
+        .note-nav-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 8px 18px; border-radius: 12px; font-size: 13px; cursor: pointer; transition: background 0.2s; }
+        .note-nav-btn:hover:not(:disabled) { background: rgba(123, 44, 191, 0.4); }
+        .note-nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
-        .note-nav-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .note-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        #notePageIndicator { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; }
 
-        #notePageIndicator { font-size: 12px; color: rgba(255,255,255,0.5); }
-
-        /* 🎇 SON SAYFA ÖZEL EFEKTLERİ: Kalp Patlaması ve Işık Karmaşası */
+        /* 🎆 SON SAYFA EFEKTLERİ */
         .light-chaos-bg {
             position: absolute;
             inset: 0;
@@ -767,56 +718,49 @@
 
         .heart-burst-element {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-250%, -250%) scale(0);
-            font-size: 180px;
-            color: #ff0055;
-            opacity: 0;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 180px; color: #ff0055; opacity: 0;
+            pointer-events: none; z-index: 2; display: none;
+            text-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
+        }
+
+        .last-page-active .light-chaos-bg { display: block; }
+        .last-page-active .heart-burst-element { display: block; animation: heartExplode 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite; }
+
+        .secret-unlocked-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #ffd700, #ffa500);
+            color: #000;
+            font-weight: 700;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+
+        #celebrationCanvas {
+            position: fixed;
+            inset: 0;
             pointer-events: none;
-            z-index: 2;
+            z-index: 99999;
             display: none;
-            text-shadow: 0 0 30px rgba(255, 0, 85, 0.8), 0 0 60px rgba(255, 0, 85, 0.4);
         }
 
-        .last-page-active .light-chaos-bg {
-            display: block;
-        }
-
-        .last-page-active .heart-burst-element {
-            display: block;
-            animation: heartExplode 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
-        }
-
-        @keyframes chaosGlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
+        @keyframes chaosGlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes heartExplode {
-            0% {
-                transform: translate(-50%, -50%) scale(0.1);
-                opacity: 0;
-            }
-            15% {
-                opacity: 0.8;
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.4);
-                opacity: 0;
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1.4);
-                opacity: 0;
-            }
+            0% { transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
+            15% { opacity: 0.8; }
+            50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
         }
-
         @keyframes bounce { 0% { height: 3px; } 100% { height: 14px; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulseGlow {
-            0%, 100% { opacity: 0.6; transform: scale(1); filter: drop-shadow(0 0 10px rgba(123, 44, 191, 0.4)); }
-            50% { opacity: 1; transform: scale(1.06); filter: drop-shadow(0 0 20px rgba(123, 44, 191, 0.7)); }
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.06); }
         }
         @keyframes dealCard {
             0% { opacity: 0; transform: translate3d(0, 100px, -400px) rotateX(-45deg); }
@@ -826,17 +770,21 @@
         @media (max-height: 700px) {
             .card-container { width: 220px; height: 330px; }
             header h1 { font-size: 24px; }
-            .card-love-text { font-size: 16px; }
-            .love-note-content { height: 450px; }
-            .note-page { font-size: 13.5px; }
+            .love-note-content { height: 460px; padding: 15px; }
+            .eye-modal-content { height: 370px; padding: 15px; }
         }
     </style>
 </head>
 <body>
 
+    <canvas id="celebrationCanvas"></canvas>
+
     <div class="top-bar">
-        <button class="collection-btn" id="collectionBtn" onclick="toggleCollectionMode()">Koleksiyonum (0)</button>
-        <button class="eye-trigger-btn" onclick="openEyeModal()">👁️</button>
+        <div class="top-left-group">
+            <button class="collection-btn" id="collectionBtn" onclick="toggleCollectionMode()">Koleksiyonum (0)</button>
+            <div class="tracker-badge" id="trackerBadge">Keşfedilen: 0 / 54</div>
+        </div>
+        <button class="eye-trigger-btn" onclick="openEyeModal()">👁️ Ritmi Gör</button>
     </div>
 
     <div id="eyeModal">
@@ -853,19 +801,19 @@
     </div>
 
     <header>
-        <h1>Sevgi Destesi</h1>
-        <p>Bizim için özel hazırlanan 52 kartlık aşk destesi. Şansını dene ya da serileri keşfet... 💜</p>
+        <h1 id="mainTitle">Sevgi Destesi</h1>
+        <p id="mainSubtitle">Bizim için özel hazırlanan 52 kartlık aşk destesi. Şansını dene ya da serileri keşfet... 💜</p>
     </header>
 
     <div class="main-stage">
         <div class="card-container" id="loveCard" onclick="toggleFlip()">
             <div class="card-face card-front">
                 <div class="card-front-design">
-                    <div class="card-front-logo">🩶</div>
+                    <div class="card-front-logo" id="frontLogo">🩶</div>
                     <div class="card-front-hint">KARTI ÇEVİR</div>
                 </div>
             </div>
-            <div class="card-face card-back" id="cardBackView">
+            <div class="card-face card-face-back card-back" id="cardBackView">
                 <button class="fav-btn" id="favBtn" onclick="toggleFavorite(event)">♥</button>
                 <div class="suite-corner red-suite">♥</div>
                 <div class="card-center-content">
@@ -885,7 +833,8 @@
         </div>
 
         <div class="suite-grid">
-            <button class="suite-btn random-btn" onclick="triggerRandomCard()">🎲 Rastgele Bir Kart Çek</button>
+            <button class="suite-btn infinity-btn" id="infinityCardBtn" onclick="triggerInfinityCard()">👑 Sonsuzluk Bağını Başlat</button>
+            <button class="suite-btn random-btn" id="randomCardBtn" onclick="triggerRandomCard()">🎲 Rastgele Bir Kart Çek</button>
             <button class="suite-btn" id="btn-kupa" onclick="selectSuite('kupa')">♥ Kupa</button>
             <button class="suite-btn" id="btn-karo" onclick="selectSuite('karo')">♦ Karo</button>
             <button class="suite-btn" id="btn-sinek" onclick="selectSuite('sinek')">♣ Sinek</button>
@@ -938,18 +887,18 @@
                 <button id="closeLoveNote">✕</button>
             </div>
             
-            <div class="note-body">
+            <div class="note-body" id="noteBodyContainer">
                 <div class="note-page active">Askim<br><br>Bu notu okurken belki gülümsüyorsundur belki de bu çocuk yine ne hazırlamış diye düşünüyorsundur ama şunu bil ki her kartı hazırlarken aklımda sadece sen vardın.</div>
                 <div class="note-page">Bazen sana ne kadar değer verdiğimi anlatmakta zorlanıyorum çünkü bazı duygular kelimelere sığmıyor<br><br>Sen benim için sadece sevdiğim biri değilsin gün içinde aklımdan çıkmayan güzel bir şey olduğunda paylaşmak istediğim ilk kişi kötü hissettiğimde sesini duymak istediğim ilk kişisin</div>
-                <div class="note-page">Hayatıma girdiğinden beri birçok şey değişti daha çok gülmeye başladım geleceği daha güzel hayal etmeye başladım en sıradan günler bile senin bir mesajınla özel hale geliyor belki kilometrelerce uzaktayız belki her istediğimiz an yan yana olamıyoruz ama buna rağmen kalbimdeki yerin hiç değişmiyor</div>
+                <div class="note-page">Hayayıma girdiğinden beri birçok şey değişti daha çok gülmeye başladım geleceği daha güzel hayal etmeye başladım en sıradan günler bile senin bir mesajınla özel hale geliyor belki kilometrelerce uzaktayız belki her istediğimiz an yan yana olamıyoruz ama buna rağmen kalbimdeki yerin hiç değişmiyor</div>
                 <div class="note-page">Bu destedeki her kartta sana dair bir şey yazdım bazıları bir anımız bazıları bir teşekkür bazıları ise sana söylemek istediğim ama bazen söyleyemediğim şeyler fakat aslında bütün kartların özeti tek bir cümle<br><strong>İyi ki varsın.</strong></div>
                 <div class="note-page">Bazen geleceği düşünüyorum birlikte gezeceğimiz yerleri edeceğimiz sohbetleri güleceğimiz saçma şeyleri ve bir gün dönüp bugünleri hatırlayışımızı Bunları düşünmek bile beni mutlu ediyor çünkü o hayallerin içinde sen varsın</div>
                 <div class="note-page">Sen çok mükemmelsin ama bu yüzden değil seni sen olduğun için değer veriyorum gülüşünle huylarınla bazen inatçılığınla bazen aşırı tatlı oluşunla kısacası her halinle</div>
-                <div class="note-page">Eğer bir gün moralin bozulursa kendini yalnız hissedersen veya seni ne kadar sevdiğimi merak edersen bu notu tekrar oku çünkü burada yazan hiçbir şey bir anlık duygu değil bunlar kalbimden geçen gerçek şeyler</div>
                 <div class="note-page">
-                    Bu destenin bir sonu var kartlar bitecek bu yazı da bitecek<br><br>Ama sevgim bitmeyecek... ❤️
+                    Eğer bir gün moralin bozulursa kendini yalnız hissedersen veya seni ne kadar sevdiğimi merak edersen bu notu tekrar oku çünkü burada yazan hiçbir şey bir anlık duygu değil bunlar kalbimden geçen gerçek şeyler<br><br>
+                    Bu destenin bir sonu var kartlar bitecek bu yazı da bitecek<br><br>Bu yüzden sevgim bitmeyecek... ❤️
                     <div class="countdown-wrapper">
-                        <div class="countdown-title"> Kalbimin Attığı O Günden Beri...</div>
+                        <div class="countdown-title">Kalbimin Attığı O Günden Beri...</div>
                         <div class="countdown-grid">
                             <div class="countdown-box" id="cd-day">00<span>Gün</span></div>
                             <div class="countdown-box" id="cd-hour">00<span>Saat</span></div>
@@ -958,11 +907,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="note-page" id="secretNotePage" style="display: none !important;">
+                    <span class="secret-unlocked-badge">🏆 Büyük Başarı Açıldı</span><br>
+                    <strong>Aşkın Tüm Evrelerini Keşfettin!</strong><br><br>
+                    Destedeki 54 kartın her birine bakarak kalbimin derinliklerine yolculuk yaptın. Bu sadakatin ve sabrın için sana küçük bir sürprizim var:<br><br>
+                    <span style="font-size: 14px; color: #ffd700;">"Sen benim bu hayatta karşıma çıkan en güzel şanssın Kevser. Sonsuzluğa kadar beraber..."</span><br><br>
+                    <a href="#" style="color: #00f0ff; text-decoration: underline; font-weight: bold;">✨ Buraya Dokun ve Sürprizini Gör ✨</a>
+                </div>
             </div>
 
             <div class="note-footer">
                 <button class="note-nav-btn" id="notePrevBtn" onclick="changeNotePage(-1)" disabled>Geri</button>
-                <span id="notePageIndicator">1 / 8</span>
+                <span id="notePageIndicator">1 / 7</span>
                 <button class="note-nav-btn" id="noteNextBtn" onclick="changeNotePage(1)">İleri</button>
             </div>
         </div>
@@ -1036,8 +992,8 @@
             ]
         };
 
-        const suiteIcons = { kupa: "♥", karo: "♦", sinek: "♣", maca: "♠", joker: "🃏" };
-        const suiteClasses = { kupa: "red-suite", karo: "red-suite", sinek: "black-suite", maca: "black-suite", joker: "joker-suite" };
+        const suiteIcons = { kupa: "♥", karo: "♦", sinek: "♣", maca: "♠", joker: "🃏", infinity: "♾" };
+        const suiteClasses = { kupa: "red-suite", karo: "red-suite", sinek: "black-suite", maca: "black-suite", joker: "joker-suite", infinity: "gold-suite" };
 
         let currentSuite = null;
         let currentIndex = 0;
@@ -1045,7 +1001,11 @@
         let isCollectionMode = false;
         let activeCardGlobal = null;
         let activeSuiteGlobal = null;
+
         let favorites = JSON.parse(localStorage.getItem('love_favorites')) || [];
+        let viewedCards = JSON.parse(localStorage.getItem('viewed_cards')) || [];
+        const TOTAL_UNIQUE_CARDS = 54; 
+        let isDeckCompleted = false; // Kartların tamamının bittiğini tutan kontrol
 
         const trackNames = ["seni seviyorum", "sana asigim", "hayatımsın", "makavelim", "oleiste"];
         const playlist = ["./love.mp3", "./love2.mp3", "./love3.mp3", "./love4.mp3", "./love5.mp3"];
@@ -1072,10 +1032,7 @@
                 source = audioCtx.createMediaElementSource(audio);
                 source.connect(analyser);
                 analyser.connect(audioCtx.destination);
-                
-                const bufferLength = analyser.frequencyBinCount;
-                dataArray = new Uint8Array(bufferLength);
-                
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
                 analyzeAudio();
             }
         }
@@ -1088,9 +1045,7 @@
 
         function toggleMusic() {
             initAudioSource();
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 
             if (audio.paused) {
                 audio.play();
@@ -1110,9 +1065,7 @@
             const player = document.getElementById('mainAudioPlayer');
             if (player.classList.contains('hidden')) {
                 player.classList.remove('hidden');
-                if(audio.paused) {
-                    toggleMusic();
-                }
+                if(audio.paused) toggleMusic();
             } else {
                 toggleMusic();
             }
@@ -1136,42 +1089,28 @@
         function adjustVolume(val) {
             audio.volume = val;
             const volIcon = document.getElementById('volumeIcon');
-            if (val == 0) {
-                volIcon.innerText = "🔇";
-            } else if (val < 0.4) {
-                volIcon.innerText = "🔈";
-            } else if (val < 0.7) {
-                volIcon.innerText = "🔉";
-            } else {
-                volIcon.innerText = "🔊";
-            }
+            volIcon.innerText = val == 0 ? "🔇" : (val < 0.4 ? "🔈" : (val < 0.7 ? "🔉" : "🔊"));
         }
 
         function toggleMute() {
             const slider = document.getElementById('volumeSlider');
             if (audio.volume > 0) {
                 preMuteVolume = audio.volume;
-                audio.volume = 0;
-                slider.value = 0;
+                audio.volume = 0; slider.value = 0;
                 document.getElementById('volumeIcon').innerText = "🔇";
             } else {
-                audio.volume = preMuteVolume;
-                slider.value = preMuteVolume;
+                audio.volume = preMuteVolume; slider.value = preMuteVolume;
                 adjustVolume(preMuteVolume);
             }
         }
 
-        function hideAudioPlayer() {
-            document.getElementById('mainAudioPlayer').classList.add('hidden');
-        }
+        function hideAudioPlayer() { document.getElementById('mainAudioPlayer').classList.add('hidden'); }
 
         audio.addEventListener('timeupdate', () => {
             const currentTime = audio.currentTime;
             const duration = audio.duration || 0;
-            
             if (duration > 0) {
-                const percentage = (currentTime / duration) * 100;
-                document.getElementById('progressBar').style.width = `${percentage}%`;
+                document.getElementById('progressBar').style.width = `${(currentTime / duration) * 100}%`;
             }
             document.getElementById('timeDisplay').innerText = `${formatTime(currentTime)} / ${formatTime(duration)}`;
         });
@@ -1180,12 +1119,9 @@
             initAudioSource();
             const container = document.getElementById('progressContainer');
             const rect = container.getBoundingClientRect();
-            const clickX = event.clientX - rect.left;
-            const width = rect.width;
             const duration = audio.duration || 0;
-
             if (duration > 0) {
-                audio.currentTime = (clickX / width) * duration;
+                audio.currentTime = ((event.clientX - rect.left) / rect.width) * duration;
                 startMusicOnInteraction();
             }
         }
@@ -1196,14 +1132,8 @@
             return `${min}:${sec < 10 ? '0' + sec : sec}`;
         }
 
-        function resetTimeline() {
-            document.getElementById('progressBar').style.width = '0%';
-            document.getElementById('timeDisplay').innerText = '0:00 / 0:00';
-        }
-
-        audio.addEventListener('ended', () => {
-            navigateTrack(1);
-        });
+        function resetTimeline() { document.getElementById('progressBar').style.width = '0%'; document.getElementById('timeDisplay').innerText = '0:00 / 0:00'; }
+        audio.addEventListener('ended', () => navigateTrack(1));
 
         function startMusicOnInteraction() {
             if (!musicStarted) {
@@ -1218,50 +1148,69 @@
             }
         }
 
-        function openEyeModal() {
-            startMusicOnInteraction();
-            document.getElementById('eyeModal').classList.add('active');
-            isEyeOpen = true;
-        }
-
-        function closeEyeModal() {
-            document.getElementById('eyeModal').classList.remove('active');
-            isEyeOpen = false;
-            document.getElementById('eyeGlowArea').style.opacity = 0.1;
-            document.getElementById('eyeImage').style.transform = "scale(1)";
-        }
+        function openEyeModal() { startMusicOnInteraction(); document.getElementById('eyeModal').classList.add('active'); isEyeOpen = true; }
+        function closeEyeModal() { document.getElementById('eyeModal').classList.remove('active'); isEyeOpen = false; }
 
         function analyzeAudio() {
             requestAnimationFrame(analyzeAudio);
             if (!analyser || !isEyeOpen || audio.paused) return;
-
             analyser.getByteFrequencyData(dataArray);
-
-            let sum = 0;
-            const sampleCount = 10; 
-            for (let i = 0; i < sampleCount; i++) {
-                sum += dataArray[i];
-            }
-            let averageVolume = sum / sampleCount; 
-
+            let sum = 0; for (let i = 0; i < 10; i++) sum += dataArray[i];
+            let averageVolume = sum / 10;
             const glowArea = document.getElementById('eyeGlowArea');
             const eyeImg = document.getElementById('eyeImage');
 
             if (averageVolume > 35) {
-                let intensity = (averageVolume / 255) * 1.5;
-                glowArea.style.opacity = Math.min(intensity, 1);
-                
-                let scaleFactor = 1 - (averageVolume / 255) * 0.35;
-                eyeImg.style.transform = `scale(${scaleFactor})`;
+                glowArea.style.opacity = Math.min((averageVolume / 255) * 1.5, 1);
+                eyeImg.style.transform = `scale(${1 - (averageVolume / 255) * 0.35})`;
             } else {
-                glowArea.style.opacity = 0.1;
-                eyeImg.style.transform = "scale(1)";
+                glowArea.style.opacity = 0.1; eyeImg.style.transform = "scale(1)";
             }
         }
 
         function toggleFlip() {
             document.getElementById('loveCard').classList.toggle('flipped');
             startMusicOnInteraction();
+            
+            if (document.getElementById('loveCard').classList.contains('flipped') && activeCardGlobal) {
+                markCardAsViewed(activeCardGlobal.id);
+            }
+        }
+
+        function markCardAsViewed(cardId) {
+            if (cardId === "infinity_special") return; 
+            if (!viewedCards.includes(cardId)) {
+                viewedCards.push(cardId);
+                localStorage.setItem('viewed_cards', JSON.stringify(viewedCards));
+                checkProgressState();
+            }
+        }
+
+        function checkProgressState() {
+            const count = viewedCards.length;
+            const badge = document.getElementById('trackerBadge');
+            badge.innerText = `Keşfedilen: ${count} / ${TOTAL_UNIQUE_CARDS}`;
+            
+            if (count >= TOTAL_UNIQUE_CARDS) {
+                isDeckCompleted = true;
+                document.body.classList.add('golden-era');
+                document.getElementById('infinityCardBtn').style.display = "block";
+                document.getElementById('randomCardBtn').style.display = "none";
+                document.getElementById('mainTitle').innerText = "👑 Sonsuzluk Destesi";
+                document.getElementById('mainSubtitle').innerText = "Tebrikler Kevser! Kalbimin tüm destesini başarıyla tamamladın. Sonsuzluk bağı seni bekliyor...";
+                
+                // Başarı açıldıysa inline kısıtlamayı kaldır
+                const secretPage = document.getElementById('secretNotePage');
+                secretPage.style.removeAttribute ? secretPage.style.removeAttribute('display') : secretPage.style.display = '';
+                
+                // Mektup açık durumdaysa sayfa indikatörünü dinamik güncelle
+                updateNoteIndicator();
+                triggerConfettiRain();
+            } else {
+                isDeckCompleted = false;
+                document.getElementById('secretNotePage').style.setProperty('display', 'none', 'important');
+                updateNoteIndicator();
+            }
         }
 
         function updateCardUI(card, suite) {
@@ -1275,10 +1224,11 @@
                 const icon = suiteIcons[suite];
                 const cssClass = suiteClasses[suite];
                 const isFav = favorites.includes(card.id);
+                const isInfinity = (suite === 'infinity');
                 
-                backView.className = `card-face card-back ${cssClass}`;
+                backView.className = `card-face card-face-back card-back ${cssClass} ${isInfinity ? 'gold-infinity-card' : ''}`;
                 backView.innerHTML = `
-                    <button class="fav-btn ${isFav ? 'favorited' : ''}" onclick="toggleFavorite(event)">♥</button>
+                    <button class="fav-btn ${isFav ? 'favorited' : ''}" style="${isInfinity ? 'display:none;' : ''}" onclick="toggleFavorite(event)">♥</button>
                     <div class="suite-corner">${card.n}<span style="font-size:18px;">${icon}</span></div>
                     <div class="card-center-content">
                         <div class="card-love-text">${card.t}</div>
@@ -1286,23 +1236,21 @@
                     <div class="suite-corner bottom">${card.n}<span style="font-size:18px;">${icon}</span></div>
                 `;
                 cardElement.classList.add('flipped');
+                markCardAsViewed(card.id);
             }, 200);
         }
 
         function selectSuite(suite) {
             isCollectionMode = false;
             document.getElementById('collectionBtn').classList.remove('active');
-            currentSuite = suite;
-            currentIndex = 0;
-            isRandomMode = false;
+            currentSuite = suite; currentIndex = 0; isRandomMode = false;
 
             document.querySelectorAll('.suite-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${suite}`).classList.add('active');
             document.getElementById('prevBtn').style.visibility = "visible";
             document.getElementById('nextBtn').style.visibility = "visible";
 
-            const activeCard = deckData[suite][currentIndex];
-            updateCardUI(activeCard, suite);
+            updateCardUI(deckData[suite][currentIndex], suite);
             updateIndicator();
         }
 
@@ -1313,17 +1261,14 @@
 
             const suiteLength = deckData[currentSuite].length;
             currentIndex = (currentIndex + direction + suiteLength) % suiteLength;
-            const activeCard = deckData[currentSuite][currentIndex];
-            updateCardUI(activeCard, currentSuite);
+            updateCardUI(deckData[currentSuite][currentIndex], currentSuite);
             updateIndicator();
         }
 
         function triggerRandomCard() {
             startMusicOnInteraction();
-            isCollectionMode = false;
-            document.getElementById('collectionBtn').classList.remove('active');
-            isRandomMode = true;
-            currentSuite = null;
+            isCollectionMode = false; document.getElementById('collectionBtn').classList.remove('active');
+            isRandomMode = true; currentSuite = null;
             
             document.querySelectorAll('.suite-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('prevBtn').style.visibility = "hidden";
@@ -1331,20 +1276,32 @@
 
             const suites = ['kupa', 'karo', 'sinek', 'maca', 'joker'];
             const randomSuite = suites[Math.floor(Math.random() * suites.length)];
-            const cards = deckData[randomSuite];
-            const randomCard = cards[Math.floor(Math.random() * cards.length)];
+            const randomCard = deckData[randomSuite][Math.floor(Math.random() * deckData[randomSuite].length)];
 
             updateCardUI(randomCard, randomSuite);
             document.getElementById('cardIndicator').innerText = `🎲 Kaderine düşen kart: ${randomSuite.toUpperCase()} Serisi`;
         }
 
+        function triggerInfinityCard() {
+            startMusicOnInteraction();
+            isCollectionMode = false; isRandomMode = false; currentSuite = null;
+            document.getElementById('prevBtn').style.visibility = "hidden";
+            document.getElementById('nextBtn').style.visibility = "hidden";
+            
+            const specialCard = {
+                id: "infinity_special",
+                n: "∞",
+                t: "Sen benim bu hayatta ulaştığım en yüksek mertebe, zamanın ve mekanın ötesindeki sonsuz aşkımsın Kevser. 54 kart bitti ama bizim hikayemiz yeni başlıyor... ❤️✨"
+            };
+            updateCardUI(specialCard, 'infinity');
+            document.getElementById('cardIndicator').innerText = `👑 TEBRİKLER: Sonsuzluk Kartı Aktif!`;
+        }
+
         function updateIndicator() {
             if (isCollectionMode) {
-                const favCards = getFavCardsObjects();
-                document.getElementById('cardIndicator').innerText = `❤️ Koleksiyonun — Kart: ${currentIndex + 1} / ${favCards.length}`;
+                document.getElementById('cardIndicator').innerText = `❤️ Koleksiyonun — Kart: ${currentIndex + 1} / ${getFavCardsObjects().length}`;
             } else if (currentSuite) {
-                const total = deckData[currentSuite].length;
-                document.getElementById('cardIndicator').innerText = `${currentSuite.toUpperCase()} Serisi — Kart: ${currentIndex + 1} / ${total}`;
+                document.getElementById('cardIndicator').innerText = `${currentSuite.toUpperCase()} Serisi — Kart: ${currentIndex + 1} / ${deckData[currentSuite].length}`;
             }
         }
 
@@ -1355,15 +1312,13 @@
             const index = favorites.indexOf(cardId);
             
             if (index > -1) {
-                favorites.splice(index, 1);
-                event.target.classList.remove('favorited');
+                favorites.splice(index, 1); event.target.classList.remove('favorited');
             } else {
-                favorites.push(cardId);
-                event.target.classList.add('favorited');
+                favorites.push(cardId); event.target.classList.add('favorited');
             }
             localStorage.setItem('love_favorites', JSON.stringify(favorites));
             updateCollectionBtnText();
-            if(isCollectionMode) { setTimeout(() => { toggleCollectionMode(); }, 300); }
+            if(isCollectionMode) { setTimeout(() => toggleCollectionMode(), 300); }
         }
 
         function getFavCardsObjects() {
@@ -1379,11 +1334,7 @@
                 alert("Henüz hiç kart favorilemedin! Kartların üzerindeki kalbe basarak koleksiyon oluşturabilirsin. ❤️");
                 return;
             }
-            isCollectionMode = true;
-            isRandomMode = false;
-            currentSuite = null;
-            currentIndex = 0;
-            
+            isCollectionMode = true; isRandomMode = false; currentSuite = null; currentIndex = 0;
             document.getElementById('collectionBtn').classList.add('active');
             document.querySelectorAll('.suite-btn').forEach(b => b.classList.remove('active'));
             
@@ -1403,42 +1354,62 @@
             updateIndicator();
         }
 
-        function updateCollectionBtnText() {
-            document.getElementById('collectionBtn').innerText = `Koleksiyonum (${favorites.length})`;
+        function updateCollectionBtnText() { document.getElementById('collectionBtn').innerText = `Koleksiyonum (${favorites.length})`; }
+
+        // Mektup Sayfa Kontrolleri
+        let currentNotePage = 0;
+
+        function getTotalNotePages() {
+            // Eğer kartlar bitmediyse 7, bittiyse gizli sayfa ile birlikte 8 sayfa var
+            return isDeckCompleted ? 8 : 7;
         }
 
-        let currentNotePage = 0;
-        const notePages = document.querySelectorAll('.note-page');
-        const totalNotePages = notePages.length;
+        function updateNoteIndicator() {
+            const total = getTotalNotePages();
+            if (currentNotePage >= total) {
+                currentNotePage = total - 1;
+            }
+            document.getElementById('notePageIndicator').innerText = `${currentNotePage + 1} / ${total}`;
+            document.getElementById('notePrevBtn').disabled = (currentNotePage === 0);
+            document.getElementById('noteNextBtn').disabled = (currentNotePage === total - 1);
+        }
 
         function changeNotePage(direction) {
+            // Sadece DOM'daki .note-page elemanlarını değil, aktif toplam sayfa sınırını baz alıyoruz
+            const notePages = document.querySelectorAll('.note-page');
+            const totalNotePages = getTotalNotePages();
+            
             notePages[currentNotePage].classList.remove('active');
             currentNotePage += direction;
+            
+            // Sınır koruması
+            if (currentNotePage < 0) currentNotePage = 0;
+            if (currentNotePage >= totalNotePages) currentNotePage = totalNotePages - 1;
+
             notePages[currentNotePage].classList.add('active');
-            document.getElementById('notePageIndicator').innerText = `${currentNotePage + 1} / ${totalNotePages}`;
-            document.getElementById('notePrevBtn').disabled = (currentNotePage === 0);
-            document.getElementById('noteNextBtn').disabled = (currentNotePage === totalNotePages - 1);
+            
+            updateNoteIndicator();
 
             const noteCard = document.getElementById('noteContentCard');
-            
-            // Son sayfa kontrolü (Işık karmaşası ve kalp patlaması tetikleme)
-            if (currentNotePage === totalNotePages - 1) {
+            document.querySelector('.note-body').scrollTop = 0;
+
+            // Eğer kartlar bittiyse ve en son sayfaya (8. sayfa yani index 7) gelindiyse kaos efektini tetikle
+            if (isDeckCompleted && currentNotePage === 7) {
                 noteCard.classList.add('last-page-active');
             } else {
                 noteCard.classList.remove('last-page-active');
             }
 
             if (currentNotePage === 0 || currentNotePage === totalNotePages - 1) {
-                noteCard.style.background = `linear-gradient(rgba(20, 20, 25, 0.85), rgba(20, 20, 25, 0.85)), url('./background.jpg') center/cover`;
+                noteCard.style.background = `linear-gradient(rgba(20, 20, 25, 0.9), rgba(20, 20, 25, 0.9)), url('./background.jpg') center/cover`;
             } else {
-                noteCard.style.background = `linear-gradient(rgba(20, 20, 25, 0.88), rgba(20, 20, 25, 0.88)), url('./background${currentNotePage + 1}.jpg') center/cover`;
+                noteCard.style.background = `linear-gradient(rgba(20, 20, 25, 0.92), rgba(20, 20, 25, 0.92)), url('./background${currentNotePage + 1}.jpg') center/cover`;
             }
         }
 
         function updateLoveCountdown() {
-            const startDate = new Date("2025-11-28T00:00:00").getTime();
-            const now = new Date().getTime();
-            const diff = now - startDate;
+            const diff = new Date().getTime() - new Date("2025-11-28T00:00:00").getTime();
+            
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -1450,8 +1421,57 @@
             document.getElementById("cd-sec").innerHTML = (secs < 10 ? "0" + secs : secs) + "<span>Sn</span>";
         }
 
+        function triggerConfettiRain() {
+            const canvas = document.getElementById('celebrationCanvas');
+            canvas.style.display = 'block';
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let confettiArray = [];
+            for (let i = 0; i < 150; i++) {
+                confettiArray.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 6 + 4,
+                    d: Math.random() * canvas.height,
+                    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                    tiltAngle: 0
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                confettiArray.forEach((p, idx) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - idx / 3) * 15;
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+
+                    if (p.y > canvas.height) {
+                        confettiArray[idx] = p;
+                        p.x = Math.random() * canvas.width;
+                        p.y = -20;
+                    }
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+            setTimeout(() => { canvas.style.display = 'none'; }, 7000); 
+        }
+
         window.addEventListener("load", () => {
             updateCollectionBtnText();
+            checkProgressState();
             loadTrack(currentTrackIndex); 
             setInterval(updateLoveCountdown, 1000);
 
@@ -1460,10 +1480,17 @@
             const closeNote = document.getElementById("closeLoveNote");
             const eyeModal = document.getElementById("eyeModal");
 
-            if(noteBtn) noteBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                startMusicOnInteraction();
-                noteModal.classList.add("active");
+            if(noteBtn) noteBtn.addEventListener("click", (e) => { 
+                e.stopPropagation(); 
+                startMusicOnInteraction(); 
+                // Modal her açıldığında ilk sayfadan başlamasını sağla
+                const notePages = document.querySelectorAll('.note-page');
+                notePages.forEach(p => p.classList.remove('active'));
+                currentNotePage = 0;
+                notePages[0].classList.add('active');
+                document.getElementById('noteContentCard').classList.remove('last-page-active');
+                updateNoteIndicator();
+                noteModal.classList.add("active"); 
             });
             if(closeNote) closeNote.addEventListener("click", () => { noteModal.classList.remove("active"); });
             if(noteModal) noteModal.addEventListener("click", (e) => { if(e.target === noteModal) noteModal.classList.remove("active"); });
