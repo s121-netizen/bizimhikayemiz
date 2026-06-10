@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beni Affeder Misin? 💜</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: "Comic Sans MS", sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#eadcff,#f5f5f5);
+    overflow:hidden;
+}
+
+.container{
+    text-align:center;
+    padding:30px;
+    max-width:700px;
+}
+
+.hello-kitty{
+    width:260px;
+    max-width:80vw;
+    margin-bottom:20px;
+}
+
+h1{
+    color:#9b7ede;
+    font-size:2.2rem;
+    margin-bottom:10px;
+}
+
+p{
+    color:#666;
+    margin-bottom:25px;
+    line-height:1.6;
+}
+
+.buttons{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+
+button{
+    border:none;
+    cursor:pointer;
+    padding:15px 35px;
+    border-radius:15px;
+    font-size:18px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+#yesBtn{
+    background:#b794ff;
+    color:white;
+    z-index:9999;
+}
+
+#noBtn{
+    background:#e5e5e5;
+    color:#555;
+}
+
+.message{
+    margin-top:20px;
+    min-height:30px;
+    font-size:20px;
+    color:#8b5cf6;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <img src="hellokitty.jpg" class="hello-kitty" alt="Hello Kitty">
+
+    <h1>Beni Affeder Misin? 💜</h1>
+
+    <p>
+        Sana karşı hata yaptım...<br>
+        Seni kırmak istemedim.
+    </p>
+
+    <div class="buttons">
+        <button id="yesBtn">Evet 💜</button>
+        <button id="noBtn">Hayır 🙈</button>
+    </div>
+
+    <div class="message" id="message"></div>
+
+</div>
+
+<script>
+
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const message = document.getElementById("message");
+
+let count = 0;
+
+const texts = [
+    "Emin misin? 🥺",
+    "Lütfen düşün 💜",
+    "Ama seni seviyorum 😔",
+    "Bak evet daha güzel 😭",
+    "Kaçamazsın 😈",
+    "Son şansın 🙈",
+    "LÜTFEN 💜"
+];
+
+noBtn.addEventListener("click", () => {
+
+    count++;
+
+    message.textContent = texts[Math.min(count-1, texts.length-1)];
+
+    let scale = 1 + count * 0.5;
+
+    yesBtn.style.transform = `scale(${scale})`;
+
+    if(count >= 7){
+
+        yesBtn.style.position = "fixed";
+        yesBtn.style.top = "0";
+        yesBtn.style.left = "0";
+        yesBtn.style.width = "100vw";
+        yesBtn.style.height = "100vh";
+        yesBtn.style.borderRadius = "0";
+        yesBtn.style.transform = "none";
+        yesBtn.style.fontSize = "70px";
+        yesBtn.innerHTML = "EVET 💜";
+
+        noBtn.style.display = "none";
+        message.style.display = "none";
+    }
+});
+
+yesBtn.addEventListener("click", () => {
+
+    document.body.innerHTML = `
+    <div style="
+        height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
+        background:linear-gradient(135deg,#eadcff,#f5f5f5);
+    ">
+        <img src="hellokitty.png" style="width:250px;max-width:80vw;">
+
+        <h1 style="color:#9b7ede;font-size:50px;margin-top:20px;">
+            Teşekkür Ederim 💜
+        </h1>
+
+        <p style="font-size:20px;color:#666;margin-top:10px;">
+            Seni çok seviyorum 🥺🎀
+        </p>
+    </div>
+    `;
+});
+
+</script>
+
+</body>
+</html>
