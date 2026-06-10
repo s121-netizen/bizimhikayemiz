@@ -121,13 +121,16 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
+            gap: 10px;
         }
         .eye-modal-header h3 {
-            font-size: 14px;
-            letter-spacing: 1px;
-            color: #b0b0b0;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            color: #d8b4fe;
             font-weight: 500;
             text-transform: uppercase;
+            line-height: 1.4;
+            flex: 1;
         }
         .close-eye-modal {
             border: none;
@@ -647,6 +650,7 @@
             padding: 25px;
             position: relative;
             transition: background 0.3s ease;
+            overflow: hidden;
         }
 
         .note-header {
@@ -655,6 +659,7 @@
             align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             padding-bottom: 12px;
+            z-index: 5;
         }
         .note-header h2 {
             font-family: 'Playfair Display', serif;
@@ -676,6 +681,7 @@
             justify-content: center;
             padding: 20px 5px;
             overflow-y: auto;
+            z-index: 5;
         }
 
         .note-page {
@@ -694,6 +700,8 @@
             border: 1px solid rgba(123, 44, 191, 0.3);
             padding: 12px;
             border-radius: 16px;
+            position: relative;
+            z-index: 6;
         }
         .countdown-title {
             font-size: 11px;
@@ -727,6 +735,7 @@
             align-items: center;
             border-top: 1px solid rgba(255,255,255,0.1);
             padding-top: 15px;
+            z-index: 5;
         }
 
         .note-nav-btn {
@@ -741,6 +750,67 @@
         .note-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         #notePageIndicator { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+        /* 🎇 SON SAYFA ÖZEL EFEKTLERİ: Kalp Patlaması ve Işık Karmaşası */
+        .light-chaos-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, #ff007f, #7b2cbf, #00f0ff, #ffb703);
+            background-size: 400% 400%;
+            animation: chaosGlow 6s ease infinite;
+            opacity: 0.4;
+            mix-blend-mode: screen;
+            pointer-events: none;
+            z-index: 1;
+            display: none;
+        }
+
+        .heart-burst-element {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-250%, -250%) scale(0);
+            font-size: 180px;
+            color: #ff0055;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 2;
+            display: none;
+            text-shadow: 0 0 30px rgba(255, 0, 85, 0.8), 0 0 60px rgba(255, 0, 85, 0.4);
+        }
+
+        .last-page-active .light-chaos-bg {
+            display: block;
+        }
+
+        .last-page-active .heart-burst-element {
+            display: block;
+            animation: heartExplode 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+        }
+
+        @keyframes chaosGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes heartExplode {
+            0% {
+                transform: translate(-50%, -50%) scale(0.1);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.4);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1.4);
+                opacity: 0;
+            }
+        }
 
         @keyframes bounce { 0% { height: 3px; } 100% { height: 14px; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -766,13 +836,13 @@
 
     <div class="top-bar">
         <button class="collection-btn" id="collectionBtn" onclick="toggleCollectionMode()">Koleksiyonum (0)</button>
-        <button class="eye-trigger-btn" onclick="openEyeModal()">👁️ Ritmi Gör</button>
+        <button class="eye-trigger-btn" onclick="openEyeModal()">👁️</button>
     </div>
 
     <div id="eyeModal">
         <div class="eye-modal-content">
             <div class="eye-modal-header">
-                <h3>Göz Modu</h3>
+                <h3>gözlerine yüklediğim anlamı hayatıma yüklemedim</h3>
                 <button class="close-eye-modal" onclick="closeEyeModal()">✕</button>
             </div>
             <div class="eye-display-container">
@@ -860,6 +930,9 @@
 
     <div id="loveNoteModal">
         <div class="love-note-content" id="noteContentCard">
+            <div class="light-chaos-bg"></div>
+            <div class="heart-burst-element">❤️</div>
+
             <div class="note-header">
                 <h2>💌 Sana Bir Not</h2>
                 <button id="closeLoveNote">✕</button>
@@ -974,7 +1047,6 @@
         let activeSuiteGlobal = null;
         let favorites = JSON.parse(localStorage.getItem('love_favorites')) || [];
 
-        // Yenilenmiş Şarkı İsimleri Listesi
         const trackNames = ["seni seviyorum", "sana asigim", "hayatımsın", "makavelim", "oleiste"];
         const playlist = ["./love.mp3", "./love2.mp3", "./love3.mp3", "./love4.mp3", "./love5.mp3"];
         let currentTrackIndex = 0;
@@ -1034,12 +1106,10 @@
             }
         }
 
-        // Sağ alttaki mini butona tıklandığında paneli açan ve müziği kontrol eden fonksiyon
         function toggleAudioPlayerView() {
             const player = document.getElementById('mainAudioPlayer');
             if (player.classList.contains('hidden')) {
                 player.classList.remove('hidden');
-                // Panel açıldığında müzik çalmıyorsa başlatmak için ideal tetikleyici
                 if(audio.paused) {
                     toggleMusic();
                 }
@@ -1350,6 +1420,14 @@
             document.getElementById('noteNextBtn').disabled = (currentNotePage === totalNotePages - 1);
 
             const noteCard = document.getElementById('noteContentCard');
+            
+            // Son sayfa kontrolü (Işık karmaşası ve kalp patlaması tetikleme)
+            if (currentNotePage === totalNotePages - 1) {
+                noteCard.classList.add('last-page-active');
+            } else {
+                noteCard.classList.remove('last-page-active');
+            }
+
             if (currentNotePage === 0 || currentNotePage === totalNotePages - 1) {
                 noteCard.style.background = `linear-gradient(rgba(20, 20, 25, 0.85), rgba(20, 20, 25, 0.85)), url('./background.jpg') center/cover`;
             } else {
