@@ -1233,6 +1233,298 @@ body.logged-in #mini-game-btn{ display:block !important; }
 
 
 
+
+/* ===== POLAROİD EFEKTİ ===== */
+.gallery-item {
+    background: #fff;
+    padding: 10px 10px 36px 10px;
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    transform: rotate(-2deg);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+.gallery-item:nth-child(even) {
+    transform: rotate(2deg);
+}
+.gallery-item:hover {
+    transform: rotate(0deg) scale(1.05) !important;
+    box-shadow: 0 16px 40px rgba(123,44,191,0.4);
+    z-index: 10;
+}
+.gallery-item img {
+    width: 180px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 2px;
+    display: block;
+}
+.gallery-date {
+    position: static !important;
+    color: #333 !important;
+    background: none !important;
+    text-align: center;
+    font-size: 11px;
+    font-family: 'Playfair Display', serif;
+    margin-top: 6px;
+    padding: 0 !important;
+}
+
+
+/* ===== TEMALAR ===== */
+body.theme-light {
+    background: linear-gradient(rgba(255,255,255,0.7),rgba(255,255,255,0.7)), url("https://i.imgur.com/PyNRVJW.jpeg") !important;
+    background-size: cover !important; background-attachment: fixed !important;
+    color: #111 !important;
+}
+body.theme-light .notes-container,
+body.theme-light #counter-container,
+body.theme-light .card-two {
+    background: rgba(0,0,0,0.07) !important;
+    border-color: rgba(0,0,0,0.12) !important;
+}
+body.theme-light h1 {
+    background: linear-gradient(90deg, #333, #7b2cbf, #333);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+body.theme-light .subtitle { color: #444 !important; }
+
+body.theme-purple {
+    background: linear-gradient(135deg, #1a0533, #2d0f5e, #1a0533) !important;
+    color: #f0e6ff !important;
+}
+body.theme-pink {
+    background: linear-gradient(135deg, #2d0014, #5c0024, #2d0014) !important;
+    color: #ffe0e8 !important;
+}
+body.theme-midnight {
+    background: linear-gradient(135deg, #0d1b2a, #1b2a3d, #0d1b2a) !important;
+    color: #e0f4ff !important;
+}
+
+/* ===== TEMA NOKTALARI ===== */
+.theme-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.theme-dot:hover { transform: scale(1.25); }
+.theme-dot.selected { box-shadow: 0 0 0 3px #fff; transform: scale(1.2); }
+
+/* ===== DARK (varsayılan) ===== */
+body {
+    --accent: #7b2cbf;
+    --accent2: #b0b0b0;
+    --bg-card: rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.1);
+    --text: #f5f5f5;
+    --btn-bg: #fff;
+    --btn-text: #000;
+    --note-btn-bg: #fff;
+    --note-btn-text: #000;
+}
+
+/* ===== LIGHT ===== */
+body.theme-light {
+    --accent: #7b2cbf;
+    --accent2: #555;
+    --bg-card: rgba(0,0,0,0.06);
+    --border: rgba(0,0,0,0.1);
+    --text: #111;
+    --btn-bg: #7b2cbf;
+    --btn-text: #fff;
+    background: linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)),
+                url("https://i.imgur.com/PyNRVJW.jpeg") center/cover fixed !important;
+    color: #111 !important;
+}
+body.theme-light #login-overlay { background: #f0f0f0 !important; }
+body.theme-light #login-overlay input { color: #111 !important; border-bottom-color: #999 !important; }
+body.theme-light #login-overlay p { color: #333 !important; }
+body.theme-light .login-logo-sub { color: #555 !important; }
+
+/* ===== MOR ===== */
+body.theme-purple {
+    --accent: #c77dff;
+    --accent2: #e0aaff;
+    --bg-card: rgba(123,44,191,0.15);
+    --border: rgba(199,125,255,0.25);
+    --text: #f0e6ff;
+    --btn-bg: #c77dff;
+    --btn-text: #1a0533;
+    background: linear-gradient(135deg, #1a0533, #2d0f5e, #1a0533) !important;
+    color: #f0e6ff !important;
+}
+body.theme-purple #login-overlay { background: #1a0533 !important; }
+
+/* ===== PEMBE ===== */
+body.theme-pink {
+    --accent: #ff4d6d;
+    --accent2: #ffb3c1;
+    --bg-card: rgba(255,77,109,0.1);
+    --border: rgba(255,179,193,0.2);
+    --text: #ffe0e8;
+    --btn-bg: #ff4d6d;
+    --btn-text: #fff;
+    background: linear-gradient(135deg, #2d0014, #5c0024, #2d0014) !important;
+    color: #ffe0e8 !important;
+}
+body.theme-pink #login-overlay { background: #2d0014 !important; }
+
+/* ===== GECE MAVİSİ ===== */
+body.theme-midnight {
+    --accent: #4fc3f7;
+    --accent2: #90e0ef;
+    --bg-card: rgba(79,195,247,0.1);
+    --border: rgba(79,195,247,0.2);
+    --text: #e0f4ff;
+    --btn-bg: #4fc3f7;
+    --btn-text: #0d1b2a;
+    background: linear-gradient(135deg, #0d1b2a, #1b2a3d, #0d1b2a) !important;
+    color: #e0f4ff !important;
+}
+body.theme-midnight #login-overlay { background: #0d1b2a !important; }
+
+/* ===== CSS DEĞİŞKENLERİNİ KULLANAN ELEMANLAR ===== */
+.notes-container, #counter-container, .card-two, .mg-card,
+.msg-mini-card, .filter-btn, .view-btn, .mg-tab {
+    background: var(--bg-card) !important;
+    border-color: var(--border) !important;
+}
+.note-btn, #login-overlay button, #check-btn {
+    background: var(--btn-bg) !important;
+    color: var(--btn-text) !important;
+}
+.mg-primary { background: rgba(255,77,109,0.28) !important; }
+h1 {
+    background: linear-gradient(90deg, var(--accent2), var(--accent), var(--accent2)) !important;
+    background-size: 200% auto !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+.spotify-btn { background: #1DB954 !important; color: #fff !important; }
+
+
+/* ===== POLAROİD EFEKTİ (GÜÇLENDİRİLMİŞ) ===== */
+.gallery-scroll.polaroid-mode {
+    gap: 24px;
+    padding: 30px 20px 50px 20px;
+    align-items: flex-start;
+}
+.gallery-scroll.polaroid-mode .gallery-item {
+    background: #fff !important;
+    padding: 10px 10px 40px 10px !important;
+    border-radius: 3px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+    transform: rotate(-2.5deg) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    position: relative !important;
+    flex: 0 0 auto !important;
+}
+.gallery-scroll.polaroid-mode .gallery-item:nth-child(even) {
+    transform: rotate(2deg) !important;
+    margin-top: 18px !important;
+}
+.gallery-scroll.polaroid-mode .gallery-item:hover {
+    transform: rotate(0deg) scale(1.07) !important;
+    box-shadow: 0 20px 50px rgba(123,44,191,0.5) !important;
+    z-index: 10 !important;
+}
+.gallery-scroll.polaroid-mode .gallery-item img {
+    width: 170px !important;
+    height: 200px !important;
+    object-fit: cover !important;
+    border-radius: 2px !important;
+    display: block !important;
+}
+.gallery-scroll.polaroid-mode .gallery-item .gallery-date {
+    position: static !important;
+    display: block !important;
+    text-align: center !important;
+    color: #444 !important;
+    background: none !important;
+    padding: 0 !important;
+    font-size: 11px !important;
+    font-family: 'Playfair Display', serif !important;
+    margin-top: 8px !important;
+    border-radius: 0 !important;
+    backdrop-filter: none !important;
+}
+
+/* ===== TEMA BUTONU ===== */
+#theme-toggle-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 9000; /* lightbox(11000) altında kalır, üste çıkmaz */
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(123,44,191,0.55);
+    border: 2px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    font-size: 17px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background 0.2s;
+}
+#theme-toggle-btn:hover { transform: scale(1.1); background: rgba(123,44,191,0.85); }
+
+#theme-picker {
+    position: fixed;
+    top: 62px;
+    right: 16px;
+    z-index: 8999;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(12,12,16,0.96);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 16px;
+    padding: 12px 10px;
+    min-width: 155px;
+}
+#theme-picker.open { display: flex; }
+.tp-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.45;
+    color: #fff;
+    padding: 0 6px 6px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 4px;
+}
+.tp-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 7px 8px;
+    border-radius: 10px;
+    width: 100%;
+    text-align: left;
+    transition: background 0.15s;
+}
+.tp-btn:hover { background: rgba(255,255,255,0.1); }
+.tp-btn.active-theme { background: rgba(123,44,191,0.35); font-weight: 600; }
+.tp-dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
 </style>
 </head>
 
@@ -1450,6 +1742,20 @@ body.logged-in #mini-game-btn{ display:block !important; }
 
     <div class="gallery">
         <h2>bizi biz yapan şeyler yaşadığımız anılar</h2>
+        <!-- ===== POLAROİD / NORMAL TOGGLE ===== -->
+<div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+  <button id="polaroid-toggle-btn" onclick="togglePolaroid()" style="
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+  ">📷 Polaroid Modu: KAPALI</button>
+</div>
         <div class="gallery-filters">
           <div class="view-controls">
     <button class="view-btn active" id="btn-scroll" onclick="setView('scroll')">↔️ yatay mod</button>
@@ -2338,8 +2644,20 @@ body.logged-in #mini-game-btn{ display:block !important; }
 </footer>
 </div>
 
+
+
 <div id="welcome-toast">hoş geldin aşkımmmmm 💜🩶 </div>
 
+<!-- ===== TEMA SEÇİCİ ===== -->
+<button id="theme-toggle-btn" onclick="toggleThemePicker()" title="Tema Değiştir">🎨</button>
+<div id="theme-picker">
+  <div class="tp-label">Tema Seç</div>
+  <button onclick="setTheme('dark')"     class="tp-btn"><span class="tp-dot" style="background:#0a0a0a;border:2px solid #7b2cbf;"></span>Karanlık</button>
+  <button onclick="setTheme('light')"    class="tp-btn"><span class="tp-dot" style="background:#f0f0f0;border:2px solid #999;"></span>Aydınlık</button>
+  <button onclick="setTheme('purple')"   class="tp-btn"><span class="tp-dot" style="background:#7b2cbf;border:2px solid #c77dff;"></span>Mor</button>
+  <button onclick="setTheme('pink')"     class="tp-btn"><span class="tp-dot" style="background:#ff4d6d;border:2px solid #ffb3c1;"></span>Pembe</button>
+  <button onclick="setTheme('midnight')" class="tp-btn"><span class="tp-dot" style="background:#0d1b2a;border:2px solid #4fc3f7;"></span>Gece Mavisi</button>
+</div>
 
 <div id="birthday-surprise">
     <div style="font-size:22px; margin-bottom:10px;">🎈🎉🎈</div>
@@ -2647,9 +2965,18 @@ document.body.appendChild(heart);
         syncLightboxDate(currentIdx);
         updateAutoplayBtn();
         startAutoSlide();
+        const tb = document.getElementById('theme-toggle-btn');
+        const tp = document.getElementById('theme-picker');
+        if (tb) tb.style.display = 'none';
+        if (tp) { tp.style.display = 'none'; tp.classList.remove('open'); }
     }
 
-    function closeLightbox() { lightbox.style.display = "none"; stopAutoSlide(); }
+    function closeLightbox() {
+        lightbox.style.display = "none";
+        stopAutoSlide();
+        const tb = document.getElementById('theme-toggle-btn');
+        if (tb) tb.style.display = 'flex';
+    }
 
     function changeImage(dir) {
         const img = document.getElementById('lightbox-img');
@@ -3683,6 +4010,51 @@ function startOfflineCaching() {
                     });
                 });
             });
+    }
+}
+
+
+// ===== TEMA SİSTEMİ =====
+function toggleThemePicker() {
+    document.getElementById('theme-picker').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#theme-picker') && !e.target.closest('#theme-toggle-btn')) {
+        document.getElementById('theme-picker').classList.remove('open');
+    }
+}, true);
+function setTheme(name) {
+    document.body.classList.remove('theme-light','theme-purple','theme-pink','theme-midnight');
+    if (name !== 'dark') document.body.classList.add('theme-' + name);
+    localStorage.setItem('ak-theme', name);
+    document.querySelectorAll('.tp-btn').forEach(b => b.classList.remove('active-theme'));
+    const idx = ['dark','light','purple','pink','midnight'].indexOf(name);
+    const btns = document.querySelectorAll('.tp-btn');
+    if (btns[idx]) btns[idx].classList.add('active-theme');
+    document.getElementById('theme-picker').classList.remove('open');
+}
+(function(){
+    const t = localStorage.getItem('ak-theme') || 'dark';
+    setTheme(t);
+})();
+
+// ===== POLAROİD TOGGLE =====
+let polaroidOn = false;
+function togglePolaroid() {
+    polaroidOn = !polaroidOn;
+    const scroll = document.getElementById('gallery-scroll');
+    const btn = document.getElementById('polaroid-toggle-btn');
+    if (!scroll || !btn) return;
+    if (polaroidOn) {
+        scroll.classList.add('polaroid-mode');
+        btn.textContent = '🖼️ Polaroid Modu: AÇIK';
+        btn.style.background = 'rgba(123,44,191,0.45)';
+        btn.style.borderColor = '#9d4edd';
+    } else {
+        scroll.classList.remove('polaroid-mode');
+        btn.textContent = '📷 Polaroid Modu: KAPALI';
+        btn.style.background = 'rgba(255,255,255,0.08)';
+        btn.style.borderColor = 'rgba(255,255,255,0.15)';
     }
 }
 
