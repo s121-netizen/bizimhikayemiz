@@ -22,6 +22,30 @@
 
     <style>
 
+        /* Mobilde scroll sırasında beyaz flaş / zıplama efektini önler */
+        html {
+            background: #0a0a0a;
+            overscroll-behavior-y: none;
+        }
+
+        /* Sabit arkaplan fotoğrafı - body'den ayrı, kendi GPU katmanında.
+           background-attachment:fixed mobilde scroll sırasında beyaz
+           flaşa ve takılmaya sebep oluyordu, bu yüzden ayrı katmana alındı. */
+        #bg-photo {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://i.imgur.com/PyNRVJW.jpeg");
+            background-size: cover;
+            background-position: center;
+            z-index: -3;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
+            pointer-events: none;
+        }
+
         body::before {
     content: "";
     position: fixed;
@@ -30,8 +54,10 @@
     /* Mor ve gri geçişli derinlik katmanı */
     background: radial-gradient(circle at 20% 30%, rgba(123, 44, 191, 0.15) 0%, transparent 40%),
                 radial-gradient(circle at 80% 70%, rgba(176, 176, 176, 0.1) 0%, transparent 40%);
-    z-index: -1;
+    z-index: -2;
     pointer-events: none;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 /* Başlıklar için mor-gri gradyan animasyonu */
@@ -149,9 +175,9 @@ h1 {
 /* --- GENEL TASARIM --- */
         body {
             margin: 0; font-family: 'Inter', sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://i.imgur.com/PyNRVJW.jpeg");
-            background-size: cover; background-position: center; background-attachment: fixed;
+            background: #0a0a0a;
             color: #f5f5f5; overflow-x: hidden;
+            overscroll-behavior-y: none;
         }
 
         .page {
@@ -1530,6 +1556,8 @@ h1 {
 
 <body>
 
+<div id="bg-photo"></div>
+
 <div id="login-overlay">
     
     
@@ -2699,6 +2727,29 @@ h1 {
 
 
 
+<!-- ===== FIREBASE (Realtime Database) - paylaşımlı sıralama için ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCVufVE2sG5-qSFt3G_pt8TnE-qo6hj7eM",
+        authDomain: "project-6700528244363532387.firebaseapp.com",
+        databaseURL: "https://project-6700528244363532387-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "project-6700528244363532387",
+        storageBucket: "project-6700528244363532387.firebasestorage.app",
+        messagingSenderId: "524187994352",
+        appId: "1:524187994352:web:8688a70183fab05cc6da35",
+        measurementId: "G-B54QMGT2KZ"
+    };
+    try {
+        firebase.initializeApp(firebaseConfig);
+        window.akDB = firebase.database();
+    } catch (e) {
+        console.warn("Firebase başlatılamadı, sıralama sadece bu cihazda çalışacak:", e);
+        window.akDB = null;
+    }
+</script>
+
 <script>
 let slideSpeed = 3000;
 let __lastHeartTap = 0;
@@ -3283,6 +3334,31 @@ function syncLightboxDate(index) {
     return (n||"").trim().slice(0,18);
   }
 
+  // ---- Firebase (paylaşımlı sıralama) ----
+  const FB_PATH = "leaderboard/players";
+  // Firebase Realtime Database key'lerinde . # $ [ ] / kullanılamaz
+  function fbKey(name){
+    return encodeURIComponent(name).replace(/[.#$\[\]]/g, "_");
+  }
+  let cloudPlayers = null;   // Firebase'den gelen son veri (null = henüz yüklenmedi)
+  let cloudReady = false;    // Firebase bağlantısı en az 1 kez veri verdi mi
+
+  function startCloudSync(onUpdate){
+    if(!window.akDB){ return; }
+    try{
+      window.akDB.ref(FB_PATH).on("value", (snap)=>{
+        cloudPlayers = snap.val() || {};
+        cloudReady = true;
+        if(typeof onUpdate === "function") onUpdate();
+      }, (err)=>{
+        console.warn("Sıralama okunamadı (Firebase):", err);
+        cloudReady = false;
+      });
+    }catch(e){
+      console.warn("Firebase sıralama bağlantı hatası:", e);
+    }
+  }
+
   // ---- UI refs (lazy) ----
   function refs(){
     return {
@@ -3357,6 +3433,16 @@ function syncLightboxDate(index) {
       save(d);
       currentName = name;
       R.nameOk.textContent = `kaydedildi: ${name} ✅`;
+
+      // Firebase: oyuncuyu paylaşımlı sıralamada da oluştur/güncelle
+      if(window.akDB){
+        const ref = window.akDB.ref(`${FB_PATH}/${fbKey(name)}`);
+        ref.transaction((cur)=>{
+          if(cur) { cur.name = name; return cur; }
+          return { name, click:0, memory:0, quiz:0, updatedAt: Date.now() };
+        }, (err)=>{ if(err) console.warn("Firebase isim kaydı hatası:", err); });
+      }
+
       renderBoards();
       return true;
     }
@@ -3377,13 +3463,36 @@ function syncLightboxDate(index) {
       d.players[currentName][mode] = Math.max(d.players[currentName][mode]||0, value);
       d.players[currentName].updatedAt = Date.now();
       save(d);
+
+      // Firebase: paylaşımlı sıralamaya en iyi skoru yaz (transaction = çarpışma güvenli)
+      if(window.akDB){
+        const name = currentName;
+        const ref = window.akDB.ref(`${FB_PATH}/${fbKey(name)}`);
+        ref.transaction((cur)=>{
+          const c = cur || { name, click:0, memory:0, quiz:0, updatedAt:0 };
+          c.name = name;
+          c[mode] = Math.max(c[mode]||0, value);
+          c.updatedAt = Date.now();
+          return c;
+        }, (err)=>{ if(err) console.warn("Firebase skor yazma hatası:", err); });
+      }
+
       renderBoards();
     }
 
     // leaderboard
     function topList(mode){
-      const d = load();
-      const arr = Object.entries(d.players).map(([name,s])=>({name,score:(s&&s[mode])||0, updatedAt:s.updatedAt||0}));
+      let players;
+      if(cloudReady && cloudPlayers){
+        players = cloudPlayers;
+      }else{
+        players = load().players;
+      }
+      const arr = Object.entries(players).map(([key,s])=>({
+        name: (s && s.name) || key,
+        score: (s && s[mode]) || 0,
+        updatedAt: (s && s.updatedAt) || 0
+      }));
       arr.sort((a,b)=> (b.score-a.score) || (b.updatedAt-a.updatedAt));
       return arr.slice(0,10);
     }
@@ -3404,10 +3513,17 @@ function syncLightboxDate(index) {
     }
     window.renderBoards = renderBoards; // debugging
     R.lbClear.addEventListener("click", ()=>{
-      if(!confirm("sıralama sıfırlansın mı? emin misin 😄")) return;
+      if(!confirm("sıralama sıfırlansın mı? bu HERKES için sıfırlanır, emin misin 😄")) return;
       save({players:{}, lastName: currentName || ""});
+      if(window.akDB){
+        window.akDB.ref(FB_PATH).remove((err)=>{ if(err) console.warn("Firebase sıfırlama hatası:", err); });
+      }
+      cloudPlayers = {};
       renderBoards();
     });
+
+    // Firebase'den canlı veri geldiğinde tabloları otomatik güncelle
+    startCloudSync(renderBoards);
 
     // ---------------- Game 1: Click Hearts ----------------
     let chScore = 0, chTime = 30, chRunning = false, chTick=null, chSpawn=null;
