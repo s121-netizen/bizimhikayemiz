@@ -892,7 +892,119 @@ body.logged-in #mini-game-btn{ display:block !important; }
     #download-btn { right: 20px; top: 70px; } /* Mobilde alt alta binmemeleri için */
 }   
 
-/* ===== AŞK ÇARKI — YENİDEN TASARIM ===== */
+/* ===== DOĞRULUK MU CESARET Mİ ===== */
+.tod-live-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: #aaa; letter-spacing: 0.4px;
+  margin-bottom: 10px;
+}
+.tod-type-row {
+  display: flex; gap: 8px; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 14px;
+}
+.tod-type-btn {
+  padding: 9px 18px; border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.07);
+  color: #fff; cursor: pointer; font-size: 13px;
+  transition: all 0.2s ease;
+}
+.tod-type-btn.active {
+  background: rgba(123,44,191,0.45);
+  border-color: #9d4edd;
+  box-shadow: 0 0 14px rgba(123,44,191,0.35);
+}
+.tod-type-btn.tod-random-btn.active {
+  background: rgba(255,77,109,0.35);
+  border-color: #ff4d6d;
+  box-shadow: 0 0 14px rgba(255,77,109,0.35);
+}
+.tod-card-wrap {
+  perspective: 900px;
+  margin: 4px auto 8px;
+  width: 100%; max-width: 420px;
+}
+.tod-card {
+  width: 100%;
+  min-height: 150px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.tod-card.flip {
+  transform: rotateY(360deg);
+}
+.tod-card-inner {
+  border-radius: 20px;
+  padding: 22px 20px 18px;
+  min-height: 150px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; text-align: center;
+  background: rgba(123,44,191,0.14);
+  border: 1px solid rgba(157,78,221,0.3);
+  box-shadow: 0 0 24px rgba(123,44,191,0.15);
+  backdrop-filter: blur(10px);
+  transition: background 0.35s ease, border-color 0.35s ease;
+}
+.tod-card-inner.dare-mode {
+  background: rgba(255,77,109,0.12);
+  border-color: rgba(255,77,109,0.3);
+  box-shadow: 0 0 24px rgba(255,77,109,0.15);
+}
+.tod-badge {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  padding: 4px 14px; border-radius: 50px;
+  background: rgba(123,44,191,0.3);
+  border: 1px solid rgba(157,78,221,0.4);
+  color: #d8b4fe;
+}
+.tod-card-inner.dare-mode .tod-badge {
+  background: rgba(255,77,109,0.25);
+  border-color: rgba(255,77,109,0.4);
+  color: #fda4af;
+}
+.tod-question {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(14px, 3.5vw, 17px);
+  line-height: 1.5; color: #f5f5f5;
+}
+.tod-card-num {
+  font-size: 10px; opacity: 0.5; letter-spacing: 0.5px;
+}
+.tod-history-wrap {
+  margin-top: 14px;
+}
+.tod-history-title {
+  font-size: 11px; opacity: 0.6; letter-spacing: 0.5px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.tod-history {
+  display: flex; flex-direction: column; gap: 6px;
+  max-height: 120px; overflow-y: auto;
+}
+.tod-history-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 7px 10px; border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  font-size: 12px; line-height: 1.4;
+}
+.tod-history-badge {
+  font-size: 10px; padding: 2px 8px; border-radius: 50px;
+  white-space: nowrap; flex-shrink: 0;
+  background: rgba(123,44,191,0.25);
+  border: 1px solid rgba(157,78,221,0.3);
+  color: #d8b4fe;
+}
+.tod-history-badge.dare {
+  background: rgba(255,77,109,0.2);
+  border-color: rgba(255,77,109,0.3);
+  color: #fda4af;
+}
+
+
 .wheel-container {
     display: flex;
     flex-direction: column;
@@ -4180,6 +4292,176 @@ document.addEventListener('contextmenu', e => {
     if (e.target.closest('.wheel-wrapper')) e.preventDefault();
 });
 
+/* ===== DOĞRULUK MU CESARET Mİ ===== */
+const TOD_FB_PATH = 'tod_state';
+let todType = 'truth';   // 'truth' | 'dare' | 'random'
+let todDrawnCount = 0;
+let todHistory = [];
+
+const todTruths = [
+  "Beni ilk ne zaman sevdiğini fark ettin? 🥹",
+  "Beni düşününce aklına ilk ne geliyor? 💜",
+  "Benden en çok ne hakkında kıskanıyorsun? 🙈",
+  "Bana hiç söyleyemediğin bir şeyi söyle 🤫",
+  "En büyük korkun ne? 😬",
+  "Benimle ilgili değiştirmek isteyeceğin bir şey var mı? 🤔",
+  "Hayatının en mutlu anı hangisi? ✨",
+  "Beni en çok ne zaman özlüyorsun? 🥺",
+  "İlk buluşmamızda ne hissettirdin? 💛",
+  "Bana en çok hangi özelliğim için aşıksın? 🫦",
+  "En utanç verici anını anlat 😳",
+  "Gizlice kıskandığın bir şey var mı? 🤨",
+  "Birlikte yaşamak istediğin bir şehir hangisi? 🌍",
+  "Beni düşündüğünde gülümsediğin bir an? 😊",
+  "Bana en büyük dürüst itirafın ne olurdu? 🫣",
+  "Birlikte yaşlandığımızı hayal ediyor musun? 👴👵",
+  "Senden iyiyim diye düşündüğün bir şey var mı? 😏",
+  "Bana ilk 'seni seviyorum' dediğinde ne hissettin? 💞",
+  "Gelecekte birlikte yapmak istediğin en küçük şey ne? 🌱",
+  "Benimle ilgili hiç kıskanç hissettin mi? 🔥",
+  "Bana öfkelendiğin ama söylemediğin bir şey var mı? 😤",
+  "Birbirimiz hakkında en büyük sırrın ne? 🤐",
+  "Beni hayatında hayal etmediğin bir şekilde hayal et 🪄",
+  "Annen ya da baban benim için ne düşünüyor? 😂",
+  "Sana göre mükemmel bir gün nasıl geçer? ☀️",
+];
+
+const todDares = [
+  "Şu an bana 3 güzel şey söyle 🗣️",
+  "Bana sesli not at, içinde bir şarkı söyle 🎤",
+  "Beni anlatan emoji dizisi gönder 😍",
+  "Bana şu an hissettiğin en derin şeyi tek cümleyle yaz ✍️",
+  "Bana 10 saniye bakarak bir şey anlat (videolu ararsın) 👀",
+  "Beni düşünürken yazdığın son cümleyi paylaş 📱",
+  "Bana küçük bir sürpriz plan 🎁",
+  "Bana özel bir emoji kodu icat et ve anlamını açıkla 🔑",
+  "Beni tarif et: 3 kelime, 3 renk, 3 müzik 🎨",
+  "Bana favori anımızla ilgili kısa bir şiir yaz 📝",
+  "Şu an ne giyiyorsan benden tarif et (utanmadan!) 😜",
+  "Bana 1 dakika boyunca sadece 'seni seviyorum' çeşitlemesi yaz 💌",
+  "Bana şu an hayatının neresinde durduğunu anlat 🗺️",
+  "Beni düşünürken güldüren bir şeyi anlat 🤣",
+  "Bana sesli mesaj bırak, sadece 'bugün seni özledim' de 🎙️",
+  "Bana benden ilham alan bir şey yap (çiz, yaz, ne olursa) 🖊️",
+  "Bana en tatlı lakabını söyle ve neden seçtiğini açıkla 🏷️",
+  "Gözlerini kapat, beni düşün, sonra açık kalplice anlat 💭",
+  "Bana gelecekte birlikte yapacağımız bir şeyi hayal et 🌟",
+  "Beni tanımayan birine beni nasıl tanımlarsın? 🧩",
+];
+
+function todSetType(type) {
+  todType = type;
+  document.querySelectorAll('.tod-type-btn').forEach(b => b.classList.remove('active'));
+  const btnMap = { truth: 'tod-btn-truth', dare: 'tod-btn-dare', random: 'tod-btn-random' };
+  // random için rastgele butonu aktif
+  if (type === 'random') {
+    document.querySelectorAll('.tod-type-btn')[2].classList.add('active');
+  } else {
+    const btn = document.getElementById(btnMap[type]);
+    if (btn) btn.classList.add('active');
+  }
+}
+
+function todDraw() {
+  const actualType = todType === 'random'
+    ? (Math.random() < 0.5 ? 'truth' : 'dare')
+    : todType;
+
+  const pool = actualType === 'truth' ? todTruths : todDares;
+  const q = pool[Math.floor(Math.random() * pool.length)];
+  todDrawnCount++;
+
+  // Firebase'e yaz (canlı senkron)
+  const drawId = Date.now().toString();
+  const payload = { drawId, type: actualType, question: q, count: todDrawnCount, ts: Date.now() };
+  if (window.akDB) {
+    window.akDB.ref(TOD_FB_PATH).set(payload);
+  }
+  todApply(payload, true);
+}
+
+function todApply(data, isOwn) {
+  const card = document.getElementById('tod-card');
+  const inner = document.getElementById('tod-card-inner');
+  const badge = document.getElementById('tod-badge');
+  const qEl  = document.getElementById('tod-question');
+  const num  = document.getElementById('tod-card-num');
+
+  // Flip animasyonu
+  card.classList.remove('flip');
+  void card.offsetWidth; // reflow
+  card.classList.add('flip');
+
+  const isD = data.type === 'dare';
+  inner.classList.toggle('dare-mode', isD);
+  badge.textContent = isD ? '🔥 Cesaret' : '🎯 Doğruluk';
+  qEl.textContent = data.question;
+  num.textContent = `kart #${data.count}`;
+
+  // Geçmişe ekle
+  todHistory.unshift({ type: data.type, question: data.question });
+  if (todHistory.length > 5) todHistory.pop();
+  todRenderHistory();
+}
+
+function todReset() {
+  todDrawnCount = 0;
+  todHistory = [];
+  const qEl = document.getElementById('tod-question');
+  const num = document.getElementById('tod-card-num');
+  const inner = document.getElementById('tod-card-inner');
+  if (qEl) qEl.textContent = 'Başlamak için kart çek 💜';
+  if (num) num.textContent = '';
+  if (inner) inner.classList.remove('dare-mode');
+  document.getElementById('tod-badge').textContent = '🎯 Doğruluk';
+  todRenderHistory();
+  if (window.akDB) window.akDB.ref(TOD_FB_PATH).remove();
+}
+
+function todRenderHistory() {
+  const container = document.getElementById('tod-history');
+  if (!container) return;
+  container.innerHTML = '';
+  todHistory.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'tod-history-item';
+    const span = document.createElement('span');
+    span.className = 'tod-history-badge' + (item.type === 'dare' ? ' dare' : '');
+    span.textContent = item.type === 'dare' ? '🔥' : '🎯';
+    const txt = document.createElement('span');
+    txt.textContent = item.question;
+    div.appendChild(span);
+    div.appendChild(txt);
+    container.appendChild(div);
+  });
+}
+
+function initTodSync() {
+  const badge = document.getElementById('tod-live-text');
+  if (!window.akDB) {
+    if (badge) badge.textContent = 'çevrimdışı mod';
+    return;
+  }
+  if (badge) badge.textContent = 'canlı bağlı ✓';
+
+  window.akDB.ref(TOD_FB_PATH).on('value', (snap) => {
+    const data = snap.val();
+    if (!data) return;
+    // Kendi yaptığımız çekilişi tekrar gösterme
+    if (data.drawId === window._myTodDrawId) return;
+    todDrawnCount = data.count || todDrawnCount;
+    todHistory.unshift({ type: data.type, question: data.question });
+    if (todHistory.length > 5) todHistory.pop();
+    todApply(data, false);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(initTodSync, 1400);
+});
+
+
+
 
 function downloadImage() {
     const currentImgUrl = document.getElementById("lightbox-img").src;
@@ -4454,6 +4736,7 @@ function togglePolaroid() {
       <button class="mg-tab" data-tab="quiz" role="tab">mini quiz</button>
       <button class="mg-tab" data-tab="board" role="tab">sıralama</button>
       <button class="mg-tab" data-tab="wheel" role="tab">aşk çarkı</button>
+      <button class="mg-tab" data-tab="tod" role="tab">doğruluk 🎯</button>
     </div>
 
     <div class="mg-body">
@@ -4549,6 +4832,47 @@ function togglePolaroid() {
         </div>
         <div id="wheel-result">Çevirmek için ortaya bas 💜</div>
     </div>
+</section>
+
+<!-- ===== DOĞRULUK MU CESARET Mİ PANELİ ===== -->
+<section class="mg-panel" data-panel="tod" role="tabpanel">
+  <div class="mg-panel-top">
+    <div class="mg-hint">🎯 sırayla oynuyorsunuz — kart çek, kural basit: doğruluk ya da cesaret!</div>
+    <div class="tod-live-badge">
+      <span class="wheel-live-dot"></span>
+      <span id="tod-live-text">canlı bağlantı bekleniyor...</span>
+    </div>
+  </div>
+
+  <!-- Kart türü seçimi -->
+  <div class="tod-type-row">
+    <button class="tod-type-btn active" id="tod-btn-truth" onclick="todSetType('truth')">🎯 Doğruluk</button>
+    <button class="tod-type-btn" id="tod-btn-dare" onclick="todSetType('dare')">🔥 Cesaret</button>
+    <button class="tod-type-btn tod-random-btn" onclick="todSetType('random')">🎲 Rastgele</button>
+  </div>
+
+  <!-- Ana kart -->
+  <div class="tod-card-wrap">
+    <div class="tod-card" id="tod-card">
+      <div class="tod-card-inner" id="tod-card-inner">
+        <div class="tod-badge" id="tod-badge">🎯 Doğruluk</div>
+        <div class="tod-question" id="tod-question">Başlamak için kart çek 💜</div>
+        <div class="tod-card-num" id="tod-card-num"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Butonlar -->
+  <div class="mg-actions" style="justify-content:center;gap:12px;margin-top:12px;">
+    <button class="mg-primary" id="tod-draw" onclick="todDraw()" type="button">🃏 Kart Çek</button>
+    <button class="mg-ghost" onclick="todReset()" type="button">🔄 Başa Dön</button>
+  </div>
+
+  <!-- Canlı geçmiş -->
+  <div class="tod-history-wrap">
+    <div class="tod-history-title">son çekilen kartlar</div>
+    <div id="tod-history" class="tod-history"></div>
+  </div>
 </section>
 
     </div>
