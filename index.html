@@ -892,25 +892,51 @@ body.logged-in #mini-game-btn{ display:block !important; }
     #download-btn { right: 20px; top: 70px; } /* Mobilde alt alta binmemeleri için */
 }   
 
-/* ===== PROFESYONEL AŞK ÇARKI GÜNCEL ===== */
+/* ===== AŞK ÇARKI — YENİDEN TASARIM ===== */
 .wheel-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    /* Mavi seçilme efektini her yerden kaldırır */
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     outline: none;
+    padding-bottom: 10px;
+}
+
+/* Ok (pointer) — çarkın üstünde, sabit */
+.wheel-arrow {
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 28px solid #ff4d6d;
+    filter: drop-shadow(0 3px 8px rgba(255,77,109,0.7));
+    position: relative;
+    z-index: 110;
+    margin-bottom: -4px;
+    flex-shrink: 0;
 }
 
 .wheel-wrapper {
     position: relative;
-    width: min(300px, 80vw); 
-    height: min(300px, 80vw);
-    border-radius: 50%;
-    margin: 20px auto;
+    width: min(310px, 82vw); 
+    height: min(310px, 82vw);
+    margin: 0 auto 16px;
 }
+
+/* Dış halka glow */
+.wheel-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: conic-gradient(#7b2cbf, #b0b0b0, #ff4d6d, #7b2cbf);
+    animation: ringRotate 8s linear infinite;
+    z-index: 0;
+    opacity: 0.45;
+}
+@keyframes ringRotate { to { transform: rotate(360deg); } }
 
 #wheel {
     width: 100%;
@@ -918,17 +944,36 @@ body.logged-in #mini-game-btn{ display:block !important; }
     border-radius: 50%;
     position: relative;
     overflow: hidden;
-    /* KASMA ÖNLEYİCİ AYARLAR */
     will-change: transform;
     backface-visibility: hidden;
     transform: translateZ(0); 
-    transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+    transition: transform 4s cubic-bezier(0.17, 0, 0.12, 1);
     background: conic-gradient(
-        #7b2cbf 0deg 45deg, #b0b0b0 45deg 90deg, #9d4edd 90deg 135deg, 
-        #8e8e8e 135deg 180deg, #5a189a 180deg 225deg, #ced4da 225deg 270deg,
-        #480ca8 270deg 315deg, #adb5bd 315deg 360deg
+        #7b2cbf   0deg   45deg,
+        #9d4edd  45deg   90deg,
+        #5a189a  90deg  135deg,
+        #480ca8 135deg  180deg,
+        #b0b0b0 180deg  225deg,
+        #8e8e8e 225deg  270deg,
+        #ced4da 270deg  315deg,
+        #adb5bd 315deg  360deg
     );
-    border: 4px solid rgba(255, 255, 255, 0.2);
+    border: 5px solid rgba(255,255,255,0.25);
+    box-shadow: 0 0 30px rgba(123,44,191,0.4), inset 0 0 20px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+/* Dilimler arasına ince çizgi */
+#wheel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+        rgba(0,0,0,0.15) 0deg 1deg,
+        transparent 1deg 45deg
+    );
+    pointer-events: none;
 }
 
 .wheel-center-btn {
@@ -936,9 +981,9 @@ body.logged-in #mini-game-btn{ display:block !important; }
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 65px;
-    height: 65px;
-    background: #ff4d6d;
+    width: 62px;
+    height: 62px;
+    background: radial-gradient(circle at 40% 35%, #ff8fa3, #ff4d6d);
     border: 4px solid #fff;
     border-radius: 50%;
     z-index: 105;
@@ -946,35 +991,89 @@ body.logged-in #mini-game-btn{ display:block !important; }
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 800;
     color: white;
-    font-size: 11px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    /* MOBİL MAVİ EFEKT ÖNLEYİCİ */
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 18px rgba(255,77,109,0.55), 0 0 0 2px rgba(255,77,109,0.2);
     outline: none !important;
     -webkit-tap-highlight-color: transparent !important;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .wheel-center-btn:active {
-    transform: translate(-50%, -50%) scale(0.92);
+    transform: translate(-50%, -50%) scale(0.88);
+    box-shadow: 0 2px 8px rgba(255,77,109,0.4);
+}
+
+/* Spinning sırasında parlama */
+.wheel-spinning .wheel-center-btn {
+    box-shadow: 0 0 22px rgba(255,77,109,0.9), 0 0 0 3px rgba(255,255,255,0.3);
 }
 
 .wheel-label {
     position: absolute;
-    width: 50%;
-    height: 30px;
-    top: calc(50% - 15px);
-    left: 50%;
+    width: 46%;
+    height: 28px;
+    top: calc(50% - 14px);
+    left: 52%;
     transform-origin: left center;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding-right: 15px;
-    font-size: min(10px, 3vw);
-    font-weight: 600;
+    padding-right: 12px;
+    font-size: clamp(8px, 2.2vw, 11px);
+    font-weight: 700;
     color: #fff;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.6);
     pointer-events: none;
+    white-space: nowrap;
+}
+
+/* Sonuç kutusu */
+#wheel-result {
+    min-height: 44px;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: #f5f5f5;
+    text-align: center;
+    padding: 10px 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(8px);
+    margin: 0 4px;
+    transition: all 0.4s ease;
+    line-height: 1.5;
+}
+
+#wheel-result.has-result {
+    background: rgba(123,44,191,0.18);
+    border-color: rgba(157,78,221,0.4);
+    box-shadow: 0 0 18px rgba(123,44,191,0.2);
+}
+
+/* Canlı göstergesi */
+.wheel-live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 8px;
+    letter-spacing: 0.4px;
+}
+.wheel-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 6px #4ade80;
+    animation: livePulse 1.4s infinite;
+}
+@keyframes livePulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
 }
 
 
@@ -3931,15 +4030,16 @@ slider.addEventListener('wheel', (e) => {
     }
 });
 
-/* ===== AŞK ÇARKI TÜM MANTIK (PRO) ===== */
+/* ===== AŞK ÇARKI — FIREBASE CANLI SENKRON ===== */
 let currentRotation = 0;
 let isSpinning = false;
 let motionInited = false;
+const WHEEL_FB_PATH = 'wheel_state';
 
 const rewards = [
     "5 dakika rol yaparak konuş 🎭",
     "Bizimle ilgili güzel bir anını anlat 📖",
-    "Sana verdiğim mini challenge’ı yap ⚡",
+    "Sana verdiğim mini challenge'ı yap ⚡",
     "Bana yeni bir lakap bul 🏷️",
     "Bana küçük bir itiraf yap 😳",
     "Bana sadece emojilerle mesaj at 😍",
@@ -3947,36 +4047,103 @@ const rewards = [
     "Bana kısa bir video çek 🎥"
 ];
 
+// Firebase dinleyici — diğer cihazlardan gelen dönüşleri yakalar
+function initWheelSync() {
+    const badge = document.getElementById('wheel-live-text');
+    if (!window.akDB) {
+        if (badge) badge.textContent = 'çevrimdışı mod';
+        return;
+    }
+    if (badge) badge.textContent = 'canlı bağlı ✓';
+
+    window.akDB.ref(WHEEL_FB_PATH).on('value', (snap) => {
+        const data = snap.val();
+        if (!data) return;
+        if (data.spinId === window._myWheelSpinId) return;
+
+        const wheel = document.getElementById('wheel');
+        const resultEl = document.getElementById('wheel-result');
+        if (!wheel) return;
+
+        currentRotation = data.targetRotation;
+        isSpinning = true;
+
+        wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0, 0.12, 1)';
+        wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+        if (resultEl) {
+            resultEl.textContent = 'Kaderin dönüyor... ✨';
+            resultEl.classList.remove('has-result');
+        }
+
+        clearTimeout(window._wheelResultTimer);
+        window._wheelResultTimer = setTimeout(() => {
+            isSpinning = false;
+            if (resultEl) {
+                resultEl.textContent = data.result || '';
+                resultEl.classList.add('has-result');
+            }
+            const wheelEl = document.getElementById('wheel');
+            if (wheelEl && typeof noteBurstHearts === 'function') {
+                const rect = wheelEl.getBoundingClientRect();
+                noteBurstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            }
+        }, 4100);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initWheelSync, 1200);
+});
+
 function spinWheel() {
     if (isSpinning) return;
     if (!motionInited) requestMotionPermission();
 
     isSpinning = true;
     const wheel = document.getElementById('wheel');
-    const resultText = document.getElementById('wheel-result');
-    
-    if (resultText) resultText.innerText = "Kaderin dönüyor... ✨";
-    
-    // Rastgele dönüş (GPU dostu miktar)
-    const randomExtra = Math.floor(Math.random() * 360) + 1800; 
-    currentRotation += randomExtra; 
-    
+    const resultEl = document.getElementById('wheel-result');
+
+    const randomExtra = Math.floor(Math.random() * 360) + 1800;
+    currentRotation += randomExtra;
+
+    const actualAngle = currentRotation % 360;
+    const prizeIndex = Math.floor(((360 - (actualAngle % 360)) % 360) / 45);
+    const result = rewards[prizeIndex];
+
+    const spinId = Date.now().toString();
+    window._myWheelSpinId = spinId;
+
     if (wheel) {
+        wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0, 0.12, 1)';
         wheel.style.transform = `rotate(${currentRotation}deg)`;
     }
-    
-    setTimeout(() => {
+    if (resultEl) {
+        resultEl.textContent = 'Kaderin dönüyor... ✨';
+        resultEl.classList.remove('has-result');
+    }
+
+    if (window.akDB) {
+        window.akDB.ref(WHEEL_FB_PATH).set({
+            spinId,
+            targetRotation: currentRotation,
+            result,
+            ts: Date.now()
+        });
+    }
+
+    clearTimeout(window._wheelResultTimer);
+    window._wheelResultTimer = setTimeout(() => {
         isSpinning = false;
-        const actualAngle = currentRotation % 360;
-        const prizeIndex = Math.floor(((360 - (actualAngle % 360)) % 360) / 45);
-        
-        if (resultText) resultText.innerText = rewards[prizeIndex];
-        
-        const rect = wheel.getBoundingClientRect();
-        if (typeof noteBurstHearts === "function") {
+        if (resultEl) {
+            resultEl.textContent = result;
+            resultEl.classList.add('has-result');
+        }
+        if (wheel && typeof noteBurstHearts === 'function') {
+            const rect = wheel.getBoundingClientRect();
             noteBurstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2);
         }
-    }, 4000);
+    }, 4100);
 }
 
 // SALLAMA AYARLARI (Gelişmiş)
@@ -4358,24 +4525,29 @@ function togglePolaroid() {
 
    <section class="mg-panel" data-panel="wheel" role="tabpanel">
     <div class="mg-panel-top">
-        <div class="mg-hint">çarkın ortasına bas veya telefonu sertçe salla! 💜</div>
+        <div class="mg-hint">ortaya bas veya telefonu sertçe salla! 💜 Tüm cihazlarda aynı anda döner.</div>
     </div>
     <div class="wheel-container">
+        <div class="wheel-live-badge">
+            <span class="wheel-live-dot"></span>
+            <span id="wheel-live-text">canlı bağlantı bekleniyor...</span>
+        </div>
+        <!-- Ok işareti - çarkın üstünde sabit durur -->
+        <div class="wheel-arrow"></div>
         <div class="wheel-wrapper">
-            <div class="wheel-pointer"></div>
             <div id="wheel">
                 <div class="wheel-label" style="transform: rotate(22.5deg)">Rol 🎭</div>
-    <div class="wheel-label" style="transform: rotate(67.5deg)">Anı 📖</div>
-    <div class="wheel-label" style="transform: rotate(112.5deg)">Challenge ⚡</div>
-    <div class="wheel-label" style="transform: rotate(157.5deg)">Lakap 🏷️</div>
-    <div class="wheel-label" style="transform: rotate(202.5deg)">İtiraf 😳</div>
-    <div class="wheel-label" style="transform: rotate(247.5deg)">Emoji 😍</div>
-    <div class="wheel-label" style="transform: rotate(292.5deg)">Şiir 📝</div>
-    <div class="wheel-label" style="transform: rotate(337.5deg)">Video 🎥</div>
+                <div class="wheel-label" style="transform: rotate(67.5deg)">Anı 📖</div>
+                <div class="wheel-label" style="transform: rotate(112.5deg)">Challenge ⚡</div>
+                <div class="wheel-label" style="transform: rotate(157.5deg)">Lakap 🏷️</div>
+                <div class="wheel-label" style="transform: rotate(202.5deg)">İtiraf 😳</div>
+                <div class="wheel-label" style="transform: rotate(247.5deg)">Emoji 😍</div>
+                <div class="wheel-label" style="transform: rotate(292.5deg)">Şiir 📝</div>
+                <div class="wheel-label" style="transform: rotate(337.5deg)">Video 🎥</div>
             </div>
             <div class="wheel-center-btn" onclick="spinWheel()">ÇEVİR</div>
         </div>
-        <div id="wheel-result"></div>
+        <div id="wheel-result">Çevirmek için ortaya bas 💜</div>
     </div>
 </section>
 
