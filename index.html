@@ -26,6 +26,8 @@
         html {
             background: #0a0a0a;
             overscroll-behavior-y: none;
+            /* iOS Safari yükseklik düzeltmesi */
+            min-height: -webkit-fill-available;
         }
 
         /* Sabit arkaplan fotoğrafı - body'den ayrı, kendi GPU katmanında.
@@ -33,16 +35,24 @@
            flaşa ve takılmaya sebep oluyordu, bu yüzden ayrı katmana alındı. */
         #bg-photo {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            /* iOS Safari'de 100vh sorun çıkarır, min-height ile kapatıyoruz */
+            min-height: 100%;
+            min-height: -webkit-fill-available;
             width: 100%;
-            height: 100%;
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://i.imgur.com/PyNRVJW.jpeg");
             background-size: cover;
-            background-position: center;
+            background-position: center center;
+            background-repeat: no-repeat;
             z-index: -3;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            will-change: transform;
+            /* will-change: transform mobilde bellek baskısı yaratır, kaldırıldı */
+            transform: translate3d(0,0,0);
+            -webkit-transform: translate3d(0,0,0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
             pointer-events: none;
         }
 
@@ -50,14 +60,16 @@
     content: "";
     position: fixed;
     top: 0; left: 0;
-    width: 100%; height: 100%;
+    right: 0; bottom: 0;
+    min-height: 100%;
+    min-height: -webkit-fill-available;
     /* Mor ve gri geçişli derinlik katmanı */
     background: radial-gradient(circle at 20% 30%, rgba(123, 44, 191, 0.15) 0%, transparent 40%),
                 radial-gradient(circle at 80% 70%, rgba(176, 176, 176, 0.1) 0%, transparent 40%);
     z-index: -2;
     pointer-events: none;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    transform: translate3d(0,0,0);
+    -webkit-transform: translate3d(0,0,0);
 }
 
 /* Başlıklar için mor-gri gradyan animasyonu */
@@ -178,6 +190,9 @@ h1 {
             background: #0a0a0a;
             color: #f5f5f5; overflow-x: hidden;
             overscroll-behavior-y: none;
+            -webkit-overflow-scrolling: touch;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
         }
 
         .page {
@@ -464,6 +479,14 @@ h1 {
 .mg-modal.show{display:block;}
 .mg-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.65);}
 .mg-card{position:relative;width:min(980px,calc(100vw - 22px));max-height:min(86vh,760px);margin:6vh auto 0;background:rgba(15,15,18,0.92);border:1px solid rgba(255,255,255,0.12);border-radius:18px;box-shadow:0 18px 70px rgba(0,0,0,0.55);backdrop-filter:blur(10px);overflow:hidden;}
+@media (max-width:480px){
+    .mg-card{margin:2vh auto 0;max-height:96vh;border-radius:14px;}
+    .mg-body{max-height:calc(96vh - 140px);padding:8px 10px 10px;}
+    .mg-header{padding:10px 10px 8px;}
+    .mg-name-row{padding:8px 10px 10px;}
+    .mg-tabs{padding:8px 10px;gap:6px;}
+    .mg-tab{padding:7px 8px;font-size:11px;}
+}
 .mg-header{display:flex;justify-content:space-between;gap:14px;padding:14px 14px 10px;border-bottom:1px solid rgba(255,255,255,0.10);}
 .mg-title{font-size:18px;font-weight:700;letter-spacing:0.2px;}
 .mg-sub{font-size:12px;opacity:0.75;margin-top:2px;}
@@ -492,14 +515,39 @@ h1 {
 .ch-heart{position:absolute;font-size:26px;user-select:none;cursor:pointer;transform:translate(-50%,-50%);animation:chPop 700ms ease-out forwards;}
 @keyframes chPop{0%{transform:translate(-50%,-50%) scale(0.9);opacity:1;}100%{transform:translate(-50%,-80%) scale(1.25);opacity:0;}}
 
-.mm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
-.mm-card{height:76px;border-radius:14px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;user-select:none;position:relative;overflow:hidden;}
+.mm-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;}
+.mm-card{
+    height:72px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.12);
+    background:rgba(255,255,255,0.06);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;cursor:pointer;user-select:none;
+    position:relative;overflow:hidden;
+    /* Mobilde dokunuş gecikmesini kaldır */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
 .mm-card.flipped{background:rgba(123,44,191,0.16);}
 .mm-card.matched{background:rgba(255,77,109,0.14);opacity:0.85;cursor:default;}
 .mm-card .mm-face{opacity:0;transition:opacity 140ms ease;}
 .mm-card.flipped .mm-face,.mm-card.matched .mm-face{opacity:1;}
 .mm-card .mm-back{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0.7;font-size:14px;}
 .mm-card.flipped .mm-back,.mm-card.matched .mm-back{opacity:0;}
+
+/* Mobilde hafıza grid */
+@media (max-width:820px){
+    .mm-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;}
+    .mm-card{height:64px;font-size:22px;}
+}
+@media (max-width:480px){
+    .mm-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
+    .mm-card{height:58px;font-size:20px;border-radius:10px;}
+}
+@media (max-width:380px){
+    .mm-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;}
+    .mm-card{height:52px;font-size:18px;}
+}
 
 .q-box{border-radius:16px;border:1px solid rgba(255,255,255,0.10);background:rgba(255,255,255,0.04);padding:12px;}
 .q-q{font-size:14px;margin-bottom:10px;}
@@ -535,11 +583,7 @@ button:active{
 /* --- MINI OYUN GİRİŞ KİLİDİ --- */
 #mini-game-btn{ display:none !important; }
 body.logged-in #mini-game-btn{ display:block !important; }
-/* --- MEMORY 20 KART DÜZENİ --- */
-.mm-grid{grid-template-columns:repeat(5,minmax(0,1fr));}
-@media (max-width:820px){.mm-grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
-@media (max-width:480px){.mm-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
-
+/* --- MEMORY 20 KART DÜZENİ - mobil media query'ler yukarıda tanımlı --- */
 /* --- MINIMAL LOGIN LOGO --- */
 .minimal-logo{
     width:120px;
@@ -1260,48 +1304,57 @@ body.logged-in #mini-game-btn{ display:block !important; }
 
 
 
-/* ===== POLAROİD EFEKTİ ===== */
+/* ===== GALERİ ITEM - NORMAL MOD (Polaroid KAPALI) ===== */
 .gallery-item {
-    background: #fff;
-    padding: 10px 10px 36px 10px;
-    border-radius: 4px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    transform: rotate(-2deg);
+    background: transparent;
+    padding: 0;
+    border-radius: 18px;
+    box-shadow: none;
+    transform: none;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
+    position: relative;
 }
 .gallery-item:nth-child(even) {
-    transform: rotate(2deg);
+    transform: none;
 }
 .gallery-item:hover {
-    transform: rotate(0deg) scale(1.05) !important;
-    box-shadow: 0 16px 40px rgba(123,44,191,0.4);
+    transform: scale(1.04) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4) !important;
     z-index: 10;
 }
 .gallery-item img {
     width: 180px;
     height: 220px;
     object-fit: cover;
-    border-radius: 2px;
+    border-radius: 18px;
     display: block;
 }
 .gallery-date {
-    position: static !important;
-    color: #333 !important;
-    background: none !important;
-    text-align: center;
-    font-size: 11px;
-    font-family: 'Playfair Display', serif;
-    margin-top: 6px;
-    padding: 0 !important;
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    color: #fff !important;
+    background: rgba(0,0,0,0.5) !important;
+    text-align: left;
+    font-size: 10px;
+    font-family: 'Inter', sans-serif;
+    padding: 3px 8px !important;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
 }
 
 
 /* ===== TEMALAR ===== */
 body.theme-light {
-    background: linear-gradient(rgba(255,255,255,0.7),rgba(255,255,255,0.7)), url("https://i.imgur.com/PyNRVJW.jpeg") !important;
-    background-size: cover !important; background-attachment: fixed !important;
+    background: transparent !important;
     color: #111 !important;
+}
+/* Aydınlık modda #bg-photo'yu açık ton yap */
+body.theme-light #bg-photo {
+    background: linear-gradient(rgba(255,255,255,0.78), rgba(255,255,255,0.78)), url("https://i.imgur.com/PyNRVJW.jpeg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
 }
 body.theme-light .notes-container,
 body.theme-light #counter-container,
@@ -1316,6 +1369,11 @@ body.theme-light h1 {
     -webkit-text-fill-color: transparent;
 }
 body.theme-light .subtitle { color: #444 !important; }
+
+/* Diğer temalar için #bg-photo'yu gizle */
+body.theme-purple #bg-photo,
+body.theme-pink #bg-photo,
+body.theme-midnight #bg-photo { display: none !important; }
 
 body.theme-purple {
     background: linear-gradient(135deg, #1a0533, #2d0f5e, #1a0533) !important;
@@ -1362,8 +1420,6 @@ body.theme-light {
     --text: #111;
     --btn-bg: #7b2cbf;
     --btn-text: #fff;
-    background: linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)),
-                url("https://i.imgur.com/PyNRVJW.jpeg") center/cover fixed !important;
     color: #111 !important;
 }
 body.theme-light #login-overlay { background: #f0f0f0 !important; }
