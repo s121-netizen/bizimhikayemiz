@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Block Blast 💜🩶</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: #0a0a0a;
+    color: #f5f5f5;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* BG gradient */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(123,44,191,0.12) 0%, transparent 45%),
+                radial-gradient(circle at 80% 70%, rgba(176,176,176,0.07) 0%, transparent 45%);
+    z-index: -1; pointer-events: none;
+  }
+
+  header {
+    text-align: center;
+    padding: 22px 16px 10px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    background: linear-gradient(90deg, #b0b0b0, #9d4edd, #b0b0b0);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 5s linear infinite;
+    margin-bottom: 4px;
+  }
+  @keyframes shine { to { background-position: 200% center; } }
+  header .sub {
+    font-size: 12px;
+    color: #aaa;
+    letter-spacing: 0.5px;
+  }
+
+  /* SCORE BAR */
+  .score-bar {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px 16px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .score-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 10px 20px;
+    text-align: center;
+    flex: 1;
+  }
+  .score-box .label { font-size: 10px; color: #999; letter-spacing: 1px; text-transform: uppercase; }
+  .score-box .value { font-size: 22px; font-weight: 700; color: #fff; margin-top: 2px; }
+  #score-display .value { color: #c77dff; }
+
+  /* GAME AREA */
+  .game-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px 24px;
+  }
+
+  /* GRID */
+  #grid-container {
+    position: relative;
+    display: inline-block;
+  }
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 6px;
+    width: min(360px, calc(100vw - 32px));
+    height: min(360px, calc(100vw - 32px));
+  }
+  .cell {
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.1s;
+  }
+  .cell.filled {
+    border-color: transparent;
+  }
+  .cell.filled img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 5px;
+  }
+  .cell.highlight {
+    background: rgba(157,78,221,0.35) !important;
+    border-color: rgba(157,78,221,0.6) !important;
+  }
+  .cell.invalid-highlight {
+    background: rgba(255,80,80,0.3) !important;
+    border-color: rgba(255,80,80,0.5) !important;
+  }
+  .cell.clear-flash {
+    animation: flashClear 0.35s ease forwards;
+  }
+  @keyframes flashClear {
+    0%   { filter: brightness(2) saturate(0); }
+    100% { filter: brightness(1) saturate(1); background: rgba(255,255,255,0.04); }
+  }
+
+  /* PIECE TRAY */
+  #piece-tray {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .piece-slot {
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    flex: 1;
+    min-width: 90px;
+    max-width: 130px;
+    aspect-ratio: 1;
+    position: relative;
+    transition: border-color 0.2s, transform 0.15s;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .piece-slot:active { transform: scale(0.95); }
+  .piece-slot.selected {
+    border-color: rgba(157,78,221,0.7);
+    background: rgba(157,78,221,0.1);
+  }
+  .piece-slot.used { opacity: 0.2; pointer-events: none; }
+
+  .piece-grid {
+    display: grid;
+    gap: 2px;
+  }
+  .piece-cell {
+    border-radius: 3px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.04);
+  }
+  .piece-cell.p-filled {
+    background: transparent;
+  }
+  .piece-cell.p-filled img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 3px;
+  }
+
+  /* DRAG GHOST */
+  #drag-ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.85;
+    display: none;
+  }
+  #drag-ghost .piece-grid { }
+
+  /* COMBO POP */
+  .combo-pop {
+    position: fixed;
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: #c77dff;
+    text-shadow: 0 0 20px rgba(157,78,221,0.7);
+    pointer-events: none;
+    z-index: 99999;
+    animation: comboPop 1s ease-out forwards;
+  }
+  @keyframes comboPop {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
+  }
+
+  /* GAME OVER */
+  #game-over-screen {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,10,10,0.88);
+    z-index: 20000;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    text-align: center;
+  }
+  #game-over-screen.show { display: flex; }
+  #game-over-screen h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #b0b0b0, #9d4edd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #game-over-screen p { color: #ccc; font-size: 15px; margin-bottom: 24px; }
+  #game-over-screen .final-score { font-size: 48px; font-weight: 700; color: #c77dff; margin-bottom: 6px; }
+  #restart-btn {
+    background: rgba(157,78,221,0.25);
+    border: 1.5px solid rgba(157,78,221,0.5);
+    color: #fff;
+    padding: 14px 34px;
+    border-radius: 50px;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.3px;
+  }
+  #restart-btn:hover { background: rgba(157,78,221,0.4); }
+
+  /* DAILY SEED INFO */
+  .daily-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(157,78,221,0.15);
+    border: 1px solid rgba(157,78,221,0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #c77dff;
+    margin-bottom: 6px;
+  }
+  .dot-live {
+    width: 6px; height: 6px;
+    background: #c77dff;
+    border-radius: 50%;
+    animation: blink 1.4s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  /* INSTRUCTIONS */
+  .hint-text {
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+    max-width: 340px;
+    line-height: 1.5;
+    margin-top: -4px;
+  }
+
+  /* LINES CLEARED INDICATOR */
+  .clear-info {
+    font-size: 11px;
+    color: #aaa;
+    text-align: center;
+    margin-top: 2px;
+    min-height: 16px;
+  }
+  #clear-msg { transition: opacity 0.5s; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Block Blast 💜🩶</h1>
+  <div class="daily-badge"><span class="dot-live"></span> günlük oyun — herkes aynı tahtayı oynuyor</div>
+  <div class="sub">Blokları sürükle, satır/sütun doldur, patlat!</div>
+</header>
+
+<div class="game-wrap">
+  <div class="score-bar">
+    <div class="score-box" id="score-display">
+      <div class="label">skor</div>
+      <div class="value" id="score-val">0</div>
+    </div>
+    <div class="score-box">
+      <div class="label">en iyi</div>
+      <div class="value" id="best-val">0</div>
+    </div>
+  </div>
+
+  <div class="clear-info"><span id="clear-msg"></span></div>
+
+  <div id="grid-container">
+    <div id="grid"></div>
+  </div>
+
+  <p class="hint-text">Blok seç, ardından tahtada bir yere dokun / tıkla. Dolu satır veya sütun patlar!</p>
+
+  <div id="piece-tray"></div>
+</div>
+
+<!-- Drag ghost -->
+<div id="drag-ghost"><div class="piece-grid" id="ghost-grid"></div></div>
+
+<!-- Game Over -->
+<div id="game-over-screen">
+  <h2>oyun bitti 💜</h2>
+  <div class="final-score" id="final-score">0</div>
+  <p>harika oynadın!</p>
+  <button id="restart-btn" onclick="restartGame()">🔄 yeniden oyna</button>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const GRID_SIZE = 8;
+
+// Sitenizden alınan resim yolları (göreli path - sitenizde çalışır)
+// Resimleri temsil eden renk bloklara dönüştürülmüş liste
+// Oyun için 6 farklı "renk" (foto grubu) kullanıyoruz
+const PHOTO_GROUPS = [
+  // Grup 0 - mor tonu
+  { color: 'rgba(123,44,191,0.7)', border: '#7b2cbf', imgs: [
+    '11.2025/28.11.2025.png','11.2025/28.11.2025.2.png','11.2025/29.11.2025.png',
+    '11.2025/30.11.2025.jpg','2025/01.12.2025.png','2025/02.12.2025.jpg',
+  ]},
+  // Grup 1 - gri tonu
+  { color: 'rgba(176,176,176,0.5)', border: '#b0b0b0', imgs: [
+    '2025/03.12.2025.jpg','2025/04.12.2025.jpg','2025/05.12.2025.jpg',
+    '2025/06.12.2025.jpg','2025/07.12.2025.jpg','2025/08.12.2025.jpg',
+  ]},
+  // Grup 2 - pembe/pembe mor
+  { color: 'rgba(255,77,109,0.55)', border: '#ff4d6d', imgs: [
+    '2025/09.12.2025.jpg','2025/10.12.2025.jpg','2025/11.12.2025.jpg',
+    '2025/12.12.2025.jpg','2025/13.12.2025.jpg','2025/14.12.2025.jpg',
+  ]},
+  // Grup 3 - açık mor
+  { color: 'rgba(199,125,255,0.5)', border: '#c77dff', imgs: [
+    '2025/15.12.2025.jpg','2025/16.12.2025.jpg','2025/17.12.2025.jpg',
+    '2025/18.12.2025.jpg','2025/19.12.2025.jpg','2025/20.12.2025.jpg',
+  ]},
+  // Grup 4 - koyu
+  { color: 'rgba(60,60,80,0.8)', border: '#555577', imgs: [
+    '01/01.01.2026.jpg','01/02.01.2026.jpg','01/03.01.2026.jpg',
+    '01/04.01.2026.jpg','01/05.01.2026.jpg','01/06.01.2026.jpg',
+  ]},
+  // Grup 5 - altın
+  { color: 'rgba(255,200,100,0.45)', border: '#ffc864', imgs: [
+    '01/07.01.2026.jpg','01/08.01.2026.jpg','01/09.01.2026.jpg',
+    '01/10.01.2026.jpg','01/11.01.2026.jpg','01/12.01.2026.jpg',
+  ]},
+];
+
+// Tüm blok şekilleri (Block Blast tarzı)
+const SHAPES = [
+  // 1x1
+  [[1]],
+  // 1x2
+  [[1,1]],
+  // 2x1
+  [[1],[1]],
+  // 1x3
+  [[1,1,1]],
+  // 3x1
+  [[1],[1],[1]],
+  // 2x2
+  [[1,1],[1,1]],
+  // 1x4
+  [[1,1,1,1]],
+  // 4x1
+  [[1],[1],[1],[1]],
+  // 1x5
+  [[1,1,1,1,1]],
+  // 5x1
+  [[1],[1],[1],[1],[1]],
+  // L şekli
+  [[1,0],[1,0],[1,1]],
+  // J şekli
+  [[0,1],[0,1],[1,1]],
+  // L ters
+  [[1,1],[1,0],[1,0]],
+  // J ters
+  [[1,1],[0,1],[0,1]],
+  // T şekli
+  [[1,1,1],[0,1,0]],
+  // T ters
+  [[0,1,0],[1,1,1]],
+  // S şekli
+  [[0,1,1],[1,1,0]],
+  // Z şekli
+  [[1,1,0],[0,1,1]],
+  // 3x3 kare
+  [[1,1,1],[1,1,1],[1,1,1]],
+  // 2x3
+  [[1,1],[1,1],[1,1]],
+  // 3x2
+  [[1,1,1],[1,1,1]],
+  // L büyük
+  [[1,0,0],[1,0,0],[1,1,1]],
+  // küçük L
+  [[1,0],[1,1]],
+  // küçük J
+  [[0,1],[1,1]],
+];
+
+// ============================================================
+// SEEDED RNG (Mulberry32) — günlük seed, herkes aynı oyunu görür
+// ============================================================
+function getDailySeeds() {
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+  return parseInt(dateStr);
+}
+
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let grid = [];         // 8x8, null or {groupIdx, imgIdx}
+let pieces = [];       // 3 pieces in tray [{shape, groupIdx}, ...]
+let usedPieces = [];   // [bool, bool, bool]
+let selectedPiece = null; // index 0-2
+let score = 0;
+let bestScore = parseInt(localStorage.getItem('bb-best') || '0');
+let rng;
+let pieceCount = 0;    // global counter for deterministic pieces
+
+function initGame() {
+  const seed = getDailySeeds();
+  rng = mulberry32(seed);
+  // burn a few cycles so grid starts varied
+  for(let i=0;i<10;i++) rng();
+
+  grid = Array.from({length: GRID_SIZE}, () => Array(GRID_SIZE).fill(null));
+  score = 0;
+  pieceCount = 0;
+  selectedPiece = null;
+
+  updateScoreDisplay();
+  renderGrid();
+  spawnPieces();
+}
+
+function seededRandInt(max) {
+  return Math.floor(rng() * max);
+}
+
+// ============================================================
+// PIECES
+// ============================================================
+function spawnPieces() {
+  pieces = [];
+  usedPieces = [false, false, false];
+  for(let i=0;i<3;i++){
+    pieces.push(generatePiece());
+    pieceCount++;
+  }
+  selectedPiece = null;
+  renderTray();
+}
+
+function generatePiece() {
+  const shapeIdx = seededRandInt(SHAPES.length);
+  const groupIdx = seededRandInt(PHOTO_GROUPS.length);
+  // pick img from group deterministically
+  const group = PHOTO_GROUPS[groupIdx];
+  const imgIdx = seededRandInt(group.imgs.length);
+  return { shape: SHAPES[shapeIdx], groupIdx, imgIdx };
+}
+
+// ============================================================
+// RENDER GRID
+// ============================================================
+function renderGrid() {
+  const gridEl = document.getElementById('grid');
+  gridEl.innerHTML = '';
+  const cellSize = gridEl.offsetWidth / GRID_SIZE; // approximate
+
+  for(let r=0;r<GRID_SIZE;r++){
+    for(let c=0;c<GRID_SIZE;c++){
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      const val = grid[r][c];
+      if(val !== null){
+        cell.classList.add('filled');
+        const img = document.createElement('img');
+        img.src = PHOTO_GROUPS[val.groupIdx].imgs[val.imgIdx];
+        img.loading = 'lazy';
+        img.onerror = function() {
+          // fallback color if image not found
+          cell.style.background = PHOTO_GROUPS[val.groupIdx].color;
+          cell.style.borderColor = PHOTO_GROUPS[val.groupIdx].border;
+          this.remove();
+        };
+        cell.appendChild(img);
+      }
+      cell.addEventListener('click', () => onCellClick(r, c));
+      cell.addEventListener('touchend', (e) => { e.preventDefault(); onCellClick(r, c); });
+      gridEl.appendChild(cell);
+    }
+  }
+}
+
+function getCellEl(r, c) {
+  return document.querySelector(`#grid .cell[data-r="${r}"][data-c="${c}"]`);
+}
+
+// ============================================================
+// RENDER TRAY
+// ============================================================
+function renderTray() {
+  const tray = document.getElementById('piece-tray');
+  tray.innerHTML = '';
+  pieces.forEach((piece, idx) => {
+    const slot = document.createElement('div');
+    slot.className = 'piece-slot';
+    if(idx === selectedPiece) slot.classList.add('selected');
+    if(usedPieces[idx]) slot.classList.add('used');
+
+    // mini piece grid
+    const shape = piece.shape;
+    const rows = shape.length, cols = shape[0].length;
+    const maxDim = Math.max(rows, cols);
+    const cellPx = Math.max(14, Math.min(28, Math.floor(74 / maxDim)));
+
+    const pg = document.createElement('div');
+    pg.className = 'piece-grid';
+    pg.style.gridTemplateColumns = `repeat(${cols}, ${cellPx}px)`;
+    pg.style.gap = '2px';
+
+    const group = PHOTO_GROUPS[piece.groupIdx];
+
+    shape.forEach(row => {
+      row.forEach(val => {
+        const pc = document.createElement('div');
+        pc.className = 'piece-cell';
+        pc.style.width = `${cellPx}px`;
+        pc.style.height = `${cellPx}px`;
+        if(val) {
+          pc.classList.add('p-filled');
+          const img = document.createElement('img');
+          img.src = group.imgs[piece.imgIdx];
+          img.loading = 'lazy';
+          img.onerror = function() {
+            pc.style.background = group.color;
+            pc.style.borderRadius = '3px';
+            this.remove();
+          };
+          pc.appendChild(img);
+        }
+        pg.appendChild(pc);
+      });
+    });
+
+    slot.appendChild(pg);
+    slot.addEventListener('click', () => selectPiece(idx));
+    tray.appendChild(slot);
+  });
+}
+
+// ============================================================
+// SELECT PIECE
+// ============================================================
+function selectPiece(idx) {
+  if(usedPieces[idx]) return;
+  if(selectedPiece === idx) {
+    selectedPiece = null;
+  } else {
+    selectedPiece = idx;
+  }
+  clearHighlights();
+  renderTray();
+}
+
+// ============================================================
+// PLACE PIECE
+// ============================================================
+function onCellClick(r, c) {
+  if(selectedPiece === null) return;
+  const piece = pieces[selectedPiece];
+  if(!canPlace(piece.shape, r, c)) {
+    flashInvalid(piece.shape, r, c);
+    return;
+  }
+  placePiece(piece, r, c);
+  usedPieces[selectedPiece] = true;
+  selectedPiece = null;
+  clearHighlights();
+  renderGrid();
+  renderTray();
+  checkAndClearLines();
+
+  // spawn new set if all used
+  if(usedPieces.every(u => u)) {
+    setTimeout(spawnPieces, 300);
+  } else {
+    checkGameOver();
+  }
+}
+
+function canPlace(shape, startR, startC) {
+  for(let r=0;r<shape.length;r++){
+    for(let c=0;c<shape[r].length;c++){
+      if(!shape[r][c]) continue;
+      const gr = startR + r, gc = startC + c;
+      if(gr < 0 || gr >= GRID_SIZE || gc < 0 || gc >= GRID_SIZE) return false;
+      if(grid[gr][gc] !== null) return false;
+    }
+  }
+  return true;
+}
+
+function placePiece(piece, startR, startC) {
+  const group = PHOTO_GROUPS[piece.groupIdx];
+  for(let r=0;r<piece.shape.length;r++){
+    for(let c=0;c<piece.shape[r].length;c++){
+      if(!piece.shape[r][c]) continue;
+      // use slightly varied imgIdx for each cell for mosaic effect
+      const imgOffset = (piece.imgIdx + r * piece.shape[0].length + c) % group.imgs.length;
+      grid[startR+r][startC+c] = { groupIdx: piece.groupIdx, imgIdx: imgOffset };
+    }
+  }
+}
+
+// ============================================================
+// CLEAR LINES
+// ============================================================
+function checkAndClearLines() {
+  const rowsToClear = [];
+  const colsToClear = [];
+
+  for(let r=0;r<GRID_SIZE;r++){
+    if(grid[r].every(v => v !== null)) rowsToClear.push(r);
+  }
+  for(let c=0;c<GRID_SIZE;c++){
+    if(grid.every(row => row[c] !== null)) colsToClear.push(c);
+  }
+
+  if(rowsToClear.length === 0 && colsToClear.length === 0) return;
+
+  // flash animation
+  const cells = new Set();
+  rowsToClear.forEach(r => {
+    for(let c=0;c<GRID_SIZE;c++) cells.add(`${r}-${c}`);
+  });
+  colsToClear.forEach(c => {
+    for(let r=0;r<GRID_SIZE;r++) cells.add(`${r}-${c}`);
+  });
+
+  cells.forEach(key => {
+    const [r, c] = key.split('-').map(Number);
+    const el = getCellEl(r, c);
+    if(el) el.classList.add('clear-flash');
+  });
+
+  setTimeout(() => {
+    rowsToClear.forEach(r => {
+      for(let c=0;c<GRID_SIZE;c++) grid[r][c] = null;
+    });
+    colsToClear.forEach(c => {
+      for(let r=0;r<GRID_SIZE;r++) grid[r][c] = null;
+    });
+
+    const linesCleared = rowsToClear.length + colsToClear.length;
+    const pts = linesCleared * GRID_SIZE * linesCleared; // combo bonus
+    score += pts;
+    if(score > bestScore){
+      bestScore = score;
+      localStorage.setItem('bb-best', bestScore);
+    }
+    updateScoreDisplay();
+    showClearMsg(linesCleared, pts);
+    renderGrid();
+    checkGameOver();
+  }, 350);
+}
+
+function showClearMsg(lines, pts) {
+  const el = document.getElementById('clear-msg');
+  const msgs = ['', 'Temiz! 💜', 'Çift! 🔥', 'Üçlü! ⚡', 'Dördü! 🌟'];
+  el.textContent = `${msgs[Math.min(lines, msgs.length-1)] || lines + ' satır!'} +${pts}`;
+  el.style.opacity = '1';
+  // combo pop
+  if(lines >= 2) {
+    spawnComboPop(`${lines}x COMBO! +${pts}`);
+  }
+  setTimeout(() => { el.style.opacity = '0'; }, 1800);
+}
+
+function spawnComboPop(text) {
+  const el = document.createElement('div');
+  el.className = 'combo-pop';
+  el.textContent = text;
+  el.style.left = '50%';
+  el.style.top = '40%';
+  el.style.transform = 'translateX(-50%)';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+// ============================================================
+// HIGHLIGHTS ON HOVER (desktop)
+// ============================================================
+document.getElementById('grid').addEventListener('mouseover', (e) => {
+  const cell = e.target.closest('.cell');
+  if(!cell || selectedPiece === null) return;
+  const r = parseInt(cell.dataset.r);
+  const c = parseInt(cell.dataset.c);
+  clearHighlights();
+  highlightPlacement(pieces[selectedPiece].shape, r, c);
+});
+document.getElementById('grid').addEventListener('mouseleave', clearHighlights);
+
+function highlightPlacement(shape, startR, startC) {
+  const ok = canPlace(shape, startR, startC);
+  for(let r=0;r<shape.length;r++){
+    for(let c=0;c<shape[r].length;c++){
+      if(!shape[r][c]) continue;
+      const el = getCellEl(startR+r, startC+c);
+      if(el) el.classList.add(ok ? 'highlight' : 'invalid-highlight');
+    }
+  }
+}
+
+function flashInvalid(shape, startR, startC) {
+  highlightPlacement(shape, startR, startC);
+  setTimeout(clearHighlights, 350);
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.cell.highlight, .cell.invalid-highlight').forEach(el => {
+    el.classList.remove('highlight','invalid-highlight');
+  });
+}
+
+// ============================================================
+// GAME OVER CHECK
+// ============================================================
+function checkGameOver() {
+  const remaining = pieces.filter((_, i) => !usedPieces[i]);
+  const canPlayAny = remaining.some(p =>
+    canPlaceAnywhere(p.shape)
+  );
+  if(!canPlayAny && remaining.length > 0) {
+    setTimeout(showGameOver, 400);
+  }
+}
+
+function canPlaceAnywhere(shape) {
+  for(let r=0;r<GRID_SIZE;r++){
+    for(let c=0;c<GRID_SIZE;c++){
+      if(canPlace(shape, r, c)) return true;
+    }
+  }
+  return false;
+}
+
+function showGameOver() {
+  document.getElementById('final-score').textContent = score.toLocaleString('tr-TR');
+  document.getElementById('game-over-screen').classList.add('show');
+}
+
+function restartGame() {
+  document.getElementById('game-over-screen').classList.remove('show');
+  // Reset rng to same seed for consistent experience
+  initGame();
+}
+
+// ============================================================
+// SCORE DISPLAY
+// ============================================================
+function updateScoreDisplay() {
+  document.getElementById('score-val').textContent = score.toLocaleString('tr-TR');
+  document.getElementById('best-val').textContent = bestScore.toLocaleString('tr-TR');
+}
+
+// ============================================================
+// TOUCH — swipe on tray piece to select then tap grid
+// ============================================================
+// Mobile: tap piece slot → selected, tap grid cell → place
+// Already handled via click events above.
+
+// ============================================================
+// START
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  updateScoreDisplay();
+  initGame();
+});
+
+// Resize
+window.addEventListener('resize', () => {
+  renderGrid();
+  renderTray();
+});
+</script>
+</body>
+</html>
