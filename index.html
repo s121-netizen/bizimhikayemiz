@@ -563,6 +563,28 @@ h1 {
 .lb li{margin:4px 0;}
 @media (max-width:820px){.lb-wrap{grid-template-columns:1fr;}.mm-grid{grid-template-columns:repeat(3,minmax(0,1fr));}.ch-area{height:320px;}}
 
+/* ===== XOX OYUN STİLLERİ ===== */
+.xox-size-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.xox-size-btn{padding:7px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.07);color:#fff;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.18s;}
+.xox-size-btn.active{background:rgba(123,44,191,0.35);border-color:#9d4edd;color:#fff;}
+.xox-size-btn:hover{background:rgba(255,255,255,0.14);}
+#xox-board-wrap{display:flex;justify-content:center;align-items:center;width:100%;padding:6px 0;}
+.xox-board{display:grid;gap:6px;width:min(380px,96vw);}
+.xox-board.size-3{grid-template-columns:repeat(3,1fr);}
+.xox-board.size-5{grid-template-columns:repeat(5,1fr);}
+.xox-board.size-9{grid-template-columns:repeat(9,1fr);}
+.xox-cell{aspect-ratio:1;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;transition:background 0.15s,transform 0.12s;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.xox-cell:hover:not(.taken){background:rgba(255,255,255,0.11);transform:scale(0.97);}
+.xox-cell.taken{cursor:default;}
+.xox-cell.x-cell{color:#ff4d6d;text-shadow:0 0 10px rgba(255,77,109,0.5);}
+.xox-cell.o-cell{color:#9d4edd;text-shadow:0 0 10px rgba(157,78,221,0.5);}
+.xox-cell.win-cell{background:rgba(255,215,0,0.15)!important;border-color:rgba(255,215,0,0.5)!important;animation:xoxWin 0.5s ease;}
+@keyframes xoxWin{0%{transform:scale(1);}50%{transform:scale(1.12);}100%{transform:scale(1);}}
+.xox-board.size-3 .xox-cell{font-size:clamp(24px,7vw,48px);border-radius:14px;}
+.xox-board.size-5 .xox-cell{font-size:clamp(16px,4.5vw,32px);border-radius:10px;}
+.xox-board.size-9 .xox-cell{font-size:clamp(8px,2.5vw,18px);border-radius:8px;}
+.xox-status{text-align:center;font-size:14px;font-family:'Playfair Display',serif;padding:10px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);margin-top:8px;min-height:42px;display:flex;align-items:center;justify-content:center;}
+@media(max-width:480px){.xox-board{width:min(320px,92vw);}.xox-board.size-9 .xox-cell{font-size:8px;}}
 
 /* --- MOBILE BLUE HIGHLIGHT / FOCUS FIX --- */
 button, input, textarea, select, a{
@@ -4725,8 +4747,139 @@ function togglePolaroid() {
 
 </script>
 
+<script>
+/* ===== XOX (TIC-TAC-TOE) OYUNU ===== */
+(function(){
+  let xoxSize = 3;
+  let xoxBoard = [];
+  let xoxCurrent = 'X'; // X veya O
+  let xoxOver = false;
+  let xoxScoreX = 0;
+  let xoxScoreO = 0;
+  let xoxWinLen = 3; // kazanmak için gerekli ardışık sayı
 
-<!-- ===== MINI OYUN MODAL ===== -->
+  // Boyuta göre kazanma uzunluğu
+  function getWinLen(size){ return size === 3 ? 3 : size === 5 ? 4 : 5; }
+
+  function xoxSetSize(s){
+    xoxSize = s;
+    xoxWinLen = getWinLen(s);
+    document.querySelectorAll('.xox-size-btn').forEach(b=>{
+      b.classList.toggle('active', parseInt(b.dataset.size)===s);
+    });
+    xoxReset();
+  }
+  window.xoxSetSize = xoxSetSize;
+
+  function xoxReset(){
+    xoxBoard = Array(xoxSize * xoxSize).fill('');
+    xoxCurrent = 'X';
+    xoxOver = false;
+    document.getElementById('xox-turn-display').textContent = 'sıra: ❌';
+    document.getElementById('xox-turn-display').style.color = '#ff4d6d';
+    document.getElementById('xox-status').textContent = 'Oyunu başlatmak için tahtaya dokun 💜';
+    xoxRenderBoard();
+  }
+  window.xoxReset = xoxReset;
+
+  function xoxResetScore(){
+    xoxScoreX = 0; xoxScoreO = 0;
+    document.getElementById('xox-score-x').textContent = 'X: 0';
+    document.getElementById('xox-score-o').textContent = 'O: 0';
+    xoxReset();
+  }
+  window.xoxResetScore = xoxResetScore;
+
+  function xoxRenderBoard(){
+    const board = document.getElementById('xox-board');
+    if(!board) return;
+    board.className = 'xox-board size-' + xoxSize;
+    board.innerHTML = '';
+    for(let i = 0; i < xoxSize * xoxSize; i++){
+      const cell = document.createElement('div');
+      cell.className = 'xox-cell';
+      if(xoxBoard[i]){
+        cell.classList.add('taken');
+        cell.classList.add(xoxBoard[i]==='X' ? 'x-cell' : 'o-cell');
+        cell.textContent = xoxBoard[i]==='X' ? '❌' : '⭕';
+      }
+      cell.addEventListener('click', ()=> xoxClick(i));
+      board.appendChild(cell);
+    }
+  }
+
+  function xoxClick(idx){
+    if(xoxOver || xoxBoard[idx]) return;
+    xoxBoard[idx] = xoxCurrent;
+    const cells = document.getElementById('xox-board').children;
+    const cell = cells[idx];
+    cell.classList.add('taken');
+    cell.classList.add(xoxCurrent==='X' ? 'x-cell' : 'o-cell');
+    cell.textContent = xoxCurrent==='X' ? '❌' : '⭕';
+
+    const winCells = xoxCheckWin(xoxBoard, xoxCurrent, xoxSize, xoxWinLen);
+    if(winCells){
+      xoxOver = true;
+      winCells.forEach(wi => cells[wi].classList.add('win-cell'));
+      if(xoxCurrent==='X'){ xoxScoreX++; document.getElementById('xox-score-x').textContent='X: '+xoxScoreX; }
+      else{ xoxScoreO++; document.getElementById('xox-score-o').textContent='O: '+xoxScoreO; }
+      const msg = xoxCurrent==='X' ? '🎉 ❌ Kazandı! Tebrikler!' : '🎉 ⭕ Kazandı! Tebrikler!';
+      document.getElementById('xox-status').textContent = msg;
+      document.getElementById('xox-turn-display').textContent = xoxCurrent==='X' ? '❌ Kazandı 🏆' : '⭕ Kazandı 🏆';
+      return;
+    }
+    if(xoxBoard.every(v=>v)){
+      xoxOver = true;
+      document.getElementById('xox-status').textContent = '🤝 Berabere! Harika oyun!';
+      document.getElementById('xox-turn-display').textContent = 'Berabere 🤝';
+      return;
+    }
+    xoxCurrent = xoxCurrent==='X' ? 'O' : 'X';
+    document.getElementById('xox-turn-display').textContent = xoxCurrent==='X' ? 'sıra: ❌' : 'sıra: ⭕';
+    document.getElementById('xox-turn-display').style.color = xoxCurrent==='X' ? '#ff4d6d' : '#9d4edd';
+    document.getElementById('xox-status').textContent = xoxCurrent==='X' ? '❌ hamleni yap!' : '⭕ hamleni yap!';
+  }
+
+  function xoxCheckWin(board, player, size, winLen){
+    // Yatay, dikey, çapraz kontrol
+    const idx = (r,c) => r*size+c;
+    // Yatay
+    for(let r=0;r<size;r++){
+      for(let c=0;c<=size-winLen;c++){
+        const cells = Array.from({length:winLen},(_,k)=>idx(r,c+k));
+        if(cells.every(i=>board[i]===player)) return cells;
+      }
+    }
+    // Dikey
+    for(let c=0;c<size;c++){
+      for(let r=0;r<=size-winLen;r++){
+        const cells = Array.from({length:winLen},(_,k)=>idx(r+k,c));
+        if(cells.every(i=>board[i]===player)) return cells;
+      }
+    }
+    // Çapraz ↘
+    for(let r=0;r<=size-winLen;r++){
+      for(let c=0;c<=size-winLen;c++){
+        const cells = Array.from({length:winLen},(_,k)=>idx(r+k,c+k));
+        if(cells.every(i=>board[i]===player)) return cells;
+      }
+    }
+    // Çapraz ↙
+    for(let r=0;r<=size-winLen;r++){
+      for(let c=winLen-1;c<size;c++){
+        const cells = Array.from({length:winLen},(_,k)=>idx(r+k,c-k));
+        if(cells.every(i=>board[i]===player)) return cells;
+      }
+    }
+    return null;
+  }
+
+  // İlk render — tab açıldığında
+  document.addEventListener('DOMContentLoaded', ()=>{ xoxReset(); });
+  // Eğer DOM zaten hazırsa
+  if(document.readyState !== 'loading') xoxReset();
+})();
+</script>
 <div id="mini-game-modal" class="mg-modal" aria-hidden="true">
   <div class="mg-backdrop" id="mg-backdrop" onclick="(function(){if(!document.body.classList.contains('logged-in'))return;var m=document.getElementById('mini-game-modal');if(m){m.classList.add('show');m.setAttribute('aria-hidden','false');}})();"></div>
   <div class="mg-card" role="dialog" aria-modal="true" aria-labelledby="mg-title">
@@ -4752,6 +4905,7 @@ function togglePolaroid() {
       <button class="mg-tab" data-tab="board" role="tab">sıralama</button>
       <button class="mg-tab" data-tab="wheel" role="tab">aşk çarkı</button>
       <button class="mg-tab" data-tab="tod" role="tab">doğruluk 🎯</button>
+      <button class="mg-tab" data-tab="xox" role="tab">XOX ❌⭕</button>
     </div>
 
     <div class="mg-body">
@@ -4887,6 +5041,39 @@ function togglePolaroid() {
   <div class="tod-history-wrap">
     <div class="tod-history-title">son çekilen kartlar</div>
     <div id="tod-history" class="tod-history"></div>
+  </div>
+</section>
+
+<!-- ===== XOX PANELİ ===== -->
+<section class="mg-panel" data-panel="xox" role="tabpanel">
+  <div class="mg-panel-top">
+    <div class="mg-hint">❌⭕ XOX — iki kişi aynı cihazda veya sırayla oynayın!</div>
+    <div class="mg-stats">
+      <div>skor: <span id="xox-score-x">X: 0</span> / <span id="xox-score-o">O: 0</span></div>
+      <div id="xox-turn-display" style="font-weight:700;color:#ff4d6d;">sıra: ❌</div>
+    </div>
+  </div>
+
+  <!-- Boyut seçimi -->
+  <div class="xox-size-row">
+    <span style="font-size:12px;opacity:0.75;">tahta boyutu:</span>
+    <button class="xox-size-btn active" data-size="3" onclick="xoxSetSize(3)">3×3</button>
+    <button class="xox-size-btn" data-size="5" onclick="xoxSetSize(5)">5×5</button>
+    <button class="xox-size-btn" data-size="9" onclick="xoxSetSize(9)">9×9</button>
+  </div>
+
+  <!-- Oyun tahtası -->
+  <div id="xox-board-wrap">
+    <div id="xox-board" class="xox-board size-3"></div>
+  </div>
+
+  <!-- Durum mesajı -->
+  <div id="xox-status" class="xox-status">Oyunu başlatmak için tahtaya dokun 💜</div>
+
+  <!-- Aksiyonlar -->
+  <div class="mg-actions" style="justify-content:center;gap:12px;margin-top:10px;">
+    <button class="mg-primary" onclick="xoxReset()" type="button">🔄 Yeni Oyun</button>
+    <button class="mg-ghost" onclick="xoxResetScore()" type="button">Skoru Sıfırla</button>
   </div>
 </section>
 
