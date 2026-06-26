@@ -586,25 +586,49 @@ h1 {
 .xox-status{text-align:center;font-size:14px;font-family:'Playfair Display',serif;padding:10px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);margin-top:8px;min-height:42px;display:flex;align-items:center;justify-content:center;}
 @media(max-width:480px){.xox-board{width:min(320px,92vw);}.xox-board.size-9 .xox-cell{font-size:8px;}}
 
-/* --- MOBILE BLUE HIGHLIGHT / FOCUS FIX --- */
-button, input, textarea, select, a{
-    outline: none !important;
-    -webkit-tap-highlight-color: transparent;
+/* --- MOBILE BLUE HIGHLIGHT / FOCUS FIX (GLOBAL) --- */
+*, *::before, *::after {
+    -webkit-tap-highlight-color: transparent !important;
 }
-button:focus, input:focus, textarea:focus, select:focus, a:focus{
+button, input, textarea, select, a, div[onclick], div[role="button"] {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none;
+}
+button:focus, input:focus, select:focus, a:focus {
     outline: none !important;
     box-shadow: none !important;
 }
-button{
+textarea:focus {
+    outline: none !important;
+}
+button {
     transition: transform 0.08s ease, opacity 0.08s ease;
 }
-button:active{
+button:active {
     transform: scale(0.97);
     opacity: 0.92;
+}
+/* Günlük takvim hücreleri */
+#gunluk-calendar-grid > div,
+#gunluk-list-view > div {
+    -webkit-tap-highlight-color: transparent !important;
+    user-select: none;
+}
+/* Kişi seçici ve oyun butonları */
+.gkisi-btn, .kyaz-kisi-btn, .xox-size-btn, .mg-tab,
+.mg-primary, .mg-ghost, .mg-danger, .mg-save {
+    -webkit-tap-highlight-color: transparent !important;
+    user-select: none;
 }
 /* --- MINI OYUN GİRİŞ KİLİDİ --- */
 #mini-game-btn{ display:none !important; }
 body.logged-in #mini-game-btn{ display:block !important; }
+/* Günlük/Kitap modal açıkken mini oyun butonunu gizle ve tıklanamaz yap */
+body.modal-open #mini-game-btn {
+    display:none !important;
+    pointer-events:none !important;
+}
 /* --- MEMORY 20 KART DÜZENİ - mobil media query'ler yukarıda tanımlı --- */
 /* --- MINIMAL LOGIN LOGO --- */
 .minimal-logo{
@@ -5534,10 +5558,15 @@ function historyPath(gun, kisi){ return "gunluk_history/gun" + gun + "/" + kisi;
 // ---- MODAL AÇMA/KAPAMA ----
 window.openGunluk = function(){
     document.getElementById("gunluk-modal").style.display = "block";
+    document.body.classList.add("modal-open");
     renderGunlukView();
 };
 window.closeGunluk = function(){
     document.getElementById("gunluk-modal").style.display = "none";
+    // Başka modal açık değilse kaldır
+    if(document.getElementById("kitap-modal").style.display === "none"){
+        document.body.classList.remove("modal-open");
+    }
 };
 window.closeGunlukOnBackdrop = function(e){
     if(e.target === document.getElementById("gunluk-modal")) closeGunluk();
@@ -5645,6 +5674,10 @@ function renderCalendar(bugun){
                 opacity: ${isFuture ? "0.3" : "1"};
                 box-shadow: ${isToday ? "0 0 0 2px rgba(255,77,109,0.5)" : "none"};
                 color: ${isFuture ? "#555" : "#ddd"};
+                -webkit-tap-highlight-color: transparent;
+                user-select: none;
+                touch-action: manipulation;
+                -webkit-touch-callout: none;
             `;
             cell.textContent = g;
             if(isToday){
@@ -5682,6 +5715,7 @@ function renderList(bugun){
             el.style.cssText = `
                 padding:12px 16px; border-radius:14px; background:rgba(255,255,255,0.04);
                 border:1px solid rgba(255,255,255,0.08); cursor:pointer; transition:all 0.2s;
+                -webkit-tap-highlight-color:transparent; user-select:none; touch-action:manipulation;
             `;
             let preview = "";
             if((aktifKisi==="kevser"||aktifKisi==="hepsi") && hasKevser){
@@ -5859,6 +5893,7 @@ window.toggleKitapModu = function(){
 
 window.openKitapModu = function(){
     document.getElementById("kitap-modal").style.display = "block";
+    document.body.classList.add("modal-open");
     if(!window.akDB){ renderKitapSayfa(); return; }
     // Realtime dinle
     window.akDB.ref("gunluk").on("value", snap=>{
@@ -5870,6 +5905,9 @@ window.openKitapModu = function(){
 window.closeKitapModu = function(){
     document.getElementById("kitap-modal").style.display = "none";
     if(window.akDB) window.akDB.ref("gunluk").off();
+    if(document.getElementById("gunluk-modal").style.display === "none"){
+        document.body.classList.remove("modal-open");
+    }
 };
 
 function kitapSayfaIcerik(gun){
