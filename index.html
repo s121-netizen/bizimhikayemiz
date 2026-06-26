@@ -1603,21 +1603,36 @@ body.theme-light h1 {
 }
 body.theme-light .subtitle { color: #444 !important; }
 
-/* Diğer temalar için #bg-photo'yu gizle */
-body.theme-purple #bg-photo,
-body.theme-pink #bg-photo,
-body.theme-midnight #bg-photo { display: none !important; }
+/* Tüm temalarda bg-photo göster, sadece overlay rengini değiştir */
+body.theme-purple #bg-photo {
+    background: linear-gradient(rgba(26,5,51,0.78), rgba(45,15,94,0.78)), url("https://i.imgur.com/PyNRVJW.jpeg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    display: block !important;
+}
+body.theme-pink #bg-photo {
+    background: linear-gradient(rgba(45,0,20,0.78), rgba(92,0,36,0.78)), url("https://i.imgur.com/PyNRVJW.jpeg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    display: block !important;
+}
+body.theme-midnight #bg-photo {
+    background: linear-gradient(rgba(13,27,42,0.80), rgba(27,42,61,0.80)), url("https://i.imgur.com/PyNRVJW.jpeg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    display: block !important;
+}
 
 body.theme-purple {
-    background: linear-gradient(135deg, #1a0533, #2d0f5e, #1a0533) !important;
+    background: transparent !important;
     color: #f0e6ff !important;
 }
 body.theme-pink {
-    background: linear-gradient(135deg, #2d0014, #5c0024, #2d0014) !important;
+    background: transparent !important;
     color: #ffe0e8 !important;
 }
 body.theme-midnight {
-    background: linear-gradient(135deg, #0d1b2a, #1b2a3d, #0d1b2a) !important;
+    background: transparent !important;
     color: #e0f4ff !important;
 }
 
@@ -1669,7 +1684,6 @@ body.theme-purple {
     --text: #f0e6ff;
     --btn-bg: #c77dff;
     --btn-text: #1a0533;
-    background: linear-gradient(135deg, #1a0533, #2d0f5e, #1a0533) !important;
     color: #f0e6ff !important;
 }
 body.theme-purple #login-overlay { background: #1a0533 !important; }
@@ -1683,7 +1697,6 @@ body.theme-pink {
     --text: #ffe0e8;
     --btn-bg: #ff4d6d;
     --btn-text: #fff;
-    background: linear-gradient(135deg, #2d0014, #5c0024, #2d0014) !important;
     color: #ffe0e8 !important;
 }
 body.theme-pink #login-overlay { background: #2d0014 !important; }
@@ -1697,10 +1710,35 @@ body.theme-midnight {
     --text: #e0f4ff;
     --btn-bg: #4fc3f7;
     --btn-text: #0d1b2a;
-    background: linear-gradient(135deg, #0d1b2a, #1b2a3d, #0d1b2a) !important;
+    background: transparent !important;
     color: #e0f4ff !important;
 }
 body.theme-midnight #login-overlay { background: #0d1b2a !important; }
+
+/* ===== GRİ TEMA ===== */
+body.theme-grey {
+    --accent: #a0a0a0;
+    --accent2: #d0d0d0;
+    --bg-card: rgba(180,180,180,0.1);
+    --border: rgba(200,200,200,0.2);
+    --text: #f0f0f0;
+    --btn-bg: #a0a0a0;
+    --btn-text: #fff;
+    color: #f0f0f0 !important;
+}
+body.theme-grey #bg-photo {
+    background: linear-gradient(rgba(30,30,30,0.72), rgba(50,50,50,0.72)), url("https://i.imgur.com/PyNRVJW.jpeg") !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    display: block !important;
+}
+body.theme-grey h1 {
+    background: linear-gradient(90deg, #d0d0d0, #888, #d0d0d0) !important;
+    background-size: 200% auto !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+body.theme-grey #login-overlay { background: #1a1a1a !important; }
 
 /* ===== CSS DEĞİŞKENLERİNİ KULLANAN ELEMANLAR ===== */
 .notes-container, #counter-container, .card-two, .mg-card,
@@ -2005,8 +2043,8 @@ h1 {
         <div id="gunluk-detail-card" style="
             position:relative;
             width:min(640px, calc(100vw - 20px));
-            max-height:88vh;
-            margin: 6vh auto 0;
+            max-height:92vh;
+            margin: 4vh auto 0;
             background: rgba(14,10,22,0.98);
             border: 1px solid rgba(123,44,191,0.35);
             border-radius: 22px;
@@ -2015,14 +2053,45 @@ h1 {
             flex-direction: column;
             box-shadow: 0 28px 90px rgba(0,0,0,0.8);
         ">
-            <!-- Detay Header -->
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,0.08); flex-shrink:0;">
-                <div id="gunluk-detail-title" style="font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:#f5f5f5;"></div>
-                <button onclick="closeGunlukDetail()" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); color:#fff; width:34px; height:34px; border-radius:11px; cursor:pointer; font-size:15px;">✕</button>
+            <!-- TEMA RESMİ (o güne ait /temalar/N.png) -->
+            <div id="gunluk-tema-img-wrap" style="position:relative; flex-shrink:0; max-height:160px; overflow:hidden; border-radius:22px 22px 0 0;">
+                <img id="gunluk-tema-img" src="" alt="" style="width:100%; height:160px; object-fit:cover; display:block;">
+                <div style="position:absolute;inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(14,10,22,0.85));"></div>
+                <!-- Başlık tema resmi üzerinde yüzer -->
+                <div style="position:absolute; bottom:0; left:0; right:0; padding:12px 20px; display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div id="gunluk-detail-title" style="font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.6);"></div>
+                    <button onclick="closeGunlukDetail()" style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); color:#fff; width:34px; height:34px; border-radius:11px; cursor:pointer; font-size:15px; flex-shrink:0;">✕</button>
+                </div>
             </div>
             <!-- Günlük içerikleri (okuma modu) -->
             <div id="gunluk-detail-read" style="flex:1; overflow-y:auto; padding:14px 20px;"></div>
-            <!-- Yeni not ekleme -->
+
+            <!-- YORUMLAR BÖLÜMÜ (X tarzı) -->
+            <div id="gunluk-yorumlar-wrap" style="border-top:1px solid rgba(255,255,255,0.07); padding:10px 20px 8px; flex-shrink:0; max-height:200px; overflow-y:auto;">
+                <div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; opacity:0.5; margin-bottom:8px;">💬 yorumlar</div>
+                <div id="gunluk-yorumlar-list" style="display:flex; flex-direction:column; gap:7px;"></div>
+            </div>
+
+            <!-- Yorum yaz (X tarzı) -->
+            <div id="gunluk-yorum-yazma" style="border-top:1px solid rgba(255,255,255,0.07); padding:10px 20px; flex-shrink:0; display:flex; gap:8px; align-items:flex-start;">
+                <div id="gunluk-yorum-avatar" style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#7b2cbf,#b0b0b0); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; margin-top:4px;">?</div>
+                <div style="flex:1;">
+                    <textarea id="gunluk-yorum-textarea" placeholder="bir şey yaz..." style="
+                        width:100%; min-height:52px; background:transparent;
+                        border:none; border-bottom:1px solid rgba(123,44,191,0.3); color:#f5f5f5;
+                        padding:6px 0; font-size:13px; font-family:'Inter',sans-serif; resize:none;
+                        outline:none; line-height:1.5;
+                    " oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+                    <div style="display:flex; justify-content:flex-end; margin-top:6px;">
+                        <button onclick="saveGunlukYorum()" style="
+                            padding:7px 18px; border-radius:999px; border:none;
+                            background:#7b2cbf; color:#fff; cursor:pointer; font-size:12px; font-weight:700;
+                        ">Gönder</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yeni NOT ekleme (günlük / kitap) -->
             <div id="gunluk-detail-write" style="border-top:1px solid rgba(255,255,255,0.08); padding:14px 20px; flex-shrink:0;">
                 <div style="font-size:12px; opacity:0.65; margin-bottom:8px;" id="gunluk-write-label">bu güne bir not ekle</div>
                 <textarea id="gunluk-textarea" placeholder="bugün nasıl hissettirdin bana..." style="
@@ -3329,6 +3398,7 @@ h1 {
   <button onclick="setTheme('purple')"   class="tp-btn"><span class="tp-dot" style="background:#7b2cbf;border:2px solid #c77dff;"></span>Mor</button>
   <button onclick="setTheme('pink')"     class="tp-btn"><span class="tp-dot" style="background:#ff4d6d;border:2px solid #ffb3c1;"></span>Pembe</button>
   <button onclick="setTheme('midnight')" class="tp-btn"><span class="tp-dot" style="background:#0d1b2a;border:2px solid #4fc3f7;"></span>Gece Mavisi</button>
+  <button onclick="setTheme('grey')"    class="tp-btn"><span class="tp-dot" style="background:#555;border:2px solid #aaa;"></span>Gri</button>
 </div>
 
 <div id="birthday-surprise">
@@ -4930,14 +5000,20 @@ document.addEventListener('click', function(e) {
     }
 }, true);
 function setTheme(name) {
-    document.body.classList.remove('theme-light','theme-purple','theme-pink','theme-midnight');
+    document.body.classList.remove('theme-light','theme-purple','theme-pink','theme-midnight','theme-grey');
     if (name !== 'dark') document.body.classList.add('theme-' + name);
     localStorage.setItem('ak-theme', name);
     document.querySelectorAll('.tp-btn').forEach(b => b.classList.remove('active-theme'));
-    const idx = ['dark','light','purple','pink','midnight'].indexOf(name);
+    const idx = ['dark','light','purple','pink','midnight','grey'].indexOf(name);
     const btns = document.querySelectorAll('.tp-btn');
     if (btns[idx]) btns[idx].classList.add('active-theme');
     document.getElementById('theme-picker').classList.remove('open');
+    // Karanlık (default) temaya dönünce bg-photo'yu sıfırla
+    const bgPhoto = document.getElementById('bg-photo');
+    if(bgPhoto && name === 'dark'){
+        bgPhoto.style.background = '';
+        bgPhoto.style.display = '';
+    }
 }
 (function(){
     const t = localStorage.getItem('ak-theme') || 'dark';
@@ -5739,7 +5815,7 @@ function renderList(bugun){
     });
 }
 
-// ---- GEÇMİŞ GÖRÜNÜMÜ ----
+// ---- GEÇMİŞ GÖRÜNÜMÜ (Son 5 düzenleme - her ikisi için de) ----
 function renderHistoryView(){
     const hv = document.getElementById("gunluk-history-view");
     hv.innerHTML = '<div style="opacity:0.5;font-size:12px;text-align:center;padding:8px;">geçmiş yükleniyor...</div>';
@@ -5747,6 +5823,13 @@ function renderHistoryView(){
     window.akDB.ref("gunluk_history").once("value").then(snap=>{
         const data = snap.val() || {};
         hv.innerHTML = "";
+
+        // Başlık
+        const baslik = document.createElement("div");
+        baslik.style.cssText = "font-size:11px;letter-spacing:1px;text-transform:uppercase;opacity:0.55;margin-bottom:12px;text-align:center;";
+        baslik.textContent = "son 5 düzenleme · her ikisi için";
+        hv.appendChild(baslik);
+
         const entries = [];
         Object.keys(data).forEach(gunKey=>{
             Object.keys(data[gunKey]).forEach(kisi=>{
@@ -5757,24 +5840,53 @@ function renderHistoryView(){
         });
         entries.sort((a,b)=>b.ts-a.ts);
         if(!entries.length){
-            hv.innerHTML = '<div style="opacity:0.45;font-size:13px;text-align:center;padding:20px;">henüz düzenleme geçmişi yok</div>';
+            hv.innerHTML += '<div style="opacity:0.45;font-size:13px;text-align:center;padding:20px;">henüz düzenleme geçmişi yok</div>';
             return;
         }
-        entries.slice(0,30).forEach(e=>{
-            const d = new Date(e.ts);
-            const zaman = d.getDate().toString().padStart(2,"0")+"."+(d.getMonth()+1).toString().padStart(2,"0")+"."+d.getFullYear()+" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
-            const el = document.createElement("div");
-            el.style.cssText = "padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);";
-            el.innerHTML = `
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                    <span style="font-size:12px;font-weight:600;">${e.kisi==="kevser"?"🩶 kevser":"💜 atakan"} · ${e.gun}. gün</span>
-                    <span style="font-size:10px;opacity:0.5;">${zaman}</span>
-                </div>
-                <div style="font-size:12px;opacity:0.75;font-style:italic;">"${e.metin.substring(0,80)}${e.metin.length>80?"...":""}"</div>
-            `;
-            hv.appendChild(el);
-        });
+        // İkisi için ayrı ayrı son 5'i bul
+        const kevserEntries = entries.filter(e=>e.kisi==="kevser").slice(0,5);
+        const atakanEntries = entries.filter(e=>e.kisi==="atakan").slice(0,5);
+
+        function renderGroup(label, color, items){
+            if(!items.length) return;
+            const grpLabel = document.createElement("div");
+            grpLabel.style.cssText = `font-size:12px;font-weight:700;margin:10px 0 6px;color:${color};`;
+            grpLabel.textContent = label + " — son 5 düzenleme";
+            hv.appendChild(grpLabel);
+            items.forEach(e=>{
+                const d = new Date(e.ts);
+                const zaman = d.getDate().toString().padStart(2,"0")+"."+(d.getMonth()+1).toString().padStart(2,"0")+"."+d.getFullYear()+" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+                const el = document.createElement("div");
+                el.style.cssText = "padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:6px;cursor:pointer;";
+                el.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                        <span style="font-size:12px;font-weight:600;">${e.kisi==="kevser"?"🩶 kevser":"💜 atakan"} · ${e.gun}. gün</span>
+                        <span style="font-size:10px;opacity:0.5;">${zaman}</span>
+                    </div>
+                    <div style="font-size:12px;opacity:0.75;font-style:italic;">"${e.metin.substring(0,80)}${e.metin.length>80?"...":""}"</div>
+                `;
+                hv.appendChild(el);
+            });
+        }
+
+        renderGroup("🩶 kevser", "#c8c8c8", kevserEntries);
+        renderGroup("💜 atakan", "#c4a0ff", atakanEntries);
     });
+}
+
+// ---- TEMA RESMİ YÜKLE (temalar/N.png, yoksa oncekini dene) ----
+function loadTemaImg(gun){
+    const img = document.getElementById("gunluk-tema-img");
+    if(!img) return;
+    function tryLoad(n){
+        if(n < 1){ img.style.display="none"; return; }
+        const src = "temalar/" + n + ".png";
+        const test = new Image();
+        test.onload = ()=>{ img.src = src; img.style.display="block"; };
+        test.onerror = ()=>{ tryLoad(n-1); };
+        test.src = src;
+    }
+    tryLoad(gun);
 }
 
 // ---- GÜN DETAY AÇ ----
@@ -5784,7 +5896,12 @@ function openGunDetail(gun, gunData){
     duzenleKey = null;
     const tarih = formatTarih(gunNo(gun));
     document.getElementById("gunluk-detail-title").textContent = gun + ". gün · " + tarih;
+
+    // Tema resmi yükle
+    loadTemaImg(gun);
+
     renderDetailRead(gun, gunData);
+
     // Yaz alanı: kişi seçiliyse hazır, hepsi modunda yine seçtir
     const writeKisi = aktifKisi === "hepsi" ? null : aktifKisi;
     const yazLabel = document.getElementById("gunluk-write-label");
@@ -5796,8 +5913,75 @@ function openGunDetail(gun, gunData){
     document.getElementById("gunluk-textarea").value = "";
     document.getElementById("gunluk-edit-note").textContent = "";
     document.getElementById("gunluk-edit-toggle").style.display = "none";
+
+    // Yorumları yükle
+    renderGunlukYorumlar(gun);
+
+    // Yorum avatar güncelle (aktif kişi)
+    const av = document.getElementById("gunluk-yorum-avatar");
+    if(av){
+        if(aktifKisi==="kevser") { av.textContent="🩶"; av.style.background="linear-gradient(135deg,#b0b0b0,#888)"; }
+        else if(aktifKisi==="atakan") { av.textContent="💜"; av.style.background="linear-gradient(135deg,#7b2cbf,#4a0e8f)"; }
+        else { av.textContent="?"; av.style.background="linear-gradient(135deg,#7b2cbf,#b0b0b0)"; }
+    }
+    document.getElementById("gunluk-yorum-textarea").value = "";
+
     document.getElementById("gunluk-detail-modal").style.display = "block";
 }
+
+// ---- YORUMLAR ----
+function yorumPath(gun){ return "gunluk_yorumlar/gun" + gun; }
+
+function renderGunlukYorumlar(gun){
+    const list = document.getElementById("gunluk-yorumlar-list");
+    if(!list) return;
+    list.innerHTML = '<div style="font-size:11px;opacity:0.4;padding:4px 0;">yükleniyor...</div>';
+    if(!window.akDB){ list.innerHTML = '<div style="font-size:11px;opacity:0.4;">bağlantı yok</div>'; return; }
+    window.akDB.ref(yorumPath(gun)).orderByChild("ts").limitToLast(30).once("value").then(snap=>{
+        list.innerHTML = "";
+        const yorumlar = [];
+        snap.forEach(ch=>{ yorumlar.push({id:ch.key, ...ch.val()}); });
+        if(!yorumlar.length){
+            list.innerHTML = '<div style="font-size:11px;opacity:0.35;padding:4px 0;">henüz yorum yok, ilk sen yaz 💬</div>';
+            return;
+        }
+        // En yeniden eskiye
+        yorumlar.reverse().forEach(y=>{
+            const el = document.createElement("div");
+            el.style.cssText = "display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);";
+            const isKev = y.kisi==="kevser";
+            const avatarBg = isKev ? "linear-gradient(135deg,#b0b0b0,#888)" : "linear-gradient(135deg,#7b2cbf,#4a0e8f)";
+            const emoji = isKev ? "🩶" : "💜";
+            const d = new Date(y.ts);
+            const zaman = d.getDate().toString().padStart(2,"0")+"."+(d.getMonth()+1).toString().padStart(2,"0")+" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+            el.innerHTML = `
+                <div style="width:26px;height:26px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">${emoji}</div>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+                        <span style="font-size:12px;font-weight:700;color:${isKev?"#c8c8c8":"#c4a0ff"};">${y.kisi}</span>
+                        <span style="font-size:10px;opacity:0.4;">${zaman}</span>
+                    </div>
+                    <div style="font-size:13px;line-height:1.5;color:#e0e0e0;">${y.metin.replace(/\n/g,"<br>")}</div>
+                </div>
+            `;
+            list.appendChild(el);
+        });
+    }).catch(()=>{ list.innerHTML = '<div style="font-size:11px;opacity:0.4;">yorumlar yüklenemedi</div>'; });
+}
+
+window.saveGunlukYorum = function(){
+    if(!window.akDB){ alert("Bağlantı yok"); return; }
+    const yazKisi = aktifKisi === "hepsi" ? null : aktifKisi;
+    if(!yazKisi){ alert("Önce kevser ya da atakan'ı seç 💜"); return; }
+    const metin = document.getElementById("gunluk-yorum-textarea").value.trim();
+    if(!metin){ alert("Bir şeyler yaz 🥺"); return; }
+    const gun = seciliGun;
+    const yorum = { kisi: yazKisi, metin, ts: Date.now() };
+    window.akDB.ref(yorumPath(gun)).push(yorum).then(()=>{
+        document.getElementById("gunluk-yorum-textarea").value = "";
+        renderGunlukYorumlar(gun);
+    }).catch(err=>alert("Kaydedilemedi: "+err.message));
+};
 
 function renderDetailRead(gun, gunData){
     const readDiv = document.getElementById("gunluk-detail-read");
@@ -5980,24 +6164,36 @@ window.kitapSayfa = function(yon){
     const flipFront = document.getElementById("kitap-flip-front");
     const flipBack  = document.getElementById("kitap-flip-back");
     const sagEl = document.getElementById("kitap-sag");
+    const solEl = document.getElementById("kitap-sol");
 
-    // Sayfa genişliğini dinamik al
     const sagW = sagEl.offsetWidth;
+    const solW = solEl.offsetWidth;
 
     if(yon === 1){
         // İLERİ: sağ sayfa sola kıvrılır
+        // Flip'in ön yüzü = mevcut sağ sayfa içeriği
+        flipFront.innerHTML = document.getElementById("kitap-sag-icerik").innerHTML;
+        // Flip'in arka yüzü = yeni sol sayfa (yeniGun - 1 = aktifGun)
+        flipBack.innerHTML  = kitapSayfaIcerik(kitapAktifGun);
+
         flipEl.style.width  = sagW + "px";
         flipEl.style.left   = "50%";
         flipEl.style.transformOrigin = "left center";
-        flipFront.innerHTML = document.getElementById("kitap-sag-icerik").innerHTML;
-        flipBack.innerHTML  = kitapSayfaIcerik(yeniGun - 1);
         flipEl.style.transform  = "rotateY(0deg)";
         flipEl.style.transition = "";
         flipEl.style.display    = "block";
 
+        // Animasyon başlarken arka plandaki sayfaları güncelle (görünmez durumdayken)
+        document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(yeniGun);
+        document.getElementById("kitap-sag-sayfa").textContent = (yeniGun * 2 - 1) + " · " + (yeniGun * 2);
+        if(yeniGun - 1 >= 1){
+            document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
+            document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1) * 2 - 1) + " · " + ((yeniGun-1) * 2);
+        }
+
         requestAnimationFrame(()=>{
             requestAnimationFrame(()=>{
-                flipEl.style.transition = "transform 0.6s cubic-bezier(0.645,0.045,0.355,1)";
+                flipEl.style.transition = "transform 0.55s cubic-bezier(0.4,0,0.2,1)";
                 flipEl.style.transform  = "rotateY(-180deg)";
             });
         });
@@ -6006,26 +6202,46 @@ window.kitapSayfa = function(yon){
             flipEl.style.display = "none";
             flipEl.style.transition = "";
             kitapFlipping = false;
-            renderKitapSayfa();
-        }, 620);
+            // Sadece labels ve butonları güncelle, innerHTML'e dokunma
+            const tarih = formatTarih(gunNo(yeniGun));
+            document.getElementById("kitap-gun-label").textContent = yeniGun + ". gün";
+            document.getElementById("kitap-tarih-label").textContent = tarih;
+            const pct = Math.round(((yeniGun - 1) / Math.max(TOPLAM_GUN - 1, 1)) * 100);
+            document.getElementById("kitap-progress-bar").style.width = pct + "%";
+            document.getElementById("kitap-progress-text").textContent = yeniGun + " / " + TOPLAM_GUN;
+            document.getElementById("kitap-prev-btn").style.opacity = yeniGun <= 1 ? "0.25" : "1";
+            document.getElementById("kitap-next-btn").style.opacity = yeniGun >= bugunGun() ? "0.25" : "1";
+            document.getElementById("kitap-yaz-btn").style.display = yeniGun <= bugunGun() ? "block" : "none";
+        }, 570);
 
     } else {
         // GERİ: sol sayfa sağa kıvrılır
-        const solEl = document.getElementById("kitap-sol");
-        const solW = solEl.offsetWidth;
+        // Flip'in ön yüzü = mevcut sol sayfa içeriği
+        flipFront.innerHTML = kitapSayfaIcerik(yeniGun + 1);
+        // Flip'in arka yüzü = yeni sağ sayfa (yeniGun)
+        flipBack.innerHTML  = document.getElementById("kitap-sol-icerik").innerHTML;
+
         flipEl.style.width  = solW + "px";
-        // Flip elementi sol sayfanın sağ kenarından başlamalı
         flipEl.style.left   = `calc(50% - ${solW + 14}px)`;
         flipEl.style.transformOrigin = "right center";
-        flipFront.innerHTML = kitapSayfaIcerik(yeniGun);
-        flipBack.innerHTML  = document.getElementById("kitap-sol-icerik").innerHTML;
         flipEl.style.transform  = "rotateY(0deg)";
         flipEl.style.transition = "";
         flipEl.style.display    = "block";
 
+        // Arka planda sayfaları önceden güncelle
+        document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(yeniGun);
+        document.getElementById("kitap-sag-sayfa").textContent = (yeniGun * 2 - 1) + " · " + (yeniGun * 2);
+        if(yeniGun - 1 >= 1){
+            document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
+            document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1) * 2 - 1) + " · " + ((yeniGun-1) * 2);
+        } else {
+            document.getElementById("kitap-sol-icerik").innerHTML = `<div style="opacity:0.12;text-align:center;margin-top:70px;font-size:28px;">📖</div>`;
+            document.getElementById("kitap-sol-sayfa").textContent = "";
+        }
+
         requestAnimationFrame(()=>{
             requestAnimationFrame(()=>{
-                flipEl.style.transition = "transform 0.6s cubic-bezier(0.645,0.045,0.355,1)";
+                flipEl.style.transition = "transform 0.55s cubic-bezier(0.4,0,0.2,1)";
                 flipEl.style.transform  = "rotateY(180deg)";
             });
         });
@@ -6034,8 +6250,16 @@ window.kitapSayfa = function(yon){
             flipEl.style.display = "none";
             flipEl.style.transition = "";
             kitapFlipping = false;
-            renderKitapSayfa();
-        }, 620);
+            const tarih = formatTarih(gunNo(yeniGun));
+            document.getElementById("kitap-gun-label").textContent = yeniGun + ". gün";
+            document.getElementById("kitap-tarih-label").textContent = tarih;
+            const pct = Math.round(((yeniGun - 1) / Math.max(TOPLAM_GUN - 1, 1)) * 100);
+            document.getElementById("kitap-progress-bar").style.width = pct + "%";
+            document.getElementById("kitap-progress-text").textContent = yeniGun + " / " + TOPLAM_GUN;
+            document.getElementById("kitap-prev-btn").style.opacity = yeniGun <= 1 ? "0.25" : "1";
+            document.getElementById("kitap-next-btn").style.opacity = yeniGun >= bugunGun() ? "0.25" : "1";
+            document.getElementById("kitap-yaz-btn").style.display = yeniGun <= bugunGun() ? "block" : "none";
+        }, 570);
     }
 };
 
