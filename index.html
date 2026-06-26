@@ -1318,30 +1318,6 @@ body.logged-in #mini-game-btn{ display:block !important; }
     text-align: center;
 }
 
-.miss-you-btn {
-    background: rgba(123, 44, 191, 0.1);
-    border: 2px solid #7b2cbf;
-    color: #f5f5f5;
-    padding: 16px 40px;
-    border-radius: 50px;
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 15px rgba(123, 44, 191, 0.2);
-}
-
-.miss-you-btn:active {
-    transform: scale(0.85); /* Kick vuruşu gibi içe çöksün */
-    box-shadow: 0 0 25px #7b2cbf;
-}
-
-.miss-you-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
 
 
 /* Haftalık Not Kartları Izgara Düzeni */
@@ -1872,15 +1848,7 @@ h1 {
     <div id="live-timer">Hesaplanıyor...</div>
 </div>
 
-<div class="miss-you-container">
-    <button id="miss-you-btn" class="miss-you-btn">
-        <span class="btn-icon">💜🩶</span>
-        <span class="btn-text">Sana Özlemimi Gönder</span>
-    </button>
-    <p id="miss-count-msg" style="font-size: 13px; opacity: 0.8; margin-top: 15px; display: none; font-style: italic; color: #b57edc;">
-        Hislerimiz birbirimize ulaştı sevgilim... 🩶
-    </p>
-</div>
+
 
 
     <div id="birthday-message">Bugün senin günün… İyi ki doğdun sevgilim. Dileklerinin içinde biraz ben olayım 💜</div>
@@ -1906,13 +1874,152 @@ h1 {
 
     <div class="card card-three"><p>mesafeler kalbi güçlendirir.</p></div>
 
+    <!-- ===== 90 GÜNLÜK KİTAP ===== -->
+    <div style="margin: 40px 0 20px 0; text-align:center;">
+        <button id="gunluk-open-btn" onclick="openGunluk()" style="
+            background: rgba(123,44,191,0.18);
+            border: 1px solid rgba(123,44,191,0.4);
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 24px rgba(123,44,191,0.2);
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        ">📖 günlükler</button>
+    </div>
 
-<div class="notes-container" style="margin-top: 30px;">
-    <h2 style="font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 15px; text-align: center;">💜 Yurt & Tatil Günlüğü 🩶</h2>
-    
-    <div class="tatil-grid" id="tatil-notlari-konteyner">
+    <!-- GÜNLÜK MODAL -->
+    <div id="gunluk-modal" style="display:none; position:fixed; inset:0; z-index:60000; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);" onclick="closeGunlukOnBackdrop(event)">
+        <div id="gunluk-card" style="
+            position:relative;
+            width:min(780px, calc(100vw - 20px));
+            max-height:92vh;
+            margin: 4vh auto 0;
+            background: rgba(12,10,18,0.97);
+            border: 1px solid rgba(123,44,191,0.3);
+            border-radius: 22px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+        ">
+            <!-- HEADER -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,0.08); flex-shrink:0;">
+                <div>
+                    <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; background:linear-gradient(90deg,#b0b0b0,#7b2cbf); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">📖 90 günlük kitap</div>
+                    <div style="font-size:11px; opacity:0.6; margin-top:2px;" id="gunluk-progress-label">yükleniyor...</div>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <!-- Düzenleme geçmişi toggle -->
+                    <button id="gunluk-history-btn" onclick="toggleGunlukHistory()" title="düzenleme geçmişi" style="
+                        background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+                        color:#b0b0b0; width:36px; height:36px; border-radius:12px; cursor:pointer; font-size:15px;
+                        display:flex; align-items:center; justify-content:center;
+                    ">🕓</button>
+                    <!-- Görünüm toggle: takvim / liste -->
+                    <button id="gunluk-view-btn" onclick="toggleGunlukView()" title="görünüm değiştir" style="
+                        background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+                        color:#b0b0b0; width:36px; height:36px; border-radius:12px; cursor:pointer; font-size:15px;
+                        display:flex; align-items:center; justify-content:center;
+                    ">📅</button>
+                    <button onclick="closeGunluk()" style="
+                        background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+                        color:#fff; width:36px; height:36px; border-radius:12px; cursor:pointer; font-size:16px;
+                        display:flex; align-items:center; justify-content:center;
+                    ">✕</button>
+                </div>
+            </div>
+
+            <!-- KİŞİ SEÇİCİ -->
+            <div style="display:flex; gap:8px; padding:12px 20px 8px; border-bottom:1px solid rgba(255,255,255,0.06); flex-shrink:0;">
+                <button class="gkisi-btn active" data-kisi="kevser" onclick="setGunlukKisi('kevser')" style="
+                    flex:1; padding:9px; border-radius:12px; border:1px solid rgba(176,176,176,0.35);
+                    background:rgba(176,176,176,0.12); color:#d9d9d9; cursor:pointer; font-size:13px; font-weight:600;
+                ">🩶 kevser</button>
+                <button class="gkisi-btn" data-kisi="atakan" onclick="setGunlukKisi('atakan')" style="
+                    flex:1; padding:9px; border-radius:12px; border:1px solid rgba(123,44,191,0.25);
+                    background:rgba(123,44,191,0.08); color:#c4a0ff; cursor:pointer; font-size:13px; font-weight:600;
+                ">💜 atakan</button>
+                <button class="gkisi-btn" data-kisi="hepsi" onclick="setGunlukKisi('hepsi')" style="
+                    flex:1; padding:9px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);
+                    background:rgba(255,255,255,0.05); color:#aaa; cursor:pointer; font-size:13px; font-weight:600;
+                ">👀 hepsi</button>
+            </div>
+
+            <!-- TAKVİM VEYA LİSTE GÖRÜNÜMÜ -->
+            <div id="gunluk-body" style="flex:1; overflow-y:auto; padding:14px 18px 20px; -webkit-overflow-scrolling:touch;">
+                <!-- Takvim görünümü -->
+                <div id="gunluk-calendar-view">
+                    <div id="gunluk-calendar-grid" style="display:grid; grid-template-columns:repeat(9,1fr); gap:5px;"></div>
+                    <div id="gunluk-legend" style="display:flex; gap:10px; justify-content:center; margin-top:12px; font-size:11px; opacity:0.7; flex-wrap:wrap;">
+                        <span>🩶 kevser yazdı</span>
+                        <span>💜 atakan yazdı</span>
+                        <span>✨ ikisi de yazdı</span>
+                        <span>⬛ boş</span>
+                    </div>
+                </div>
+                <!-- Liste görünümü -->
+                <div id="gunluk-list-view" style="display:none; flex-direction:column; gap:10px;"></div>
+                <!-- Düzenleme geçmişi -->
+                <div id="gunluk-history-view" style="display:none; flex-direction:column; gap:8px;"></div>
+            </div>
         </div>
-</div>
+    </div>
+
+    <!-- GÜN DETAY MODAL -->
+    <div id="gunluk-detail-modal" style="display:none; position:fixed; inset:0; z-index:70000; background:rgba(0,0,0,0.75); backdrop-filter:blur(10px);" onclick="closeGunlukDetailOnBackdrop(event)">
+        <div id="gunluk-detail-card" style="
+            position:relative;
+            width:min(640px, calc(100vw - 20px));
+            max-height:88vh;
+            margin: 6vh auto 0;
+            background: rgba(14,10,22,0.98);
+            border: 1px solid rgba(123,44,191,0.35);
+            border-radius: 22px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 28px 90px rgba(0,0,0,0.8);
+        ">
+            <!-- Detay Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,0.08); flex-shrink:0;">
+                <div id="gunluk-detail-title" style="font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:#f5f5f5;"></div>
+                <button onclick="closeGunlukDetail()" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); color:#fff; width:34px; height:34px; border-radius:11px; cursor:pointer; font-size:15px;">✕</button>
+            </div>
+            <!-- Günlük içerikleri (okuma modu) -->
+            <div id="gunluk-detail-read" style="flex:1; overflow-y:auto; padding:14px 20px;"></div>
+            <!-- Yeni not ekleme -->
+            <div id="gunluk-detail-write" style="border-top:1px solid rgba(255,255,255,0.08); padding:14px 20px; flex-shrink:0;">
+                <div style="font-size:12px; opacity:0.65; margin-bottom:8px;" id="gunluk-write-label">bu güne bir not ekle</div>
+                <textarea id="gunluk-textarea" placeholder="bugün nasıl hissettirdin bana..." style="
+                    width:100%; min-height:90px; background:rgba(255,255,255,0.06);
+                    border:1px solid rgba(123,44,191,0.3); border-radius:14px; color:#f5f5f5;
+                    padding:12px; font-size:14px; font-family:'Inter',sans-serif; resize:vertical;
+                    outline:none; line-height:1.6;
+                "></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:8px;">
+                    <div style="font-size:11px; opacity:0.55;" id="gunluk-edit-note"></div>
+                    <div style="display:flex; gap:8px;">
+                        <button id="gunluk-edit-toggle" onclick="toggleGunlukEdit()" style="
+                            display:none;
+                            padding:9px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.15);
+                            background:rgba(255,255,255,0.07); color:#aaa; cursor:pointer; font-size:12px;
+                        ">✏️ düzenle</button>
+                        <button onclick="saveGunlukEntry()" style="
+                            padding:9px 20px; border-radius:12px; border:1px solid rgba(123,44,191,0.4);
+                            background:rgba(123,44,191,0.28); color:#fff; cursor:pointer; font-size:13px; font-weight:600;
+                        ">kaydet 💜</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /90 GÜNLÜK KİTAP -->
+
 
 <div id="custom-popup" class="popup-overlay" onclick="closePopup()">
     <div class="popup-content" onclick="event.stopPropagation()">
@@ -4538,113 +4645,6 @@ function downloadImage() {
 }
 
 
-document.getElementById('miss-you-btn').addEventListener('click', function() {
-    const btn = this;
-    const msg = document.getElementById('miss-count-msg');
-    
-    // Senin Bot Bilgilerin (Güncel tutmayı unutma)
-    const botToken = "8637374659:AAG_hMNTd86vvCD33yYLA4SDKcKdc7Hy_Tk";
-    const chatId = "6548616471";
-    const text = "💜 Seni özledim hayatım 🩶";
-
-    // Kalp patlatma efekti (Mevcut fonksiyonun)
-    const rect = btn.getBoundingClientRect();
-    if (typeof noteBurstHearts === "function") {
-        noteBurstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    }
-
-    // Telegram'a sadece bildirimi atıyoruz
-    fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}`)
-        .then(response => {
-            if (response.ok) {
-                msg.style.display = "block";
-                btn.disabled = true; // 10 saniye boyunca tekrar basamasın (spam önleme)
-                
-                setTimeout(() => {
-                    btn.disabled = false;
-                    msg.style.display = "none";
-                }, 10000);
-            }
-        });
-});
-
-
-
-
-// HER HAFTA BURADAKİ GERÇEK TARİHLERİ VE NOTLARI YENİLEYEBİLİRSİN
-// 1. Gün Pazar saat 14:00'te açılır. Diğer günler (2,3,4,5,6) gece 00:00'da açılır.
-// HER HAFTA BURADAKİ GERÇEK TARİHLERİ VE NOTLARI YENİLEYEBİLİRSİN
-// 1. Gün Pazar saat 14:00'te açılır. Diğer günler (2,3,4,5,6) gece 00:00'da açılır.
-// HER HAFTA BURADAKİ GERÇEK TARİHLERİ VE NOTLARI YENİLEYEBİLİRSİN
-const haftalikNotlar = [
-    { tarih: "2026-06-14T14:00:00", baslik: "1. Gün (Pazar)", not: "seni yanımda istedigim kadar canımı bedenimde istemedim" },
-    { tarih: "2026-06-15T00:00:00", baslik: "2. Gün (Pazartesi)", not: "sana bakınca anlıyoruminsan bazen bütün hayatını tek bir kişide bulabiliyormuş" },
-    { tarih: "2026-06-16T00:00:00", baslik: "3. Gün (Salı)", not: "bu hayatta sahip olduğum en güzel şey sana benim sevgilim diyebilmek " },
-    { tarih: "2026-06-17T00:00:00", baslik: "4. Gün (Çarşamba)", not: "kalbim sana aitken başka hiçbir yere ait hissedemiyorum" },
-    { tarih: "2026-06-18T00:00:00", baslik: "5. Gün (Perşembe)", not: "sen gülünce içimdeki bütün fırtınalar diniyor" },
-    { tarih: "2026-06-19T00:00:00", baslik: "6. Gün (Cuma)", not: "seni sevmek başıma gelen en güzel şey" }
-];
-
-// ÖZEL POP-UP'I AÇMA FONKSİYONU
-function openPopup(title, text) {
-    document.getElementById("popup-title").innerText = title;
-    document.getElementById("popup-text").innerText = text;
-    document.getElementById("custom-popup").classList.add("active");
-}
-
-// ÖZEL POP-UP'I KAPATMA FONKSİYONU
-function closePopup() {
-    document.getElementById("custom-popup").classList.remove("active");
-}
-
-function haftalikNotSisteminiYonet() {
-    const simdi = new Date(); 
-    const konteyner = document.getElementById("tatil-notlari-konteyner");
-    if (!konteyner) return;
-    konteyner.innerHTML = "";
-
-    haftalikNotlar.forEach((item) => {
-        const acilisZamani = new Date(item.tarih);
-        const kart = document.createElement("div");
-        kart.className = "tatil-not-karti";
-
-        // Gün ismini ayıklama (Mobilde taşmasın diye)
-        let baslikMetni = item.baslik.split(" ")[0] + " " + (item.baslik.split(" ")[1] || "");
-
-        if (simdi < acilisZamani) {
-            // KİLİTLİ DURUMU
-            kart.classList.add("kilitli");
-            kart.innerHTML = `
-                <div class="kart-icon">🔒</div>
-                <div class="kart-baslik">${baslikMetni}</div>
-                <div class="kart-sayac">Kilitli</div>
-            `;
-            // Kilitliyken tıklandığında da eski çirkin alert yerine yeni şık pop-up'ı açıyoruz
-            kart.onclick = () => {
-                openPopup("Kilitli Giriş 🔒", `Bu not henüz kilitli sevgilim!\nAçılış saati: ${acilisZamani.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'})}`);
-            };
-        } else {
-            // AÇIK DURUMU
-            kart.classList.add("acik");
-            kart.innerHTML = `
-                <div class="kart-icon">💌</div>
-                <div class="kart-baslik">${baslikMetni}</div>
-                <div class="kart-sayac" style="color:#7b2cbf; font-weight:bold;">Oku</div>
-            `;
-            // Açık nota tıklayınca yeni şık pop-up açılır
-            kart.onclick = () => {
-                openPopup(`💌 ${item.baslik} Notu`, item.not);
-            };
-        }
-        konteyner.appendChild(kart);
-    });
-}
-
-// Sayfa yüklendiğinde çalıştır
-document.addEventListener("DOMContentLoaded", () => {
-    haftalikNotSisteminiYonet();
-});
-
 
 
 
@@ -5103,6 +5103,359 @@ function togglePolaroid() {
     </div>
   </div>
 </div>
+
+<!-- ===== 90 GÜNLÜK KİTAP SCRIPT ===== -->
+<script>
+(function(){
+// ---- CONFIG ----
+const BASLANGIC = new Date("2026-06-26T00:00:00"); // ilk gün: 26 Haziran 2026
+const TOPLAM_GUN = 74; // 26 Haziran → 7 Eylül 2026 = 74 gün
+const KISILER = { kevser: "🩶", atakan: "💜" };
+
+// ---- STATE ----
+let aktifKisi = "kevser";
+let gunlukGorünum = "calendar"; // "calendar" | "list"
+let seciliGun = null;
+let duzenlemeModu = false;
+let duzenleKey = null;
+
+// ---- YARDIMCI ----
+function gunNo(n){ // 1-indexed
+    const d = new Date(BASLANGIC);
+    d.setDate(d.getDate() + n - 1);
+    return d;
+}
+function bugunGun(){
+    const diff = Math.floor((Date.now() - BASLANGIC.getTime()) / 86400000) + 1;
+    return Math.min(Math.max(diff, 1), TOPLAM_GUN);
+}
+function formatTarih(d){
+    return d.getDate().toString().padStart(2,"0") + "." + (d.getMonth()+1).toString().padStart(2,"0") + "." + d.getFullYear();
+}
+function dbPath(gun, kisi){ return "gunluk/gun" + gun + "/" + kisi; }
+function historyPath(gun, kisi){ return "gunluk_history/gun" + gun + "/" + kisi; }
+
+// ---- MODAL AÇMA/KAPAMA ----
+window.openGunluk = function(){
+    document.getElementById("gunluk-modal").style.display = "block";
+    renderGunlukView();
+};
+window.closeGunluk = function(){
+    document.getElementById("gunluk-modal").style.display = "none";
+};
+window.closeGunlukOnBackdrop = function(e){
+    if(e.target === document.getElementById("gunluk-modal")) closeGunluk();
+};
+window.closeGunlukDetail = function(){
+    document.getElementById("gunluk-detail-modal").style.display = "none";
+    seciliGun = null; duzenlemeModu = false; duzenleKey = null;
+};
+window.closeGunlukDetailOnBackdrop = function(e){
+    if(e.target === document.getElementById("gunluk-detail-modal")) closeGunlukDetail();
+};
+
+// ---- KİŞİ SEÇİCİ ----
+window.setGunlukKisi = function(kisi){
+    aktifKisi = kisi;
+    document.querySelectorAll(".gkisi-btn").forEach(b=>{
+        const isActive = b.dataset.kisi === kisi;
+        if(kisi==="kevser"){
+            b.style.background = isActive ? "rgba(176,176,176,0.25)" : "rgba(176,176,176,0.05)";
+            b.style.borderColor = isActive ? "rgba(176,176,176,0.6)" : "rgba(176,176,176,0.15)";
+            b.style.color = isActive ? "#f0f0f0" : "#888";
+        } else if(kisi==="atakan"){
+            b.style.background = isActive ? "rgba(123,44,191,0.3)" : (b.dataset.kisi==="kevser"?"rgba(176,176,176,0.05)":"rgba(123,44,191,0.08)");
+            b.style.borderColor = isActive ? "rgba(123,44,191,0.65)" : "";
+            b.style.color = isActive ? "#d8b4fe" : (b.dataset.kisi==="kevser"?"#888":"#c4a0ff");
+        } else {
+            b.style.background = isActive ? "rgba(255,255,255,0.15)" : "";
+            b.style.borderColor = isActive ? "rgba(255,255,255,0.3)" : "";
+            b.style.color = isActive ? "#fff" : "";
+        }
+    });
+    renderGunlukView();
+};
+
+// ---- GÖRÜNÜM TOGGLE ----
+window.toggleGunlukView = function(){
+    gunlukGorünum = gunlukGorünum === "calendar" ? "list" : "calendar";
+    document.getElementById("gunluk-view-btn").textContent = gunlukGorünum === "calendar" ? "📅" : "📋";
+    document.getElementById("gunluk-calendar-view").style.display = gunlukGorünum === "calendar" ? "block" : "none";
+    document.getElementById("gunluk-list-view").style.display = gunlukGorünum === "list" ? "flex" : "none";
+    document.getElementById("gunluk-history-view").style.display = "none";
+    renderGunlukView();
+};
+
+// ---- GEÇMİŞ TOGGLE ----
+window.toggleGunlukHistory = function(){
+    const hv = document.getElementById("gunluk-history-view");
+    const cv = document.getElementById("gunluk-calendar-view");
+    const lv = document.getElementById("gunluk-list-view");
+    const isOpen = hv.style.display === "flex";
+    if(isOpen){
+        hv.style.display = "none";
+        if(gunlukGorünum==="calendar"){ cv.style.display="block"; lv.style.display="none"; }
+        else { cv.style.display="none"; lv.style.display="flex"; }
+    } else {
+        hv.style.display = "flex";
+        cv.style.display = "none";
+        lv.style.display = "none";
+        renderHistoryView();
+    }
+};
+
+// ---- ANA RENDER ----
+function renderGunlukView(){
+    if(!window.akDB){ renderOffline(); return; }
+    const bugun = bugunGun();
+    document.getElementById("gunluk-progress-label").textContent =
+        bugun + ". gün · 26 Haz – 7 Eyl · " + (TOPLAM_GUN - bugun) + " gün kaldı";
+    if(gunlukGorünum === "calendar") renderCalendar(bugun);
+    else renderList(bugun);
+}
+
+function renderOffline(){
+    document.getElementById("gunluk-progress-label").textContent = "bağlantı bekleniyor...";
+}
+
+// ---- TAKVİM GÖRÜNÜMÜ ----
+function renderCalendar(bugun){
+    const grid = document.getElementById("gunluk-calendar-grid");
+    grid.innerHTML = "";
+    // Tüm günlerin verilerini Firebase'den çekiyoruz
+    window.akDB.ref("gunluk").once("value").then(snap=>{
+        const data = snap.val() || {};
+        for(let g=1; g<=TOPLAM_GUN; g++){
+            const gunData = data["gun"+g] || {};
+            const hasKevser = !!(gunData.kevser && gunData.kevser.metin);
+            const hasAtakan = !!(gunData.atakan && gunData.atakan.metin);
+            const isToday = g === bugun;
+            const isFuture = g > bugun;
+            const isFilled = aktifKisi==="hepsi" ? (hasKevser||hasAtakan) : 
+                            aktifKisi==="kevser" ? hasKevser : hasAtakan;
+            const isBoth = hasKevser && hasAtakan;
+
+            const cell = document.createElement("div");
+            cell.style.cssText = `
+                aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center;
+                font-size:10px; font-weight:700; cursor:${isFuture?"not-allowed":"pointer"};
+                position:relative; transition:all 0.15s ease;
+                border: 1px solid ${isToday ? "rgba(255,77,109,0.7)" : "rgba(255,255,255,0.07)"};
+                background: ${isFuture ? "rgba(255,255,255,0.02)" :
+                              isBoth ? "linear-gradient(135deg,rgba(176,176,176,0.22),rgba(123,44,191,0.22))" :
+                              hasKevser ? "rgba(176,176,176,0.22)" :
+                              hasAtakan ? "rgba(123,44,191,0.28)" :
+                              "rgba(255,255,255,0.05)"};
+                opacity: ${isFuture ? "0.3" : "1"};
+                box-shadow: ${isToday ? "0 0 0 2px rgba(255,77,109,0.5)" : "none"};
+                color: ${isFuture ? "#555" : "#ddd"};
+            `;
+            cell.textContent = g;
+            if(isToday){
+                const dot = document.createElement("div");
+                dot.style.cssText = "position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#ff4d6d;";
+                cell.appendChild(dot);
+            }
+            if(!isFuture){
+                cell.addEventListener("click", ()=> openGunDetail(g, data["gun"+g]||{}));
+                cell.addEventListener("mouseover", ()=>{ cell.style.transform="scale(1.08)"; cell.style.zIndex="5"; });
+                cell.addEventListener("mouseout", ()=>{ cell.style.transform="scale(1)"; cell.style.zIndex=""; });
+            }
+            grid.appendChild(cell);
+        }
+    }).catch(()=>renderOffline());
+}
+
+// ---- LİSTE GÖRÜNÜMÜ ----
+function renderList(bugun){
+    const list = document.getElementById("gunluk-list-view");
+    list.innerHTML = '<div style="opacity:0.5;font-size:12px;text-align:center;padding:8px;">yükleniyor...</div>';
+    window.akDB.ref("gunluk").once("value").then(snap=>{
+        const data = snap.val() || {};
+        list.innerHTML = "";
+        // Sadece dolu günleri listele
+        for(let g=bugun; g>=1; g--){
+            const gunData = data["gun"+g] || {};
+            const hasKevser = !!(gunData.kevser && gunData.kevser.metin);
+            const hasAtakan = !!(gunData.atakan && gunData.atakan.metin);
+            const show = aktifKisi==="hepsi" ? (hasKevser||hasAtakan) :
+                         aktifKisi==="kevser" ? hasKevser : hasAtakan;
+            if(!show) continue;
+            const tarih = formatTarih(gunNo(g));
+            const el = document.createElement("div");
+            el.style.cssText = `
+                padding:12px 16px; border-radius:14px; background:rgba(255,255,255,0.04);
+                border:1px solid rgba(255,255,255,0.08); cursor:pointer; transition:all 0.2s;
+            `;
+            let preview = "";
+            if((aktifKisi==="kevser"||aktifKisi==="hepsi") && hasKevser){
+                preview += `<div style="font-size:12px;opacity:0.8;margin-top:4px;">🩶 ${gunData.kevser.metin.substring(0,55)}${gunData.kevser.metin.length>55?"...":""}</div>`;
+            }
+            if((aktifKisi==="atakan"||aktifKisi==="hepsi") && hasAtakan){
+                preview += `<div style="font-size:12px;opacity:0.8;margin-top:4px;">💜 ${gunData.atakan.metin.substring(0,55)}${gunData.atakan.metin.length>55?"...":""}</div>`;
+            }
+            el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-family:'Playfair Display',serif;font-size:14px;font-weight:600;">${g}. gün</span>
+                <span style="font-size:11px;opacity:0.5;">${tarih}</span>
+            </div>${preview}`;
+            el.addEventListener("click", ()=> openGunDetail(g, data["gun"+g]||{}));
+            el.addEventListener("mouseover", ()=>{ el.style.borderColor="rgba(123,44,191,0.4)"; el.style.background="rgba(123,44,191,0.08)"; });
+            el.addEventListener("mouseout", ()=>{ el.style.borderColor="rgba(255,255,255,0.08)"; el.style.background="rgba(255,255,255,0.04)"; });
+            list.appendChild(el);
+        }
+        if(!list.children.length){
+            list.innerHTML = '<div style="opacity:0.45;font-size:13px;text-align:center;padding:20px;">henüz hiç yazı yok 🥺</div>';
+        }
+    });
+}
+
+// ---- GEÇMİŞ GÖRÜNÜMÜ ----
+function renderHistoryView(){
+    const hv = document.getElementById("gunluk-history-view");
+    hv.innerHTML = '<div style="opacity:0.5;font-size:12px;text-align:center;padding:8px;">geçmiş yükleniyor...</div>';
+    if(!window.akDB){ hv.innerHTML = '<div style="opacity:0.45;font-size:13px;text-align:center;padding:20px;">bağlantı yok</div>'; return; }
+    window.akDB.ref("gunluk_history").once("value").then(snap=>{
+        const data = snap.val() || {};
+        hv.innerHTML = "";
+        const entries = [];
+        Object.keys(data).forEach(gunKey=>{
+            Object.keys(data[gunKey]).forEach(kisi=>{
+                Object.keys(data[gunKey][kisi]).forEach(ts=>{
+                    entries.push({ gun: parseInt(gunKey.replace("gun","")), kisi, ts: parseInt(ts), metin: data[gunKey][kisi][ts] });
+                });
+            });
+        });
+        entries.sort((a,b)=>b.ts-a.ts);
+        if(!entries.length){
+            hv.innerHTML = '<div style="opacity:0.45;font-size:13px;text-align:center;padding:20px;">henüz düzenleme geçmişi yok</div>';
+            return;
+        }
+        entries.slice(0,30).forEach(e=>{
+            const d = new Date(e.ts);
+            const zaman = d.getDate().toString().padStart(2,"0")+"."+(d.getMonth()+1).toString().padStart(2,"0")+"."+d.getFullYear()+" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+            const el = document.createElement("div");
+            el.style.cssText = "padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);";
+            el.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                    <span style="font-size:12px;font-weight:600;">${e.kisi==="kevser"?"🩶 kevser":"💜 atakan"} · ${e.gun}. gün</span>
+                    <span style="font-size:10px;opacity:0.5;">${zaman}</span>
+                </div>
+                <div style="font-size:12px;opacity:0.75;font-style:italic;">"${e.metin.substring(0,80)}${e.metin.length>80?"...":""}"</div>
+            `;
+            hv.appendChild(el);
+        });
+    });
+}
+
+// ---- GÜN DETAY AÇ ----
+function openGunDetail(gun, gunData){
+    seciliGun = gun;
+    duzenlemeModu = false;
+    duzenleKey = null;
+    const tarih = formatTarih(gunNo(gun));
+    document.getElementById("gunluk-detail-title").textContent = gun + ". gün · " + tarih;
+    renderDetailRead(gun, gunData);
+    // Yaz alanı: kişi seçiliyse hazır, hepsi modunda yine seçtir
+    const writeKisi = aktifKisi === "hepsi" ? null : aktifKisi;
+    const yazLabel = document.getElementById("gunluk-write-label");
+    if(writeKisi){
+        yazLabel.textContent = (KISILER[writeKisi]||"") + " " + writeKisi + " olarak yaz";
+    } else {
+        yazLabel.textContent = "yazmak için önce kevser ya da atakan seç";
+    }
+    document.getElementById("gunluk-textarea").value = "";
+    document.getElementById("gunluk-edit-note").textContent = "";
+    document.getElementById("gunluk-edit-toggle").style.display = "none";
+    document.getElementById("gunluk-detail-modal").style.display = "block";
+}
+
+function renderDetailRead(gun, gunData){
+    const readDiv = document.getElementById("gunluk-detail-read");
+    readDiv.innerHTML = "";
+    const kisiler = aktifKisi === "hepsi" ? ["kevser","atakan"] : [aktifKisi];
+    let anyContent = false;
+    kisiler.forEach(kisi=>{
+        const entry = gunData[kisi];
+        if(entry && entry.metin){
+            anyContent = true;
+            const el = document.createElement("div");
+            el.style.cssText = `margin-bottom:14px; padding:14px 16px; border-radius:14px;
+                background:${kisi==="kevser"?"rgba(176,176,176,0.09)":"rgba(123,44,191,0.12)"};
+                border:1px solid ${kisi==="kevser"?"rgba(176,176,176,0.2)":"rgba(123,44,191,0.25)"};`;
+            const zaman = entry.zaman ? `<span style="font-size:10px;opacity:0.5;margin-left:6px;">${entry.zaman}</span>` : "";
+            el.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span style="font-size:13px;font-weight:700;">${KISILER[kisi]} ${kisi}</span>
+                    ${zaman}
+                    ${kisi===aktifKisi||aktifKisi==="hepsi" ? `<button onclick="startEdit('${kisi}',\`${entry.metin.replace(/`/g,"\\`")}\`)" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#aaa;padding:4px 10px;border-radius:9px;cursor:pointer;font-size:11px;">✏️ düzenle</button>` : ""}
+                </div>
+                <div style="font-size:14px;line-height:1.7;color:#e8e8e8;font-family:'Playfair Display',serif;font-style:italic;">${entry.metin.replace(/\n/g,"<br>")}</div>
+            `;
+            readDiv.appendChild(el);
+        }
+    });
+    if(!anyContent){
+        readDiv.innerHTML = '<div style="opacity:0.4;font-size:13px;text-align:center;padding:20px;font-style:italic;">bu gün henüz boş... ilk sen yaz 🌿</div>';
+    }
+}
+
+// ---- DÜZENLEME BAŞLAT ----
+window.startEdit = function(kisi, metin){
+    duzenlemeModu = true;
+    duzenleKey = kisi;
+    document.getElementById("gunluk-textarea").value = metin;
+    document.getElementById("gunluk-edit-note").textContent = "✏️ " + kisi + " notunu düzenliyorsun";
+    document.getElementById("gunluk-edit-toggle").style.display = "none";
+    document.getElementById("gunluk-textarea").focus();
+};
+
+window.toggleGunlukEdit = function(){};
+
+// ---- KAYDET ----
+window.saveGunlukEntry = function(){
+    if(!window.akDB){ alert("Bağlantı yok, şu an kaydedilemez."); return; }
+    const yazKisi = aktifKisi === "hepsi" ? duzenleKey : aktifKisi;
+    if(!yazKisi){ alert("Önce kevser ya da atakan'ı seç 💜"); return; }
+    const metin = document.getElementById("gunluk-textarea").value.trim();
+    if(!metin){ alert("Bir şeyler yaz önce 🥺"); return; }
+    const gun = seciliGun;
+    const d = new Date();
+    const zaman = d.getDate().toString().padStart(2,"0")+"."+(d.getMonth()+1).toString().padStart(2,"0")+"."+d.getFullYear()+" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+
+    // Varsa eski metni geçmişe kaydet
+    window.akDB.ref(dbPath(gun, yazKisi)).once("value").then(snap=>{
+        const old = snap.val();
+        if(old && old.metin){
+            const ts = Date.now();
+            window.akDB.ref(historyPath(gun, yazKisi) + "/" + ts).set(old.metin);
+        }
+        // Yeni metni kaydet
+        return window.akDB.ref(dbPath(gun, yazKisi)).set({ metin, zaman });
+    }).then(()=>{
+        // Detayı yenile
+        window.akDB.ref("gunluk/gun"+gun).once("value").then(snap=>{
+            renderDetailRead(gun, snap.val()||{});
+        });
+        document.getElementById("gunluk-textarea").value = "";
+        document.getElementById("gunluk-edit-note").textContent = "✅ kaydedildi";
+        duzenlemeModu = false; duzenleKey = null;
+        setTimeout(()=>{ document.getElementById("gunluk-edit-note").textContent = ""; }, 2000);
+        // Ana takvimi de yenile
+        renderGunlukView();
+    }).catch(err=>{ alert("Kaydedilemedi: "+err.message); });
+};
+
+// ---- OTOMATIK GİRİŞ SONRASI BAŞLATMA ----
+// executeLogin içinde çağır
+const _origExecLogin = window.executeLogin || null;
+// İlk açılışta Firebase hazır olunca günlük butonunu göster
+document.addEventListener("DOMContentLoaded", ()=>{
+    // Giriş butonu zaten var, sadece modal dinleme
+});
+
+})();
+</script>
+<!-- /90 GÜNLÜK KİTAP SCRIPT -->
 
 <button id="mini-game-btn" class="mini-game-btn" type="button" style="position:fixed;bottom:20px;right:20px;z-index:999999;pointer-events:auto;" onclick="(function(){var m=document.getElementById('mini-game-modal');if(m){m.classList.add('show');m.setAttribute('aria-hidden','false');}})();">mini oyun 🎮</button>
 </body>
