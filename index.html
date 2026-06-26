@@ -1914,6 +1914,12 @@ h1 {
                     <div style="font-size:11px; opacity:0.6; margin-top:2px;" id="gunluk-progress-label">yükleniyor...</div>
                 </div>
                 <div style="display:flex; gap:8px; align-items:center;">
+                    <!-- Kitap modu toggle -->
+                    <button id="gunluk-book-btn" onclick="toggleKitapModu()" title="kitap modu" style="
+                        background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+                        color:#b0b0b0; height:36px; border-radius:12px; cursor:pointer; font-size:12px;
+                        display:flex; align-items:center; justify-content:center; padding:0 12px; gap:5px; font-weight:600; white-space:nowrap;
+                    ">📖 kitap</button>
                     <!-- Düzenleme geçmişi toggle -->
                     <button id="gunluk-history-btn" onclick="toggleGunlukHistory()" title="düzenleme geçmişi" style="
                         background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
@@ -2014,6 +2020,172 @@ h1 {
                             background:rgba(123,44,191,0.28); color:#fff; cursor:pointer; font-size:13px; font-weight:600;
                         ">kaydet 💜</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- KİTAP MODU MODAL -->
+    <div id="kitap-modal" style="display:none; position:fixed; inset:0; z-index:65000; background:rgba(0,0,0,0.88); backdrop-filter:blur(12px);">
+        <!-- Üst bar -->
+        <div style="position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 20px; z-index:10;">
+            <div style="font-family:'Playfair Display',serif; font-size:15px; opacity:0.85;" id="kitap-gun-label">1. gün</div>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <span style="font-size:11px; opacity:0.5;" id="kitap-tarih-label"></span>
+                <button onclick="closeKitapModu()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); color:#fff; width:34px; height:34px; border-radius:11px; cursor:pointer; font-size:15px;">✕</button>
+            </div>
+        </div>
+
+        <!-- KİTAP SAHNESİ -->
+        <div id="kitap-sahne" style="
+            position:absolute; inset:0;
+            display:flex; align-items:center; justify-content:center;
+            perspective: 1800px;
+            padding: 60px 16px 80px;
+        ">
+            <!-- Sol sayfa (önceki gün veya boş) -->
+            <div id="kitap-sol" style="
+                width: min(340px, 44vw);
+                height: min(480px, 65vh);
+                background: linear-gradient(160deg, #1a1228, #130e1e);
+                border-radius: 4px 0 0 4px;
+                border: 1px solid rgba(255,255,255,0.06);
+                border-right: none;
+                box-shadow: -8px 0 30px rgba(0,0,0,0.5), inset -4px 0 12px rgba(0,0,0,0.3);
+                display: flex; flex-direction: column;
+                overflow: hidden;
+                position: relative;
+            ">
+                <div style="position:absolute; top:0; bottom:0; right:0; width:18px; background:linear-gradient(to right, rgba(0,0,0,0.25), rgba(123,44,191,0.08)); pointer-events:none;"></div>
+                <div id="kitap-sol-icerik" style="flex:1; overflow-y:auto; padding:24px 22px 16px; font-family:'Playfair Display',serif; color:#d8d0e8; line-height:1.8; font-size:13px; font-style:italic;"></div>
+                <div id="kitap-sol-sayfa" style="text-align:center; padding:10px; font-size:10px; opacity:0.35; letter-spacing:1px;"></div>
+            </div>
+
+            <!-- Kitap ortası / cilt -->
+            <div style="
+                width: 14px;
+                height: min(480px, 65vh);
+                background: linear-gradient(to right, #0e0816, #1c1230, #0e0816);
+                box-shadow: 0 0 20px rgba(0,0,0,0.7);
+                position: relative;
+                z-index: 5;
+                flex-shrink: 0;
+            ">
+                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:2px; height:60%; background:linear-gradient(to bottom, transparent, rgba(123,44,191,0.4), transparent);"></div>
+            </div>
+
+            <!-- Sağ sayfa (aktif gün) -->
+            <div id="kitap-sag" style="
+                width: min(340px, 44vw);
+                height: min(480px, 65vh);
+                background: linear-gradient(160deg, #130e1e, #1a1228);
+                border-radius: 0 4px 4px 0;
+                border: 1px solid rgba(255,255,255,0.06);
+                border-left: none;
+                box-shadow: 8px 0 30px rgba(0,0,0,0.5), inset 4px 0 12px rgba(0,0,0,0.3);
+                display: flex; flex-direction: column;
+                overflow: hidden;
+                position: relative;
+            ">
+                <div style="position:absolute; top:0; bottom:0; left:0; width:18px; background:linear-gradient(to left, rgba(0,0,0,0.25), rgba(123,44,191,0.08)); pointer-events:none;"></div>
+                <div id="kitap-sag-icerik" style="flex:1; overflow-y:auto; padding:24px 22px 16px; font-family:'Playfair Display',serif; color:#d8d0e8; line-height:1.8; font-size:13px; font-style:italic;"></div>
+                <div id="kitap-sag-sayfa" style="text-align:center; padding:10px; font-size:10px; opacity:0.35; letter-spacing:1px;"></div>
+            </div>
+
+            <!-- SAYFA ÇEVİRME ANIMASYON KAPI -->
+            <div id="kitap-flip-el" style="
+                position:absolute;
+                width: min(340px, 44vw);
+                height: min(480px, 65vh);
+                left: 50%;
+                transform-origin: left center;
+                transform-style: preserve-3d;
+                pointer-events:none;
+                z-index: 20;
+                display:none;
+            ">
+                <!-- Ön yüz (eski sağ sayfa) -->
+                <div id="kitap-flip-front" style="
+                    position:absolute; inset:0;
+                    background: linear-gradient(160deg, #130e1e, #1a1228);
+                    backface-visibility:hidden;
+                    border-radius: 0 4px 4px 0;
+                    border:1px solid rgba(255,255,255,0.06);
+                    padding:24px 22px;
+                    font-family:'Playfair Display',serif; color:#d8d0e8; line-height:1.8; font-size:13px; font-style:italic;
+                    overflow:hidden;
+                    box-shadow: 4px 0 20px rgba(0,0,0,0.4);
+                "></div>
+                <!-- Arka yüz (yeni sol sayfa) -->
+                <div id="kitap-flip-back" style="
+                    position:absolute; inset:0;
+                    background: linear-gradient(160deg, #1a1228, #130e1e);
+                    backface-visibility:hidden;
+                    transform: rotateY(180deg);
+                    border-radius: 4px 0 0 4px;
+                    border:1px solid rgba(255,255,255,0.06);
+                    padding:24px 22px;
+                    font-family:'Playfair Display',serif; color:#d8d0e8; line-height:1.8; font-size:13px; font-style:italic;
+                    overflow:hidden;
+                "></div>
+            </div>
+        </div>
+
+        <!-- Alt navigasyon -->
+        <div style="position:absolute; bottom:0; left:0; right:0; display:flex; align-items:center; justify-content:center; gap:16px; padding:16px 20px;">
+            <button onclick="kitapSayfa(-1)" id="kitap-prev-btn" style="
+                background:rgba(176,176,176,0.12); border:1px solid rgba(176,176,176,0.25); color:#c0c0c0;
+                width:44px; height:44px; border-radius:50%; cursor:pointer; font-size:20px;
+                display:flex; align-items:center; justify-content:center; transition:all 0.2s;
+            ">‹</button>
+
+            <!-- Gün sayacı çubuğu -->
+            <div style="flex:1; max-width:300px;">
+                <div style="background:rgba(255,255,255,0.08); border-radius:999px; height:4px; overflow:hidden;">
+                    <div id="kitap-progress-bar" style="height:100%; background:linear-gradient(90deg,#b0b0b0,#7b2cbf); border-radius:999px; transition:width 0.4s ease; width:0%;"></div>
+                </div>
+                <div style="text-align:center; margin-top:6px; font-size:11px; opacity:0.45;" id="kitap-progress-text"></div>
+            </div>
+
+            <button onclick="kitapSayfa(1)" id="kitap-next-btn" style="
+                background:rgba(123,44,191,0.18); border:1px solid rgba(123,44,191,0.35); color:#c4a0ff;
+                width:44px; height:44px; border-radius:50%; cursor:pointer; font-size:20px;
+                display:flex; align-items:center; justify-content:center; transition:all 0.2s;
+            ">›</button>
+        </div>
+
+        <!-- Not ekle butonu (sağ alt) -->
+        <button onclick="kitapNotEkle()" id="kitap-yaz-btn" style="
+            position:absolute; bottom:18px; right:20px;
+            background:rgba(123,44,191,0.3); border:1px solid rgba(123,44,191,0.5); color:#d8b4fe;
+            padding:10px 18px; border-radius:50px; cursor:pointer; font-size:12px; font-weight:600;
+        ">✏️ bu güne yaz</button>
+    </div>
+
+    <!-- KİTAP NOT YAZMA MİNİ MODAL -->
+    <div id="kitap-yaz-modal" style="display:none; position:fixed; inset:0; z-index:75000; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px);" onclick="closeKitapYaz(event)">
+        <div style="
+            position:relative; width:min(480px,calc(100vw - 24px)); margin: 12vh auto 0;
+            background:rgba(14,10,22,0.99); border:1px solid rgba(123,44,191,0.4);
+            border-radius:20px; overflow:hidden; box-shadow:0 24px 80px rgba(0,0,0,0.8);
+        " onclick="event.stopPropagation()">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 18px 10px; border-bottom:1px solid rgba(255,255,255,0.07);">
+                <div style="font-family:'Playfair Display',serif; font-size:15px;" id="kitap-yaz-title">not ekle</div>
+                <button onclick="document.getElementById('kitap-yaz-modal').style.display='none'" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); color:#fff; width:32px; height:32px; border-radius:10px; cursor:pointer;">✕</button>
+            </div>
+            <!-- kişi seçici -->
+            <div style="display:flex; gap:8px; padding:12px 18px 6px;">
+                <button class="kyaz-kisi-btn" data-k="kevser" onclick="setKitapYazKisi('kevser')" style="flex:1; padding:8px; border-radius:11px; border:1px solid rgba(176,176,176,0.3); background:rgba(176,176,176,0.15); color:#d9d9d9; cursor:pointer; font-size:12px; font-weight:600;">🩶 kevser</button>
+                <button class="kyaz-kisi-btn" data-k="atakan" onclick="setKitapYazKisi('atakan')" style="flex:1; padding:8px; border-radius:11px; border:1px solid rgba(123,44,191,0.2); background:rgba(123,44,191,0.06); color:#c4a0ff; cursor:pointer; font-size:12px; font-weight:600;">💜 atakan</button>
+            </div>
+            <div style="padding:10px 18px 14px;">
+                <textarea id="kitap-yaz-textarea" placeholder="bugün nasıl hissettirdin bana..." style="
+                    width:100%; min-height:110px; background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(123,44,191,0.3); border-radius:12px; color:#f0e8ff;
+                    padding:12px; font-size:13px; font-family:'Playfair Display',serif; font-style:italic;
+                    resize:vertical; outline:none; line-height:1.75;
+                "></textarea>
+                <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                    <button onclick="kaydetKitapNot()" style="padding:10px 22px; border-radius:12px; border:1px solid rgba(123,44,191,0.5); background:rgba(123,44,191,0.3); color:#fff; cursor:pointer; font-size:13px; font-weight:600;">kaydet 💜</button>
                 </div>
             </div>
         </div>
@@ -4771,136 +4943,332 @@ function togglePolaroid() {
 </script>
 
 <script>
-/* ===== XOX (TIC-TAC-TOE) OYUNU ===== */
+/* ===== XOX — FİREBASE ÇOKLU CİHAZ ===== */
 (function(){
+  const FB_XOX = 'xox_game'; // Firebase yolu
+
   let xoxSize = 3;
   let xoxBoard = [];
-  let xoxCurrent = 'X'; // X veya O
+  let xoxCurrent = 'X';
   let xoxOver = false;
-  let xoxScoreX = 0;
-  let xoxScoreO = 0;
-  let xoxWinLen = 3; // kazanmak için gerekli ardışık sayı
+  let xoxWinLen = 3;
 
-  // Boyuta göre kazanma uzunluğu
-  function getWinLen(size){ return size === 3 ? 3 : size === 5 ? 4 : 5; }
+  // Benim bilgim
+  let myName = '';
+  let mySymbol = ''; // 'X' ya da 'O'
 
-  function xoxSetSize(s){
-    xoxSize = s;
-    xoxWinLen = getWinLen(s);
-    document.querySelectorAll('.xox-size-btn').forEach(b=>{
-      b.classList.toggle('active', parseInt(b.dataset.size)===s);
-    });
-    xoxReset();
+  // Firebase'den gelen son state
+  let fbState = null;
+  let fbListener = null;
+
+  function getWinLen(s){ return s===3?3:s===5?4:5; }
+
+  /* --- Canlı bağlantı göstergesi --- */
+  function setLive(on){
+    const dot = document.getElementById('xox-live-dot');
+    const txt = document.getElementById('xox-live-text');
+    if(!dot||!txt) return;
+    dot.style.background = on ? '#4ade80' : '#aaa';
+    dot.style.boxShadow  = on ? '0 0 6px #4ade80' : 'none';
+    txt.textContent = on ? 'canlı bağlı ✓' : 'çevrimdışı';
   }
-  window.xoxSetSize = xoxSetSize;
 
-  function xoxReset(){
-    xoxBoard = Array(xoxSize * xoxSize).fill('');
-    xoxCurrent = 'X';
-    xoxOver = false;
-    document.getElementById('xox-turn-display').textContent = 'sıra: ❌';
-    document.getElementById('xox-turn-display').style.color = '#ff4d6d';
-    document.getElementById('xox-status').textContent = 'Oyunu başlatmak için tahtaya dokun 💜';
+  /* --- Firebase dinleyici başlat --- */
+  function startFBListener(){
+    if(!window.akDB){ setLive(false); return; }
+    setLive(true);
+    if(fbListener) window.akDB.ref(FB_XOX).off('value', fbListener);
+    fbListener = window.akDB.ref(FB_XOX).on('value', snap=>{
+      const data = snap.val();
+      if(!data) return;
+      fbState = data;
+      applyState(data);
+    }, ()=>setLive(false));
+  }
+
+  /* --- Firebase'e state yaz --- */
+  function pushState(patch){
+    if(!window.akDB) return;
+    const cur = fbState || {};
+    const next = Object.assign({}, cur, patch, {ts: Date.now()});
+    window.akDB.ref(FB_XOX).set(next);
+  }
+
+  /* --- Firebase'den gelen state'i uygula --- */
+  function applyState(s){
+    if(!s) return;
+    xoxSize    = s.size    || 3;
+    xoxBoard   = s.board   || Array(xoxSize*xoxSize).fill('');
+    xoxCurrent = s.current || 'X';
+    xoxOver    = s.over    || false;
+
+    // Boyut butonları
+    document.querySelectorAll('.xox-size-btn').forEach(b=>{
+      b.classList.toggle('active', parseInt(b.dataset.size)===xoxSize);
+    });
+
+    // Oyuncu kartları
+    const px = s.playerX || '';
+    const po = s.playerO || '';
+    const ex = document.getElementById('xox-player-x-name');
+    const eo = document.getElementById('xox-player-o-name');
+    if(ex) ex.textContent = px || 'bekliyor...';
+    if(eo) eo.textContent = po || 'bekliyor...';
+
+    const sx = document.getElementById('xox-score-x');
+    const so = document.getElementById('xox-score-o');
+    if(sx) sx.textContent = (s.scoreX||0)+' puan';
+    if(so) so.textContent = (s.scoreO||0)+' puan';
+
+    // Sıra / durum
+    const turnEl  = document.getElementById('xox-turn-display');
+    const statusEl= document.getElementById('xox-status');
+
+    if(s.over){
+      const winner = s.winner;
+      if(winner === 'draw'){
+        if(turnEl){ turnEl.textContent='Berabere 🤝'; turnEl.style.color='#fff'; }
+        if(statusEl) statusEl.textContent='🤝 Berabere! Harika oyun!';
+      } else {
+        const wname = winner==='X' ? (px||'❌') : (po||'⭕');
+        const wsym  = winner==='X' ? '❌' : '⭕';
+        if(turnEl){ turnEl.textContent=wsym+' Kazandı 🏆'; turnEl.style.color= winner==='X'?'#ff4d6d':'#9d4edd'; }
+        if(statusEl) statusEl.textContent=`🎉 ${wname} kazandı! Tebrikler!`;
+      }
+    } else {
+      const cname = xoxCurrent==='X' ? (px ? px : '❌') : (po ? po : '⭕');
+      const csym  = xoxCurrent==='X' ? '❌' : '⭕';
+      if(turnEl){ turnEl.textContent='sıra: '+csym+' ('+cname+')'; turnEl.style.color=xoxCurrent==='X'?'#ff4d6d':'#9d4edd'; }
+
+      if(!px || !po){
+        if(statusEl) statusEl.textContent='İki oyuncu bekleniyor... 💜';
+      } else {
+        // Benim sıram mı?
+        if(mySymbol && xoxCurrent===mySymbol){
+          if(statusEl) statusEl.textContent='Senin sıran! '+csym+' hamleni yap!';
+        } else if(mySymbol) {
+          if(statusEl) statusEl.textContent='Rakibinin hamlesi bekleniyor... ⏳';
+        } else {
+          if(statusEl) statusEl.textContent=cname+' hamleni yapıyor...';
+        }
+      }
+    }
+
+    // Katıl kutusu — ben zaten içerideyse gizle
+    if(mySymbol){
+      const jb = document.getElementById('xox-join-box');
+      if(jb) jb.style.display='none';
+    }
+
     xoxRenderBoard();
   }
-  window.xoxReset = xoxReset;
 
-  function xoxResetScore(){
-    xoxScoreX = 0; xoxScoreO = 0;
-    document.getElementById('xox-score-x').textContent = 'X: 0';
-    document.getElementById('xox-score-o').textContent = 'O: 0';
-    xoxReset();
-  }
-  window.xoxResetScore = xoxResetScore;
-
+  /* --- Tahtayı çiz --- */
   function xoxRenderBoard(){
     const board = document.getElementById('xox-board');
     if(!board) return;
-    board.className = 'xox-board size-' + xoxSize;
+    board.className = 'xox-board size-'+xoxSize;
     board.innerHTML = '';
-    for(let i = 0; i < xoxSize * xoxSize; i++){
+    for(let i=0;i<xoxSize*xoxSize;i++){
       const cell = document.createElement('div');
       cell.className = 'xox-cell';
       if(xoxBoard[i]){
         cell.classList.add('taken');
-        cell.classList.add(xoxBoard[i]==='X' ? 'x-cell' : 'o-cell');
-        cell.textContent = xoxBoard[i]==='X' ? '❌' : '⭕';
+        cell.classList.add(xoxBoard[i]==='X'?'x-cell':'o-cell');
+        cell.textContent = xoxBoard[i]==='X'?'❌':'⭕';
       }
-      cell.addEventListener('click', ()=> xoxClick(i));
+      // Kazanan hücreler
+      const wins = fbState && fbState.winCells;
+      if(wins && wins.includes(i)) cell.classList.add('win-cell');
+      cell.addEventListener('click', ()=>xoxClick(i));
       board.appendChild(cell);
     }
   }
 
+  /* --- Katıl --- */
+  window.xoxJoin = function(){
+    const input = document.getElementById('xox-name-input');
+    const statusEl = document.getElementById('xox-join-status');
+    const name = (input ? input.value.trim() : '').slice(0,14);
+    if(!name){ if(statusEl) statusEl.textContent='İsim boş olamaz 😅'; return; }
+
+    if(!window.akDB){
+      // Offline: sadece yerel, X al
+      myName=''; mySymbol='X';
+      if(statusEl) statusEl.textContent='Çevrimdışı: sana ❌ verildi (sadece bu cihaz)';
+      const jb = document.getElementById('xox-join-box');
+      if(jb) jb.style.display='none';
+      return;
+    }
+
+    window.akDB.ref(FB_XOX).once('value').then(snap=>{
+      const s = snap.val() || {};
+      const px = s.playerX || '';
+      const po = s.playerO || '';
+
+      // Aynı isimle zaten içeride mi?
+      if(px === name){ myName=name; mySymbol='X'; if(statusEl) statusEl.textContent='Tekrar hoş geldin '+name+'! Sın ❌'; const jb=document.getElementById('xox-join-box'); if(jb)jb.style.display='none'; return; }
+      if(po === name){ myName=name; mySymbol='O'; if(statusEl) statusEl.textContent='Tekrar hoş geldin '+name+'! Sin ⭕'; const jb=document.getElementById('xox-join-box'); if(jb)jb.style.display='none'; return; }
+
+      // Oda dolu mu?
+      if(px && po){ if(statusEl) statusEl.textContent='Oda dolu! Seyirci olarak izleyebilirsin 👀'; return; }
+
+      // Hangi sembolü alacak?
+      let symbol;
+      if(!px && !po){
+        // İlk kişi — rastgele
+        symbol = Math.random() < 0.5 ? 'X' : 'O';
+      } else if(!px){
+        symbol = 'X';
+      } else {
+        symbol = 'O';
+      }
+
+      myName   = name;
+      mySymbol = symbol;
+
+      const patch = {};
+      if(symbol==='X') patch.playerX = name;
+      else             patch.playerO = name;
+
+      // Eğer hiç oyun yoksa temiz başlat
+      if(!px && !po){
+        patch.board   = Array(xoxSize*xoxSize).fill('');
+        patch.current = 'X';
+        patch.over    = false;
+        patch.winner  = null;
+        patch.winCells= null;
+        patch.size    = xoxSize;
+        patch.scoreX  = 0;
+        patch.scoreO  = 0;
+      }
+      pushState(patch);
+
+      if(statusEl) statusEl.textContent = `Hoş geldin ${name}! Sana ${symbol==='X'?'❌':'⭕'} verildi 🎉`;
+      const jb = document.getElementById('xox-join-box');
+      if(jb) jb.style.display='none';
+    });
+  };
+
+  /* --- Hamle yap --- */
   function xoxClick(idx){
     if(xoxOver || xoxBoard[idx]) return;
-    xoxBoard[idx] = xoxCurrent;
-    const cells = document.getElementById('xox-board').children;
-    const cell = cells[idx];
-    cell.classList.add('taken');
-    cell.classList.add(xoxCurrent==='X' ? 'x-cell' : 'o-cell');
-    cell.textContent = xoxCurrent==='X' ? '❌' : '⭕';
 
-    const winCells = xoxCheckWin(xoxBoard, xoxCurrent, xoxSize, xoxWinLen);
+    // Sadece kendi sıramda oynayabilirim
+    if(mySymbol && xoxCurrent !== mySymbol){
+      const statusEl = document.getElementById('xox-status');
+      if(statusEl){ statusEl.textContent='Bu senin sıran değil! ⏳'; setTimeout(()=>applyState(fbState),1200); }
+      return;
+    }
+
+    // Oyuncu yoksa local oyna
+    const s = fbState || {};
+    if(!s.playerX && !s.playerO && !mySymbol){
+      xoxBoard[idx] = xoxCurrent;
+      xoxLocalAfterMove(idx);
+      return;
+    }
+
+    const newBoard = [...xoxBoard];
+    newBoard[idx] = xoxCurrent;
+
+    const winCells = xoxCheckWin(newBoard, xoxCurrent, xoxSize, xoxWinLen);
     if(winCells){
-      xoxOver = true;
-      winCells.forEach(wi => cells[wi].classList.add('win-cell'));
-      if(xoxCurrent==='X'){ xoxScoreX++; document.getElementById('xox-score-x').textContent='X: '+xoxScoreX; }
-      else{ xoxScoreO++; document.getElementById('xox-score-o').textContent='O: '+xoxScoreO; }
-      const msg = xoxCurrent==='X' ? '🎉 ❌ Kazandı! Tebrikler!' : '🎉 ⭕ Kazandı! Tebrikler!';
-      document.getElementById('xox-status').textContent = msg;
-      document.getElementById('xox-turn-display').textContent = xoxCurrent==='X' ? '❌ Kazandı 🏆' : '⭕ Kazandı 🏆';
-      return;
+      const patch = { board: newBoard, over:true, winner:xoxCurrent, winCells };
+      if(xoxCurrent==='X') patch.scoreX = (s.scoreX||0)+1;
+      else                  patch.scoreO = (s.scoreO||0)+1;
+      pushState(patch);
+    } else if(newBoard.every(v=>v)){
+      pushState({ board: newBoard, over:true, winner:'draw', winCells:null });
+    } else {
+      const next = xoxCurrent==='X'?'O':'X';
+      pushState({ board: newBoard, current: next, over:false, winner:null, winCells:null });
     }
-    if(xoxBoard.every(v=>v)){
-      xoxOver = true;
-      document.getElementById('xox-status').textContent = '🤝 Berabere! Harika oyun!';
-      document.getElementById('xox-turn-display').textContent = 'Berabere 🤝';
-      return;
-    }
-    xoxCurrent = xoxCurrent==='X' ? 'O' : 'X';
-    document.getElementById('xox-turn-display').textContent = xoxCurrent==='X' ? 'sıra: ❌' : 'sıra: ⭕';
-    document.getElementById('xox-turn-display').style.color = xoxCurrent==='X' ? '#ff4d6d' : '#9d4edd';
-    document.getElementById('xox-status').textContent = xoxCurrent==='X' ? '❌ hamleni yap!' : '⭕ hamleni yap!';
   }
 
+  /* --- Yerel (offline) hamle sonrası --- */
+  function xoxLocalAfterMove(idx){
+    xoxRenderBoard();
+    const winCells = xoxCheckWin(xoxBoard, xoxCurrent, xoxSize, xoxWinLen);
+    const statusEl = document.getElementById('xox-status');
+    const turnEl   = document.getElementById('xox-turn-display');
+    if(winCells){
+      xoxOver=true;
+      winCells.forEach(wi=>document.getElementById('xox-board').children[wi].classList.add('win-cell'));
+      if(statusEl) statusEl.textContent='🎉 '+(xoxCurrent==='X'?'❌':'⭕')+' kazandı!';
+      if(turnEl)   turnEl.textContent=(xoxCurrent==='X'?'❌':'⭕')+' Kazandı 🏆';
+    } else if(xoxBoard.every(v=>v)){
+      xoxOver=true;
+      if(statusEl) statusEl.textContent='🤝 Berabere!';
+    } else {
+      xoxCurrent = xoxCurrent==='X'?'O':'X';
+      if(turnEl){ turnEl.textContent='sıra: '+(xoxCurrent==='X'?'❌':'⭕'); turnEl.style.color=xoxCurrent==='X'?'#ff4d6d':'#9d4edd'; }
+      if(statusEl) statusEl.textContent=(xoxCurrent==='X'?'❌':'⭕')+' hamleni yap!';
+    }
+  }
+
+  /* --- Yeni oyun --- */
+  window.xoxReset = function(){
+    const s = fbState || {};
+    const patch = {
+      board: Array(xoxSize*xoxSize).fill(''),
+      current:'X', over:false, winner:null, winCells:null, size:xoxSize,
+      playerX: s.playerX||'', playerO: s.playerO||'',
+      scoreX: s.scoreX||0, scoreO: s.scoreO||0
+    };
+    if(window.akDB) pushState(patch);
+    else { xoxBoard=patch.board; xoxCurrent='X'; xoxOver=false; xoxRenderBoard(); }
+  };
+
+  /* --- Skoru sıfırla --- */
+  window.xoxResetScore = function(){
+    const s = fbState || {};
+    pushState({ scoreX:0, scoreO:0, board:Array(xoxSize*xoxSize).fill(''), current:'X', over:false, winner:null, winCells:null, size:xoxSize, playerX:s.playerX||'', playerO:s.playerO||'' });
+  };
+
+  /* --- Odadan çık --- */
+  window.xoxLeave = function(){
+    if(!mySymbol){ return; }
+    const s = fbState || {};
+    const patch = {};
+    if(mySymbol==='X') patch.playerX='';
+    else               patch.playerO='';
+    // Tahtayı da sıfırla
+    patch.board=Array(xoxSize*xoxSize).fill('');
+    patch.current='X'; patch.over=false; patch.winner=null; patch.winCells=null;
+    pushState(patch);
+    myName=''; mySymbol='';
+    const jb = document.getElementById('xox-join-box');
+    if(jb) jb.style.display='';
+    const js = document.getElementById('xox-join-status');
+    if(js) js.textContent='Odadan çıktın.';
+  };
+
+  /* --- Boyut değiştir --- */
+  window.xoxSetSize = function(s){
+    xoxSize=s; xoxWinLen=getWinLen(s);
+    document.querySelectorAll('.xox-size-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.size)===s));
+    window.xoxReset();
+  };
+
+  /* --- Kazanma kontrolü --- */
   function xoxCheckWin(board, player, size, winLen){
-    // Yatay, dikey, çapraz kontrol
-    const idx = (r,c) => r*size+c;
-    // Yatay
-    for(let r=0;r<size;r++){
-      for(let c=0;c<=size-winLen;c++){
-        const cells = Array.from({length:winLen},(_,k)=>idx(r,c+k));
-        if(cells.every(i=>board[i]===player)) return cells;
-      }
-    }
-    // Dikey
-    for(let c=0;c<size;c++){
-      for(let r=0;r<=size-winLen;r++){
-        const cells = Array.from({length:winLen},(_,k)=>idx(r+k,c));
-        if(cells.every(i=>board[i]===player)) return cells;
-      }
-    }
-    // Çapraz ↘
-    for(let r=0;r<=size-winLen;r++){
-      for(let c=0;c<=size-winLen;c++){
-        const cells = Array.from({length:winLen},(_,k)=>idx(r+k,c+k));
-        if(cells.every(i=>board[i]===player)) return cells;
-      }
-    }
-    // Çapraz ↙
-    for(let r=0;r<=size-winLen;r++){
-      for(let c=winLen-1;c<size;c++){
-        const cells = Array.from({length:winLen},(_,k)=>idx(r+k,c-k));
-        if(cells.every(i=>board[i]===player)) return cells;
-      }
-    }
+    const idx=(r,c)=>r*size+c;
+    for(let r=0;r<size;r++) for(let c=0;c<=size-winLen;c++){ const cs=Array.from({length:winLen},(_,k)=>idx(r,c+k)); if(cs.every(i=>board[i]===player)) return cs; }
+    for(let c=0;c<size;c++) for(let r=0;r<=size-winLen;r++){ const cs=Array.from({length:winLen},(_,k)=>idx(r+k,c)); if(cs.every(i=>board[i]===player)) return cs; }
+    for(let r=0;r<=size-winLen;r++) for(let c=0;c<=size-winLen;c++){ const cs=Array.from({length:winLen},(_,k)=>idx(r+k,c+k)); if(cs.every(i=>board[i]===player)) return cs; }
+    for(let r=0;r<=size-winLen;r++) for(let c=winLen-1;c<size;c++){ const cs=Array.from({length:winLen},(_,k)=>idx(r+k,c-k)); if(cs.every(i=>board[i]===player)) return cs; }
     return null;
   }
 
-  // İlk render — tab açıldığında
-  document.addEventListener('DOMContentLoaded', ()=>{ xoxReset(); });
-  // Eğer DOM zaten hazırsa
-  if(document.readyState !== 'loading') xoxReset();
+  /* --- Enter ile katıl --- */
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const inp = document.getElementById('xox-name-input');
+    if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); window.xoxJoin(); } });
+    startFBListener();
+    xoxRenderBoard();
+  });
+  if(document.readyState !== 'loading'){ startFBListener(); xoxRenderBoard(); }
 })();
 </script>
 <div id="mini-game-modal" class="mg-modal" aria-hidden="true">
@@ -5069,17 +5437,44 @@ function togglePolaroid() {
 
 <!-- ===== XOX PANELİ ===== -->
 <section class="mg-panel" data-panel="xox" role="tabpanel">
-  <div class="mg-panel-top">
-    <div class="mg-hint">❌⭕ XOX — iki kişi aynı cihazda veya sırayla oynayın!</div>
-    <div class="mg-stats">
-      <div>skor: <span id="xox-score-x">X: 0</span> / <span id="xox-score-o">O: 0</span></div>
-      <div id="xox-turn-display" style="font-weight:700;color:#ff4d6d;">sıra: ❌</div>
+
+  <!-- Bağlantı durumu -->
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:11px;color:#aaa;">
+    <span id="xox-live-dot" style="width:7px;height:7px;border-radius:50%;background:#aaa;display:inline-block;"></span>
+    <span id="xox-live-text">bağlanıyor...</span>
+  </div>
+
+  <!-- Oyuncu girişi -->
+  <div id="xox-join-box" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);border-radius:14px;padding:14px;margin-bottom:12px;">
+    <div style="font-size:12px;opacity:0.8;margin-bottom:8px;">📱 İsmini gir ve katıl — sana rastgele ❌ veya ⭕ verilecek:</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <input id="xox-name-input" type="text" maxlength="14" placeholder="ör: kevser" style="flex:1;min-width:120px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:#fff;padding:9px 12px;border-radius:10px;outline:none;font-size:13px;" />
+      <button onclick="xoxJoin()" type="button" style="padding:9px 16px;border-radius:10px;border:1px solid rgba(123,44,191,0.5);background:rgba(123,44,191,0.25);color:#fff;cursor:pointer;font-size:13px;white-space:nowrap;">Katıl 💜</button>
+    </div>
+    <div id="xox-join-status" style="font-size:12px;margin-top:8px;opacity:0.75;min-height:18px;"></div>
+  </div>
+
+  <!-- Oyuncu kartları -->
+  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+    <div id="xox-player-x-card" style="flex:1;min-width:100px;padding:8px 10px;border-radius:10px;background:rgba(255,77,109,0.10);border:1px solid rgba(255,77,109,0.25);font-size:12px;text-align:center;">
+      <div style="font-size:18px;">❌</div>
+      <div id="xox-player-x-name" style="opacity:0.7;margin-top:2px;">bekliyor...</div>
+      <div id="xox-score-x" style="font-weight:700;color:#ff4d6d;font-size:11px;">0 puan</div>
+    </div>
+    <div style="display:flex;align-items:center;font-size:16px;opacity:0.4;">VS</div>
+    <div id="xox-player-o-card" style="flex:1;min-width:100px;padding:8px 10px;border-radius:10px;background:rgba(157,78,221,0.10);border:1px solid rgba(157,78,221,0.25);font-size:12px;text-align:center;">
+      <div style="font-size:18px;">⭕</div>
+      <div id="xox-player-o-name" style="opacity:0.7;margin-top:2px;">bekliyor...</div>
+      <div id="xox-score-o" style="font-weight:700;color:#9d4edd;font-size:11px;">0 puan</div>
     </div>
   </div>
 
+  <!-- Sıra göstergesi -->
+  <div id="xox-turn-display" style="font-weight:700;color:#ff4d6d;font-size:13px;text-align:center;margin-bottom:8px;">sıra: ❌</div>
+
   <!-- Boyut seçimi -->
   <div class="xox-size-row">
-    <span style="font-size:12px;opacity:0.75;">tahta boyutu:</span>
+    <span style="font-size:12px;opacity:0.75;">tahta:</span>
     <button class="xox-size-btn active" data-size="3" onclick="xoxSetSize(3)">3×3</button>
     <button class="xox-size-btn" data-size="5" onclick="xoxSetSize(5)">5×5</button>
     <button class="xox-size-btn" data-size="9" onclick="xoxSetSize(9)">9×9</button>
@@ -5091,12 +5486,13 @@ function togglePolaroid() {
   </div>
 
   <!-- Durum mesajı -->
-  <div id="xox-status" class="xox-status">Oyunu başlatmak için tahtaya dokun 💜</div>
+  <div id="xox-status" class="xox-status">İsim gir ve katıl 💜</div>
 
   <!-- Aksiyonlar -->
-  <div class="mg-actions" style="justify-content:center;gap:12px;margin-top:10px;">
+  <div class="mg-actions" style="justify-content:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
     <button class="mg-primary" onclick="xoxReset()" type="button">🔄 Yeni Oyun</button>
     <button class="mg-ghost" onclick="xoxResetScore()" type="button">Skoru Sıfırla</button>
+    <button class="mg-ghost" onclick="xoxLeave()" type="button">Çıkış</button>
   </div>
 </section>
 
@@ -5109,7 +5505,7 @@ function togglePolaroid() {
 (function(){
 // ---- CONFIG ----
 const BASLANGIC = new Date("2026-06-26T00:00:00"); // ilk gün: 26 Haziran 2026
-const TOPLAM_GUN = 74; // 26 Haziran → 7 Eylül 2026 = 74 gün
+const TOPLAM_GUN = 79; // 26 Haziran → 12 Eylül 2026 = 79 gün
 const KISILER = { kevser: "🩶", atakan: "💜" };
 
 // ---- STATE ----
@@ -5446,12 +5842,232 @@ window.saveGunlukEntry = function(){
 };
 
 // ---- OTOMATIK GİRİŞ SONRASI BAŞLATMA ----
-// executeLogin içinde çağır
 const _origExecLogin = window.executeLogin || null;
-// İlk açılışta Firebase hazır olunca günlük butonunu göster
-document.addEventListener("DOMContentLoaded", ()=>{
-    // Giriş butonu zaten var, sadece modal dinleme
-});
+document.addEventListener("DOMContentLoaded", ()=>{});
+
+// ======== KİTAP MODU ========
+let kitapAktifGun = 1;
+let kitapFlipping = false;
+let kitapYazKisi = "kevser";
+let kitapTumVeri = {};
+
+window.toggleKitapModu = function(){
+    closeGunluk();
+    kitapAktifGun = bugunGun();
+    openKitapModu();
+};
+
+window.openKitapModu = function(){
+    document.getElementById("kitap-modal").style.display = "block";
+    if(!window.akDB){ renderKitapSayfa(); return; }
+    // Realtime dinle
+    window.akDB.ref("gunluk").on("value", snap=>{
+        kitapTumVeri = snap.val() || {};
+        renderKitapSayfa();
+    });
+};
+
+window.closeKitapModu = function(){
+    document.getElementById("kitap-modal").style.display = "none";
+    if(window.akDB) window.akDB.ref("gunluk").off();
+};
+
+function kitapSayfaIcerik(gun){
+    if(gun < 1 || gun > TOPLAM_GUN) return "";
+    const gd = kitapTumVeri["gun"+gun] || {};
+    const tarih = formatTarih(gunNo(gun));
+    let html = `<div style="font-size:9px;opacity:0.35;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;">${tarih}</div>`;
+    const kevser = gd.kevser;
+    const atakan = gd.atakan;
+    if(!kevser && !atakan){
+        html += `<div style="opacity:0.2;font-size:12px;text-align:center;margin-top:50px;">henüz yazılmamış…</div>`;
+    }
+    if(kevser && kevser.metin){
+        html += `<div style="margin-bottom:16px;padding:10px 12px;border-radius:12px;background:rgba(176,176,176,0.07);border-left:3px solid #b0b0b0;">
+            <div style="font-size:9px;letter-spacing:1.2px;margin-bottom:6px;color:#b0b0b0;font-weight:700;">🩶 KEVSER</div>
+            <div style="color:#c8c8c8;font-size:13px;line-height:1.6;">${kevser.metin.replace(/\n/g,"<br>")}</div>
+            ${kevser.zaman ? `<div style="font-size:9px;opacity:0.4;margin-top:6px;color:#b0b0b0;">${kevser.zaman}</div>` : ""}
+        </div>`;
+    }
+    if(atakan && atakan.metin){
+        html += `<div style="padding:10px 12px;border-radius:12px;background:rgba(123,44,191,0.08);border-left:3px solid #7b2cbf;">
+            <div style="font-size:9px;letter-spacing:1.2px;margin-bottom:6px;color:#c4a0ff;font-weight:700;">💜 ATAKAN</div>
+            <div style="color:#d0c0ff;font-size:13px;line-height:1.6;">${atakan.metin.replace(/\n/g,"<br>")}</div>
+            ${atakan.zaman ? `<div style="font-size:9px;opacity:0.4;margin-top:6px;color:#c4a0ff;">${atakan.zaman}</div>` : ""}
+        </div>`;
+    }
+    return html;
+}
+
+function renderKitapSayfa(){
+    const gun = kitapAktifGun;
+    const oncekiGun = gun - 1;
+    const tarih = formatTarih(gunNo(gun));
+    const bugun = bugunGun();
+
+    document.getElementById("kitap-gun-label").textContent = gun + ". gün";
+    document.getElementById("kitap-tarih-label").textContent = tarih;
+
+    // Sol (önceki gün)
+    if(oncekiGun >= 1){
+        document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(oncekiGun);
+        document.getElementById("kitap-sol-sayfa").textContent = (oncekiGun * 2 - 1) + " · " + (oncekiGun * 2);
+    } else {
+        document.getElementById("kitap-sol-icerik").innerHTML = `<div style="opacity:0.12;text-align:center;margin-top:70px;font-size:28px;">📖</div>`;
+        document.getElementById("kitap-sol-sayfa").textContent = "";
+    }
+
+    // Sağ (aktif gün)
+    document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(gun);
+    document.getElementById("kitap-sag-sayfa").textContent = (gun * 2 - 1) + " · " + (gun * 2);
+
+    // Progress
+    const pct = Math.round(((gun - 1) / Math.max(TOPLAM_GUN - 1, 1)) * 100);
+    document.getElementById("kitap-progress-bar").style.width = pct + "%";
+    document.getElementById("kitap-progress-text").textContent = gun + " / " + TOPLAM_GUN;
+
+    // Buton opaklıkları
+    document.getElementById("kitap-prev-btn").style.opacity = gun <= 1 ? "0.25" : "1";
+    document.getElementById("kitap-next-btn").style.opacity = gun >= bugun ? "0.25" : "1";
+    document.getElementById("kitap-yaz-btn").style.display = gun <= bugun ? "block" : "none";
+}
+
+window.kitapSayfa = function(yon){
+    if(kitapFlipping) return;
+    const yeniGun = kitapAktifGun + yon;
+    if(yeniGun < 1 || yeniGun > bugunGun()) return;
+
+    kitapFlipping = true;
+    const flipEl  = document.getElementById("kitap-flip-el");
+    const flipFront = document.getElementById("kitap-flip-front");
+    const flipBack  = document.getElementById("kitap-flip-back");
+    const sagEl = document.getElementById("kitap-sag");
+
+    // Sayfa genişliğini dinamik al
+    const sagW = sagEl.offsetWidth;
+
+    if(yon === 1){
+        // İLERİ: sağ sayfa sola kıvrılır
+        flipEl.style.width  = sagW + "px";
+        flipEl.style.left   = "50%";
+        flipEl.style.transformOrigin = "left center";
+        flipFront.innerHTML = document.getElementById("kitap-sag-icerik").innerHTML;
+        flipBack.innerHTML  = kitapSayfaIcerik(yeniGun - 1);
+        flipEl.style.transform  = "rotateY(0deg)";
+        flipEl.style.transition = "";
+        flipEl.style.display    = "block";
+
+        requestAnimationFrame(()=>{
+            requestAnimationFrame(()=>{
+                flipEl.style.transition = "transform 0.6s cubic-bezier(0.645,0.045,0.355,1)";
+                flipEl.style.transform  = "rotateY(-180deg)";
+            });
+        });
+        setTimeout(()=>{
+            kitapAktifGun = yeniGun;
+            flipEl.style.display = "none";
+            flipEl.style.transition = "";
+            kitapFlipping = false;
+            renderKitapSayfa();
+        }, 620);
+
+    } else {
+        // GERİ: sol sayfa sağa kıvrılır
+        const solEl = document.getElementById("kitap-sol");
+        const solW = solEl.offsetWidth;
+        flipEl.style.width  = solW + "px";
+        // Flip elementi sol sayfanın sağ kenarından başlamalı
+        flipEl.style.left   = `calc(50% - ${solW + 14}px)`;
+        flipEl.style.transformOrigin = "right center";
+        flipFront.innerHTML = kitapSayfaIcerik(yeniGun);
+        flipBack.innerHTML  = document.getElementById("kitap-sol-icerik").innerHTML;
+        flipEl.style.transform  = "rotateY(0deg)";
+        flipEl.style.transition = "";
+        flipEl.style.display    = "block";
+
+        requestAnimationFrame(()=>{
+            requestAnimationFrame(()=>{
+                flipEl.style.transition = "transform 0.6s cubic-bezier(0.645,0.045,0.355,1)";
+                flipEl.style.transform  = "rotateY(180deg)";
+            });
+        });
+        setTimeout(()=>{
+            kitapAktifGun = yeniGun;
+            flipEl.style.display = "none";
+            flipEl.style.transition = "";
+            kitapFlipping = false;
+            renderKitapSayfa();
+        }, 620);
+    }
+};
+
+// Touch kaydırma
+(function(){
+    let tx = 0;
+    document.addEventListener("touchstart", e=>{
+        if(document.getElementById("kitap-modal").style.display !== "none")
+            tx = e.touches[0].clientX;
+    },{passive:true});
+    document.addEventListener("touchend", e=>{
+        if(document.getElementById("kitap-modal").style.display === "none") return;
+        const dx = tx - e.changedTouches[0].clientX;
+        if(Math.abs(dx) > 50) kitapSayfa(dx > 0 ? 1 : -1);
+    },{passive:true});
+})();
+
+// ---- KİTAP NOT YAZMA ----
+window.kitapNotEkle = function(){
+    document.getElementById("kitap-yaz-title").textContent = kitapAktifGun + ". güne not ekle";
+    kitapYazKisi = "kevser";
+    syncKitapYazKisiUI();
+    const gd = kitapTumVeri["gun"+kitapAktifGun] || {};
+    document.getElementById("kitap-yaz-textarea").value = (gd.kevser && gd.kevser.metin) ? gd.kevser.metin : "";
+    document.getElementById("kitap-yaz-modal").style.display = "block";
+    setTimeout(()=> document.getElementById("kitap-yaz-textarea").focus(), 100);
+};
+
+window.closeKitapYaz = function(e){
+    if(e.target === document.getElementById("kitap-yaz-modal"))
+        document.getElementById("kitap-yaz-modal").style.display = "none";
+};
+
+window.setKitapYazKisi = function(k){
+    kitapYazKisi = k;
+    syncKitapYazKisiUI();
+    const gd = kitapTumVeri["gun"+kitapAktifGun] || {};
+    document.getElementById("kitap-yaz-textarea").value = (gd[k] && gd[k].metin) ? gd[k].metin : "";
+};
+
+function syncKitapYazKisiUI(){
+    document.querySelectorAll(".kyaz-kisi-btn").forEach(b=>{
+        const isMe = b.dataset.k === kitapYazKisi;
+        b.style.opacity = isMe ? "1" : "0.4";
+        b.style.fontWeight = isMe ? "700" : "500";
+        b.style.borderColor = isMe
+            ? (kitapYazKisi === "kevser" ? "rgba(176,176,176,0.7)" : "rgba(123,44,191,0.6)")
+            : (b.dataset.k === "kevser" ? "rgba(176,176,176,0.2)" : "rgba(123,44,191,0.15)");
+    });
+}
+
+window.kaydetKitapNot = function(){
+    if(!window.akDB){ alert("bağlantı yok"); return; }
+    const metin = document.getElementById("kitap-yaz-textarea").value.trim();
+    if(!metin){ alert("bir şeyler yaz önce 🥺"); return; }
+    const gun = kitapAktifGun;
+    const d = new Date();
+    const zaman = d.getDate().toString().padStart(2,"0")+"."+(d.getMonth()+1).toString().padStart(2,"0")+"."+d.getFullYear()+" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+
+    window.akDB.ref(dbPath(gun, kitapYazKisi)).once("value").then(snap=>{
+        const old = snap.val();
+        if(old && old.metin){
+            window.akDB.ref(historyPath(gun, kitapYazKisi)+"/"+Date.now()).set(old.metin);
+        }
+        return window.akDB.ref(dbPath(gun, kitapYazKisi)).set({ metin, zaman });
+    }).then(()=>{
+        document.getElementById("kitap-yaz-modal").style.display = "none";
+        // realtime listener sayfayı otomatik günceller
+    }).catch(err=>alert("kaydedilemedi: "+err.message));
+};
 
 })();
 </script>
