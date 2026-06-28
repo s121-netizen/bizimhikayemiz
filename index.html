@@ -2169,9 +2169,12 @@ h1 {
     #kitap-govde {
         display:flex; align-items:stretch;
         filter: drop-shadow(0 40px 80px rgba(0,0,0,0.85)) drop-shadow(0 8px 20px rgba(0,0,0,0.6));
-        transform: rotateX(3deg);
+        /* rotateX kaldırıldı — mobilde yazıları bulanıklaştırıyordu */
         transform-style: preserve-3d;
         position:relative;
+        /* Yazı netliği için */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     /* Sol & sağ sayfa ortak */
@@ -2317,6 +2320,8 @@ h1 {
         overflow:hidden;
         font-family:'Playfair Display',serif; color:#d8d0e8;
         font-size:12.5px; line-height:1.8; font-style:italic;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
     #kitap-flip-front {
         background: linear-gradient(72deg, #130e22, #17102a, #1e1530);
@@ -6456,35 +6461,37 @@ window.kitapSayfa = function(yon){
     const ciltW     = document.getElementById("kitap-cilt").offsetWidth;
 
     if(yon === 1){
-        // İLERİ → sağ sayfa sola kıvrılır
+        // İLERİ: sağ sayfa sola kıvrılır
+        // Flip yüzüne mevcut sağ sayfanın içeriğini koy
         flipFront.innerHTML = document.getElementById("kitap-sag-icerik").innerHTML;
-        flipBack.innerHTML  = kitapSayfaIcerik(kitapAktifGun); // arka = yeni sol
+        flipBack.innerHTML  = kitapSayfaIcerik(yeniGun - 1 >= 1 ? yeniGun - 1 : kitapAktifGun);
 
-        // Flip konumlandır: cilt sağından başla
+        // Konum: govde içinde, solW + ciltW kadar sağdan başla (relative)
         flipEl.style.width        = sagW + "px";
         flipEl.style.height       = sagEl.offsetHeight + "px";
-        flipEl.style.left         = (solEl.offsetLeft + solW + ciltW) + "px";
-        flipEl.style.top          = sagEl.offsetTop + "px";
+        flipEl.style.left         = (solW + ciltW) + "px";
+        flipEl.style.top          = "0px";
         flipEl.style.transformOrigin = "left center";
         flipEl.style.transform    = "rotateY(0deg)";
         flipEl.style.transition   = "";
         flipEl.style.display      = "block";
 
-        // Arka planda yeni sayfaları hazırla
-        document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(yeniGun);
-        document.getElementById("kitap-sag-sayfa").textContent = (yeniGun * 2 - 1) + " · " + (yeniGun * 2);
-        if(yeniGun - 1 >= 1){
-            document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
-            document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1)*2-1) + " · " + ((yeniGun-1)*2);
-        }
-        // Tema güncelle (arka planda)
-        _setTemaImg("kitap-sag-tema-img", yeniGun);
-        _setTemaImg("kitap-sol-tema-img", yeniGun-1 >= 1 ? yeniGun-1 : null);
-
         requestAnimationFrame(()=> requestAnimationFrame(()=>{
             flipEl.style.transition = "transform 0.6s cubic-bezier(0.45,0,0.2,1)";
             flipEl.style.transform  = "rotateY(-180deg)";
         }));
+
+        // Animasyon ortasında arka planda içeriği güncelle (flip kapattığı için görünmez)
+        setTimeout(()=>{
+            document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(yeniGun);
+            document.getElementById("kitap-sag-sayfa").textContent = (yeniGun * 2 - 1) + " \xb7 " + (yeniGun * 2);
+            if(yeniGun - 1 >= 1){
+                document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
+                document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1)*2-1) + " \xb7 " + ((yeniGun-1)*2);
+            }
+            _setTemaImg("kitap-sag-tema-img", yeniGun);
+            _setTemaImg("kitap-sol-tema-img", yeniGun-1 >= 1 ? yeniGun-1 : null);
+        }, 380);
 
         setTimeout(()=>{
             kitapAktifGun = yeniGun;
@@ -6492,33 +6499,21 @@ window.kitapSayfa = function(yon){
             kitapFlipping = false;
             kitapBgGuncelle(yeniGun);
             _kitapUI(yeniGun);
-        }, 630);
+        }, 650);
 
     } else {
-        // GERİ → sol sayfa sağa kıvrılır
-        flipFront.innerHTML = kitapSayfaIcerik(yeniGun + 1);
-        flipBack.innerHTML  = document.getElementById("kitap-sol-icerik").innerHTML;
+        // GERİ: sol sayfa sağa kıvrılır
+        flipFront.innerHTML = document.getElementById("kitap-sol-icerik").innerHTML;
+        flipBack.innerHTML  = kitapSayfaIcerik(yeniGun);
 
         flipEl.style.width        = solW + "px";
         flipEl.style.height       = solEl.offsetHeight + "px";
-        flipEl.style.left         = solEl.offsetLeft + "px";
-        flipEl.style.top          = solEl.offsetTop + "px";
+        flipEl.style.left         = "0px";
+        flipEl.style.top          = "0px";
         flipEl.style.transformOrigin = "right center";
         flipEl.style.transform    = "rotateY(0deg)";
         flipEl.style.transition   = "";
         flipEl.style.display      = "block";
-
-        document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(yeniGun);
-        document.getElementById("kitap-sag-sayfa").textContent = (yeniGun * 2 - 1) + " · " + (yeniGun * 2);
-        if(yeniGun - 1 >= 1){
-            document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
-            document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1)*2-1) + " · " + ((yeniGun-1)*2);
-        } else {
-            document.getElementById("kitap-sol-icerik").innerHTML = `<div style="opacity:0.08;text-align:center;margin-top:60px;font-size:32px;">📖</div>`;
-            document.getElementById("kitap-sol-sayfa").textContent = "";
-        }
-        _setTemaImg("kitap-sag-tema-img", yeniGun);
-        _setTemaImg("kitap-sol-tema-img", yeniGun-1 >= 1 ? yeniGun-1 : null);
 
         requestAnimationFrame(()=> requestAnimationFrame(()=>{
             flipEl.style.transition = "transform 0.6s cubic-bezier(0.45,0,0.2,1)";
@@ -6526,12 +6521,26 @@ window.kitapSayfa = function(yon){
         }));
 
         setTimeout(()=>{
+            document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(yeniGun);
+            document.getElementById("kitap-sag-sayfa").textContent = (yeniGun * 2 - 1) + " \xb7 " + (yeniGun * 2);
+            if(yeniGun - 1 >= 1){
+                document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
+                document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1)*2-1) + " \xb7 " + ((yeniGun-1)*2);
+            } else {
+                document.getElementById("kitap-sol-icerik").innerHTML = "<div style=\"opacity:0.08;text-align:center;margin-top:60px;font-size:32px;\">\uD83D\uDCD6</div>";
+                document.getElementById("kitap-sol-sayfa").textContent = "";
+            }
+            _setTemaImg("kitap-sag-tema-img", yeniGun);
+            _setTemaImg("kitap-sol-tema-img", yeniGun-1 >= 1 ? yeniGun-1 : null);
+        }, 380);
+
+        setTimeout(()=>{
             kitapAktifGun = yeniGun;
             flipEl.style.display = "none";
             kitapFlipping = false;
             kitapBgGuncelle(yeniGun);
             _kitapUI(yeniGun);
-        }, 630);
+        }, 650);
     }
 };
 
