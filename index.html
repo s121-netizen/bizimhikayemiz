@@ -2128,13 +2128,13 @@ h1 {
     #kitap-bg {
         position:absolute; inset:0;
         background-size:cover; background-position:center;
-        filter:blur(18px) brightness(0.35) saturate(1.4);
-        transform:scale(1.08);
-        transition: background-image 0.5s ease;
+        filter:blur(30px) brightness(0.18) saturate(1.1);
+        transform:scale(1.1);
+        transition: background-image 0.6s ease;
     }
     #kitap-bg::after {
         content:""; position:absolute; inset:0;
-        background: radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+        background: rgba(4,2,10,0.6);
     }
     /* Üst bar */
     #kitap-topbar {
@@ -2255,65 +2255,28 @@ h1 {
 
     /* Cilt */
     #kitap-cilt {
-        width: 22px;
-        height: min(460px, 62vh);
+        width:22px; height:min(460px,62vh);
         flex-shrink:0; position:relative; z-index:10;
-        background: linear-gradient(to right,
-            #08050f 0%, #1a0d2e 30%, #240f3d 50%, #1a0d2e 70%, #08050f 100%);
-        box-shadow:
-            0 0 25px rgba(0,0,0,0.8),
-            inset 0 0 6px rgba(123,44,191,0.15);
-        display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+        background:linear-gradient(to right,#08050f 0%,#1a0d2e 30%,#240f3d 50%,#1a0d2e 70%,#08050f 100%);
+        box-shadow:0 0 25px rgba(0,0,0,0.8),inset 0 0 6px rgba(123,44,191,0.15);
     }
-    /* Cilt çizgileri */
     #kitap-cilt::before {
-        content:"";
-        position:absolute; top:15%; left:50%; transform:translateX(-50%);
+        content:""; position:absolute; top:15%; left:50%; transform:translateX(-50%);
         width:2px; height:70%;
-        background: linear-gradient(to bottom,
-            transparent 0%, rgba(123,44,191,0.5) 20%,
-            rgba(176,176,176,0.3) 50%, rgba(123,44,191,0.5) 80%, transparent 100%);
+        background:linear-gradient(to bottom,transparent,rgba(123,44,191,0.5),rgba(176,176,176,0.3),rgba(123,44,191,0.5),transparent);
         border-radius:2px;
     }
 
-    /* Sayfa kenarları — gerçek sayfa yığını efekti */
-    #kitap-sol .sayfa-kenar {
-        display:none;
-    }
+    /* Sayfa kenar yığını */
     #kitap-sag-kenar {
-        position:absolute;
-        right:-5px; top:4px; bottom:4px; width:5px;
-        background: repeating-linear-gradient(
-            to bottom,
-            #2a1f3d 0px, #1c1230 2px, #241840 2px, #1a102e 4px
-        );
-        border-radius:0 3px 3px 0;
-        z-index:-1;
+        position:absolute; right:-5px; top:4px; bottom:4px; width:5px;
+        background:repeating-linear-gradient(to bottom,#2a1f3d 0px,#1c1230 2px,#241840 2px,#1a102e 4px);
+        border-radius:0 3px 3px 0; z-index:-1;
     }
     #kitap-sol-kenar {
-        position:absolute;
-        left:-5px; top:4px; bottom:4px; width:5px;
-        background: repeating-linear-gradient(
-            to bottom,
-            #2a1f3d 0px, #1c1230 2px, #241840 2px, #1a102e 4px
-        );
-        border-radius:3px 0 0 3px;
-        z-index:-1;
-    }
-
-    /* Tema resmi — sayfanın üstünde tam genişlik */
-    .kitap-tema-img-wrap {
-        position:relative; flex-shrink:0;
-        height:120px; overflow:hidden;
-    }
-    .kitap-tema-img-wrap img {
-        width:100%; height:100%; object-fit:cover; display:block;
-    }
-    .kitap-tema-img-wrap::after {
-        content:"";
-        position:absolute; bottom:0; left:0; right:0; height:50px;
-        background:linear-gradient(transparent, var(--pg-bg, #17102a));
-        pointer-events:none;
+        position:absolute; left:-5px; top:4px; bottom:4px; width:5px;
+        background:repeating-linear-gradient(to bottom,#2a1f3d 0px,#1c1230 2px,#241840 2px,#1a102e 4px);
+        border-radius:3px 0 0 3px; z-index:-1;
     }
 
     /* Not kutuları */
@@ -2450,10 +2413,12 @@ h1 {
 
                 <!-- Sol sayfa -->
                 <div class="kitap-sayfa" id="kitap-sol">
-                    <!-- Tema resmi sol -->
-                    <div class="kitap-tema-img-wrap" id="kitap-sol-tema">
-                        <img id="kitap-sol-tema-img" src="" alt="" onerror="this.closest('.kitap-tema-img-wrap').style.display='none'">
-                    </div>
+                    <!-- Tema arka plan resmi (absolute, içerik üstüne değil altına) -->
+                    <img id="kitap-sol-tema-img" src="" alt="" style="
+                        position:absolute; inset:0; width:100%; height:100%;
+                        object-fit:cover; opacity:0.18; z-index:0; display:block;
+                        pointer-events:none;
+                    ">
                     <div class="kitap-icerik" id="kitap-sol-icerik"></div>
                     <div class="kitap-sayfa-no" id="kitap-sol-sayfa"></div>
                 </div>
@@ -2463,10 +2428,12 @@ h1 {
 
                 <!-- Sağ sayfa -->
                 <div class="kitap-sayfa" id="kitap-sag">
-                    <!-- Tema resmi sağ -->
-                    <div class="kitap-tema-img-wrap" id="kitap-sag-tema">
-                        <img id="kitap-sag-tema-img" src="" alt="" onerror="this.closest('.kitap-tema-img-wrap').style.display='none'">
-                    </div>
+                    <!-- Tema arka plan resmi (absolute, içerik üstüne değil altına) -->
+                    <img id="kitap-sag-tema-img" src="" alt="" style="
+                        position:absolute; inset:0; width:100%; height:100%;
+                        object-fit:cover; opacity:0.18; z-index:0; display:block;
+                        pointer-events:none;
+                    ">
                     <div class="kitap-icerik" id="kitap-sag-icerik"></div>
                     <div class="kitap-sayfa-no" id="kitap-sag-sayfa"></div>
                 </div>
@@ -6339,28 +6306,29 @@ function kitapBgGuncelle(gun){
     }
 
     // Sol sayfa tema resmi
-    _setTemaImg("kitap-sol-tema-img", "kitap-sol-tema", solGun >= 1 ? solGun : null);
+    _setTemaImg("kitap-sol-tema-img", solGun >= 1 ? solGun : null);
     // Sağ sayfa tema resmi
-    _setTemaImg("kitap-sag-tema-img", "kitap-sag-tema", sagGun);
+    _setTemaImg("kitap-sag-tema-img", sagGun);
 }
 
-function _setTemaImg(imgId, wrapId, gun){
+function _setTemaImg(imgId, gun){
     const img = document.getElementById(imgId);
-    const wrap = document.getElementById(wrapId);
-    if(!img || !wrap) return;
+    if(!img) return;
     if(!gun || gun < 1){
-        wrap.style.display = "none";
+        img.src = "";
+        img.style.opacity = "0";
         return;
     }
-    wrap.style.display = "block";
-    const src = kitapTemaUrl(gun);
+    const src = "temalar/" + gun + ".png";
     img.onerror = function(){
         if(this.src.indexOf("temalar/1.png") < 0){
             this.src = "temalar/1.png";
         } else {
-            wrap.style.display = "none";
+            this.style.opacity = "0";
         }
     };
+    img.onload = function(){ this.style.opacity = "0.18"; };
+    img.style.opacity = "0";
     img.src = src;
 }
 
@@ -6510,8 +6478,8 @@ window.kitapSayfa = function(yon){
             document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1)*2-1) + " · " + ((yeniGun-1)*2);
         }
         // Tema güncelle (arka planda)
-        _setTemaImg("kitap-sag-tema-img","kitap-sag-tema", yeniGun);
-        _setTemaImg("kitap-sol-tema-img","kitap-sol-tema", yeniGun-1 >= 1 ? yeniGun-1 : null);
+        _setTemaImg("kitap-sag-tema-img", yeniGun);
+        _setTemaImg("kitap-sol-tema-img", yeniGun-1 >= 1 ? yeniGun-1 : null);
 
         requestAnimationFrame(()=> requestAnimationFrame(()=>{
             flipEl.style.transition = "transform 0.6s cubic-bezier(0.45,0,0.2,1)";
@@ -6549,8 +6517,8 @@ window.kitapSayfa = function(yon){
             document.getElementById("kitap-sol-icerik").innerHTML = `<div style="opacity:0.08;text-align:center;margin-top:60px;font-size:32px;">📖</div>`;
             document.getElementById("kitap-sol-sayfa").textContent = "";
         }
-        _setTemaImg("kitap-sag-tema-img","kitap-sag-tema", yeniGun);
-        _setTemaImg("kitap-sol-tema-img","kitap-sol-tema", yeniGun-1 >= 1 ? yeniGun-1 : null);
+        _setTemaImg("kitap-sag-tema-img", yeniGun);
+        _setTemaImg("kitap-sol-tema-img", yeniGun-1 >= 1 ? yeniGun-1 : null);
 
         requestAnimationFrame(()=> requestAnimationFrame(()=>{
             flipEl.style.transition = "transform 0.6s cubic-bezier(0.45,0,0.2,1)";
