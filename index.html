@@ -2118,141 +2118,386 @@ h1 {
         </div>
     </div>
     <!-- KİTAP MODU MODAL -->
-    <div id="kitap-modal" style="display:none; position:fixed; inset:0; z-index:65000; background:rgba(0,0,0,0.88); backdrop-filter:blur(12px);">
+    <!-- ===== GERÇEK KİTAP MODALI ===== -->
+    <style>
+    #kitap-modal {
+        display:none; position:fixed; inset:0; z-index:65000;
+        overflow:hidden;
+    }
+    /* Bulanık arka plan — temadan gelecek */
+    #kitap-bg {
+        position:absolute; inset:0;
+        background-size:cover; background-position:center;
+        filter:blur(18px) brightness(0.35) saturate(1.4);
+        transform:scale(1.08);
+        transition: background-image 0.5s ease;
+    }
+    #kitap-bg::after {
+        content:""; position:absolute; inset:0;
+        background: radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+    }
+    /* Üst bar */
+    #kitap-topbar {
+        position:absolute; top:0; left:0; right:0;
+        display:flex; justify-content:space-between; align-items:center;
+        padding:14px 20px; z-index:10;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+    }
+    #kitap-topbar-title {
+        font-family:'Playfair Display',serif; font-size:16px;
+        background: linear-gradient(90deg,#c0c0c0,#c4a0ff);
+        -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        letter-spacing:0.5px;
+    }
+    #kitap-topbar-right { display:flex; gap:10px; align-items:center; }
+    #kitap-tarih-label { font-size:11px; opacity:0.55; color:#fff; font-family:'Playfair Display',serif; }
+    #kitap-close-btn {
+        background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18);
+        color:#fff; width:34px; height:34px; border-radius:11px; cursor:pointer; font-size:15px;
+        backdrop-filter:blur(6px);
+    }
+
+    /* Sahne */
+    #kitap-sahne {
+        position:absolute; inset:0;
+        display:flex; align-items:center; justify-content:center;
+        perspective:2200px;
+        padding:58px 10px 72px;
+    }
+
+    /* Kitap gövdesi */
+    #kitap-govde {
+        display:flex; align-items:stretch;
+        filter: drop-shadow(0 40px 80px rgba(0,0,0,0.85)) drop-shadow(0 8px 20px rgba(0,0,0,0.6));
+        transform: rotateX(3deg);
+        transform-style: preserve-3d;
+        position:relative;
+    }
+
+    /* Sol & sağ sayfa ortak */
+    .kitap-sayfa {
+        width: min(310px, 42vw);
+        height: min(460px, 62vh);
+        display:flex; flex-direction:column;
+        overflow:hidden; position:relative;
+        flex-shrink:0;
+    }
+
+    /* Kağıt dokusu arka planı */
+    .kitap-sayfa::before {
+        content:"";
+        position:absolute; inset:0;
+        background:
+            repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 27px,
+                rgba(123,44,191,0.045) 27px,
+                rgba(123,44,191,0.045) 28px
+            );
+        pointer-events:none; z-index:1;
+    }
+
+    #kitap-sol {
+        background: linear-gradient(108deg,
+            #1e1530 0%, #17102a 40%, #130e22 100%);
+        border-radius: 6px 0 0 6px;
+        border-top: 1px solid rgba(255,255,255,0.09);
+        border-left: 1px solid rgba(255,255,255,0.07);
+        border-bottom: 1px solid rgba(0,0,0,0.5);
+        box-shadow:
+            inset -6px 0 20px rgba(0,0,0,0.4),
+            inset 2px 0 8px rgba(255,255,255,0.02);
+    }
+    #kitap-sag {
+        background: linear-gradient(72deg,
+            #130e22 0%, #17102a 60%, #1e1530 100%);
+        border-radius: 0 6px 6px 0;
+        border-top: 1px solid rgba(255,255,255,0.09);
+        border-right: 1px solid rgba(255,255,255,0.07);
+        border-bottom: 1px solid rgba(0,0,0,0.5);
+        box-shadow:
+            inset 6px 0 20px rgba(0,0,0,0.4),
+            inset -2px 0 8px rgba(255,255,255,0.02);
+    }
+
+    /* Gölge + renk kenar efekti sol sayfa sağ kenar */
+    #kitap-sol::after {
+        content:"";
+        position:absolute; top:0; bottom:0; right:0; width:22px;
+        background: linear-gradient(to right,
+            rgba(123,44,191,0.06), rgba(0,0,0,0.35));
+        pointer-events:none; z-index:2;
+    }
+    #kitap-sag::after {
+        content:"";
+        position:absolute; top:0; bottom:0; left:0; width:22px;
+        background: linear-gradient(to left,
+            rgba(123,44,191,0.06), rgba(0,0,0,0.35));
+        pointer-events:none; z-index:2;
+    }
+
+    /* İçerik scroll */
+    .kitap-icerik {
+        flex:1; overflow-y:auto; position:relative; z-index:3;
+        scrollbar-width:none;
+        padding:22px 20px 12px;
+    }
+    .kitap-icerik::-webkit-scrollbar { display:none; }
+
+    /* Sayfa numarası */
+    .kitap-sayfa-no {
+        text-align:center; padding:8px; font-size:10px;
+        opacity:0.28; letter-spacing:2px; color:#c4a0ff;
+        position:relative; z-index:3; flex-shrink:0;
+        font-family:'Playfair Display',serif;
+    }
+
+    /* Cilt */
+    #kitap-cilt {
+        width: 22px;
+        height: min(460px, 62vh);
+        flex-shrink:0; position:relative; z-index:10;
+        background: linear-gradient(to right,
+            #08050f 0%, #1a0d2e 30%, #240f3d 50%, #1a0d2e 70%, #08050f 100%);
+        box-shadow:
+            0 0 25px rgba(0,0,0,0.8),
+            inset 0 0 6px rgba(123,44,191,0.15);
+        display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+    }
+    /* Cilt çizgileri */
+    #kitap-cilt::before {
+        content:"";
+        position:absolute; top:15%; left:50%; transform:translateX(-50%);
+        width:2px; height:70%;
+        background: linear-gradient(to bottom,
+            transparent 0%, rgba(123,44,191,0.5) 20%,
+            rgba(176,176,176,0.3) 50%, rgba(123,44,191,0.5) 80%, transparent 100%);
+        border-radius:2px;
+    }
+
+    /* Sayfa kenarları — gerçek sayfa yığını efekti */
+    #kitap-sol .sayfa-kenar {
+        display:none;
+    }
+    #kitap-sag-kenar {
+        position:absolute;
+        right:-5px; top:4px; bottom:4px; width:5px;
+        background: repeating-linear-gradient(
+            to bottom,
+            #2a1f3d 0px, #1c1230 2px, #241840 2px, #1a102e 4px
+        );
+        border-radius:0 3px 3px 0;
+        z-index:-1;
+    }
+    #kitap-sol-kenar {
+        position:absolute;
+        left:-5px; top:4px; bottom:4px; width:5px;
+        background: repeating-linear-gradient(
+            to bottom,
+            #2a1f3d 0px, #1c1230 2px, #241840 2px, #1a102e 4px
+        );
+        border-radius:3px 0 0 3px;
+        z-index:-1;
+    }
+
+    /* Tema resmi — sayfanın üstünde tam genişlik */
+    .kitap-tema-img-wrap {
+        position:relative; flex-shrink:0;
+        height:120px; overflow:hidden;
+    }
+    .kitap-tema-img-wrap img {
+        width:100%; height:100%; object-fit:cover; display:block;
+    }
+    .kitap-tema-img-wrap::after {
+        content:"";
+        position:absolute; bottom:0; left:0; right:0; height:50px;
+        background:linear-gradient(transparent, var(--pg-bg, #17102a));
+        pointer-events:none;
+    }
+
+    /* Not kutuları */
+    .kitap-not-kevser {
+        margin-bottom:12px; padding:10px 12px;
+        border-radius:10px;
+        background:rgba(176,176,176,0.06);
+        border-left:2px solid rgba(176,176,176,0.4);
+    }
+    .kitap-not-atakan {
+        padding:10px 12px;
+        border-radius:10px;
+        background:rgba(123,44,191,0.07);
+        border-left:2px solid rgba(123,44,191,0.45);
+    }
+    .kitap-not-label {
+        font-size:9px; letter-spacing:1.5px; font-weight:700;
+        margin-bottom:5px; text-transform:uppercase;
+    }
+    .kitap-not-metin {
+        font-size:12.5px; line-height:1.7;
+        font-family:'Playfair Display',serif; font-style:italic;
+    }
+    .kitap-not-zaman { font-size:9px; opacity:0.35; margin-top:5px; }
+
+    /* Flip animasyon */
+    #kitap-flip-el {
+        position:absolute;
+        height: min(460px, 62vh);
+        transform-origin: left center;
+        transform-style: preserve-3d;
+        pointer-events:none;
+        z-index:20; display:none;
+    }
+    .kitap-flip-yuz {
+        position:absolute; inset:0;
+        backface-visibility:hidden; -webkit-backface-visibility:hidden;
+        overflow:hidden;
+        font-family:'Playfair Display',serif; color:#d8d0e8;
+        font-size:12.5px; line-height:1.8; font-style:italic;
+    }
+    #kitap-flip-front {
+        background: linear-gradient(72deg, #130e22, #17102a, #1e1530);
+        border-radius:0 6px 6px 0;
+        padding:22px 20px;
+        box-shadow: 6px 0 30px rgba(0,0,0,0.5);
+        border-top:1px solid rgba(255,255,255,0.08);
+        border-right:1px solid rgba(255,255,255,0.06);
+    }
+    #kitap-flip-back {
+        background: linear-gradient(108deg, #1e1530, #17102a, #130e22);
+        border-radius:6px 0 0 6px;
+        padding:22px 20px;
+        transform:rotateY(180deg);
+        border-top:1px solid rgba(255,255,255,0.08);
+        border-left:1px solid rgba(255,255,255,0.06);
+    }
+
+    /* Sayfa kıvrımı gölgesi flip sırasında */
+    #kitap-flip-front::after {
+        content:"";
+        position:absolute; top:0; bottom:0; left:0; width:30px;
+        background:linear-gradient(to right, rgba(0,0,0,0.5), transparent);
+        pointer-events:none;
+    }
+
+    /* Alt nav */
+    #kitap-bottombar {
+        position:absolute; bottom:0; left:0; right:0;
+        display:flex; align-items:center; justify-content:center; gap:14px;
+        padding:12px 20px 16px;
+        background:linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+        z-index:10;
+    }
+    .kitap-nav-btn {
+        width:42px; height:42px; border-radius:50%; cursor:pointer;
+        font-size:22px; display:flex; align-items:center; justify-content:center;
+        transition:all 0.2s; backdrop-filter:blur(6px);
+        border:1px solid rgba(255,255,255,0.15);
+        background:rgba(255,255,255,0.08); color:#fff;
+        flex-shrink:0;
+    }
+    .kitap-nav-btn:hover { background:rgba(255,255,255,0.18); transform:scale(1.08); }
+    #kitap-progress-wrap { flex:1; max-width:280px; }
+    #kitap-progress-bar-bg {
+        background:rgba(255,255,255,0.1); border-radius:999px; height:3px; overflow:hidden;
+    }
+    #kitap-progress-bar {
+        height:100%; background:linear-gradient(90deg,#b0b0b0,#9d4edd);
+        border-radius:999px; transition:width 0.4s ease; width:0%;
+    }
+    #kitap-progress-text {
+        text-align:center; margin-top:5px; font-size:10px; opacity:0.4; color:#fff;
+    }
+    #kitap-yaz-btn {
+        position:absolute; bottom:16px; right:18px;
+        background:rgba(123,44,191,0.28); border:1px solid rgba(123,44,191,0.5);
+        color:#d8b4fe; padding:9px 16px; border-radius:50px;
+        cursor:pointer; font-size:12px; font-weight:600; backdrop-filter:blur(6px);
+        z-index:11;
+    }
+    /* Mobil */
+    @media (max-width:600px){
+        .kitap-sayfa { width:44vw; height:58vh; }
+        .kitap-icerik { padding:14px 12px 8px; }
+        .kitap-tema-img-wrap { height:90px; }
+        #kitap-cilt { width:16px; }
+        .kitap-not-metin { font-size:11px; }
+    }
+    @media (max-width:380px){
+        .kitap-sayfa { width:46vw; height:55vh; }
+        #kitap-cilt { width:12px; }
+    }
+    </style>
+
+    <div id="kitap-modal">
+        <!-- Blurlu arka plan (temadan) -->
+        <div id="kitap-bg"></div>
+
         <!-- Üst bar -->
-        <div style="position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:14px 20px; z-index:10;">
-            <div style="font-family:'Playfair Display',serif; font-size:15px; opacity:0.85;" id="kitap-gun-label">1. gün</div>
-            <div style="display:flex; gap:8px; align-items:center;">
-                <span style="font-size:11px; opacity:0.5;" id="kitap-tarih-label"></span>
-                <button onclick="closeKitapModu()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); color:#fff; width:34px; height:34px; border-radius:11px; cursor:pointer; font-size:15px;">✕</button>
+        <div id="kitap-topbar">
+            <div id="kitap-topbar-title">📖 <span id="kitap-gun-label">1. gün</span></div>
+            <div id="kitap-topbar-right">
+                <span id="kitap-tarih-label"></span>
+                <button id="kitap-close-btn" onclick="closeKitapModu()">✕</button>
             </div>
         </div>
 
-        <!-- KİTAP SAHNESİ -->
-        <div id="kitap-sahne" style="
-            position:absolute; inset:0;
-            display:flex; align-items:center; justify-content:center;
-            perspective: 1800px;
-            padding: 60px 16px 80px;
-        ">
-            <!-- Sol sayfa (önceki gün veya boş) -->
-            <div id="kitap-sol" style="
-                width: min(340px, 44vw);
-                height: min(480px, 65vh);
-                background: linear-gradient(160deg, #1a1228, #130e1e);
-                border-radius: 4px 0 0 4px;
-                border: 1px solid rgba(255,255,255,0.06);
-                border-right: none;
-                box-shadow: -8px 0 30px rgba(0,0,0,0.5), inset -4px 0 12px rgba(0,0,0,0.3);
-                display: flex; flex-direction: column;
-                overflow: hidden;
-                position: relative;
-            ">
-                <div style="position:absolute; top:0; bottom:0; right:0; width:18px; background:linear-gradient(to right, rgba(0,0,0,0.25), rgba(123,44,191,0.08)); pointer-events:none;"></div>
-                <div id="kitap-sol-icerik" style="flex:1; overflow-y:auto; padding:24px 22px 16px; font-family:'Playfair Display',serif; color:#d8d0e8; line-height:1.8; font-size:13px; font-style:italic;"></div>
-                <div id="kitap-sol-sayfa" style="text-align:center; padding:10px; font-size:10px; opacity:0.35; letter-spacing:1px;"></div>
-            </div>
+        <!-- Kitap sahnesi -->
+        <div id="kitap-sahne">
+            <div id="kitap-govde">
+                <!-- Sol sayfa kenarı -->
+                <div id="kitap-sol-kenar"></div>
 
-            <!-- Kitap ortası / cilt -->
-            <div style="
-                width: 14px;
-                height: min(480px, 65vh);
-                background: linear-gradient(to right, #0e0816, #1c1230, #0e0816);
-                box-shadow: 0 0 20px rgba(0,0,0,0.7);
-                position: relative;
-                z-index: 5;
-                flex-shrink: 0;
-            ">
-                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:2px; height:60%; background:linear-gradient(to bottom, transparent, rgba(123,44,191,0.4), transparent);"></div>
-            </div>
+                <!-- Sol sayfa -->
+                <div class="kitap-sayfa" id="kitap-sol">
+                    <!-- Tema resmi sol -->
+                    <div class="kitap-tema-img-wrap" id="kitap-sol-tema">
+                        <img id="kitap-sol-tema-img" src="" alt="" onerror="this.closest('.kitap-tema-img-wrap').style.display='none'">
+                    </div>
+                    <div class="kitap-icerik" id="kitap-sol-icerik"></div>
+                    <div class="kitap-sayfa-no" id="kitap-sol-sayfa"></div>
+                </div>
 
-            <!-- Sağ sayfa (aktif gün) -->
-            <div id="kitap-sag" style="
-                width: min(340px, 44vw);
-                height: min(480px, 65vh);
-                background: linear-gradient(160deg, #130e1e, #1a1228);
-                border-radius: 0 4px 4px 0;
-                border: 1px solid rgba(255,255,255,0.06);
-                border-left: none;
-                box-shadow: 8px 0 30px rgba(0,0,0,0.5), inset 4px 0 12px rgba(0,0,0,0.3);
-                display: flex; flex-direction: column;
-                overflow: hidden;
-                position: relative;
-            ">
-                <div style="position:absolute; top:0; bottom:0; left:0; width:18px; background:linear-gradient(to left, rgba(0,0,0,0.25), rgba(123,44,191,0.08)); pointer-events:none;"></div>
-                <div id="kitap-sag-icerik" style="flex:1; overflow-y:auto; padding:24px 22px 16px; font-family:'Playfair Display',serif; color:#d8d0e8; line-height:1.8; font-size:13px; font-style:italic;"></div>
-                <div id="kitap-sag-sayfa" style="text-align:center; padding:10px; font-size:10px; opacity:0.35; letter-spacing:1px;"></div>
-            </div>
+                <!-- Cilt -->
+                <div id="kitap-cilt"></div>
 
-            <!-- SAYFA ÇEVİRME ANIMASYON KAPI -->
-            <div id="kitap-flip-el" style="
-                position:absolute;
-                width: min(340px, 44vw);
-                height: min(480px, 65vh);
-                left: 50%;
-                transform-origin: left center;
-                transform-style: preserve-3d;
-                pointer-events:none;
-                z-index: 20;
-                display:none;
-            ">
-                <!-- Ön yüz (eski sağ sayfa) -->
-                <div id="kitap-flip-front" style="
-                    position:absolute; inset:0;
-                    background: linear-gradient(160deg, #130e1e, #1a1228);
-                    backface-visibility:hidden;
-                    border-radius: 0 4px 4px 0;
-                    border:1px solid rgba(255,255,255,0.06);
-                    padding:24px 22px;
-                    font-family:'Playfair Display',serif; color:#d8d0e8; line-height:1.8; font-size:13px; font-style:italic;
-                    overflow:hidden;
-                    box-shadow: 4px 0 20px rgba(0,0,0,0.4);
-                "></div>
-                <!-- Arka yüz (yeni sol sayfa) -->
-                <div id="kitap-flip-back" style="
-                    position:absolute; inset:0;
-                    background: linear-gradient(160deg, #1a1228, #130e1e);
-                    backface-visibility:hidden;
-                    transform: rotateY(180deg);
-                    border-radius: 4px 0 0 4px;
-                    border:1px solid rgba(255,255,255,0.06);
-                    padding:24px 22px;
-                    font-family:'Playfair Display',serif; color:#d8d0e8; line-height:1.8; font-size:13px; font-style:italic;
-                    overflow:hidden;
-                "></div>
+                <!-- Sağ sayfa -->
+                <div class="kitap-sayfa" id="kitap-sag">
+                    <!-- Tema resmi sağ -->
+                    <div class="kitap-tema-img-wrap" id="kitap-sag-tema">
+                        <img id="kitap-sag-tema-img" src="" alt="" onerror="this.closest('.kitap-tema-img-wrap').style.display='none'">
+                    </div>
+                    <div class="kitap-icerik" id="kitap-sag-icerik"></div>
+                    <div class="kitap-sayfa-no" id="kitap-sag-sayfa"></div>
+                </div>
+
+                <!-- Sağ sayfa kenarı -->
+                <div id="kitap-sag-kenar"></div>
+
+                <!-- Flip animasyon elemanı -->
+                <div id="kitap-flip-el">
+                    <div class="kitap-flip-yuz" id="kitap-flip-front"></div>
+                    <div class="kitap-flip-yuz" id="kitap-flip-back"></div>
+                </div>
             </div>
         </div>
 
         <!-- Alt navigasyon -->
-        <div style="position:absolute; bottom:0; left:0; right:0; display:flex; align-items:center; justify-content:center; gap:16px; padding:16px 20px;">
-            <button onclick="kitapSayfa(-1)" id="kitap-prev-btn" style="
-                background:rgba(176,176,176,0.12); border:1px solid rgba(176,176,176,0.25); color:#c0c0c0;
-                width:44px; height:44px; border-radius:50%; cursor:pointer; font-size:20px;
-                display:flex; align-items:center; justify-content:center; transition:all 0.2s;
-            ">‹</button>
-
-            <!-- Gün sayacı çubuğu -->
-            <div style="flex:1; max-width:300px;">
-                <div style="background:rgba(255,255,255,0.08); border-radius:999px; height:4px; overflow:hidden;">
-                    <div id="kitap-progress-bar" style="height:100%; background:linear-gradient(90deg,#b0b0b0,#7b2cbf); border-radius:999px; transition:width 0.4s ease; width:0%;"></div>
+        <div id="kitap-bottombar">
+            <button class="kitap-nav-btn" onclick="kitapSayfa(-1)" id="kitap-prev-btn" style="color:#c0c0c0;">‹</button>
+            <div id="kitap-progress-wrap">
+                <div id="kitap-progress-bar-bg">
+                    <div id="kitap-progress-bar"></div>
                 </div>
-                <div style="text-align:center; margin-top:6px; font-size:11px; opacity:0.45;" id="kitap-progress-text"></div>
+                <div id="kitap-progress-text"></div>
             </div>
-
-            <button onclick="kitapSayfa(1)" id="kitap-next-btn" style="
-                background:rgba(123,44,191,0.18); border:1px solid rgba(123,44,191,0.35); color:#c4a0ff;
-                width:44px; height:44px; border-radius:50%; cursor:pointer; font-size:20px;
-                display:flex; align-items:center; justify-content:center; transition:all 0.2s;
-            ">›</button>
+            <button class="kitap-nav-btn" onclick="kitapSayfa(1)" id="kitap-next-btn" style="color:#c4a0ff;">›</button>
         </div>
 
-        <!-- Not ekle butonu (sağ alt) -->
-        <button onclick="kitapNotEkle()" id="kitap-yaz-btn" style="
-            position:absolute; bottom:18px; right:20px;
-            background:rgba(123,44,191,0.3); border:1px solid rgba(123,44,191,0.5); color:#d8b4fe;
-            padding:10px 18px; border-radius:50px; cursor:pointer; font-size:12px; font-weight:600;
-        ">✏️ bu güne yaz</button>
+        <!-- Not ekle -->
+        <button id="kitap-yaz-btn" onclick="kitapNotEkle()">✏️ bu güne yaz</button>
     </div>
+    <!-- /GERÇEK KİTAP MODALI -->
 
     <!-- KİTAP NOT YAZMA MİNİ MODAL -->
     <div id="kitap-yaz-modal" style="display:none; position:fixed; inset:0; z-index:75000; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px);" onclick="closeKitapYaz(event)">
@@ -6063,12 +6308,132 @@ window.saveGunlukEntry = function(){
 const _origExecLogin = window.executeLogin || null;
 document.addEventListener("DOMContentLoaded", ()=>{});
 
-// ======== KİTAP MODU ========
+// ======== KİTAP MODU (YENİDEN YAZILDI) ========
 let kitapAktifGun = 1;
 let kitapFlipping = false;
 let kitapYazKisi = "kevser";
 let kitapTumVeri = {};
 
+// ---- TEMA YARDIMCISI ----
+// temalar/{n}.png dene, 404 gelirse temalar/1.png'ye düş
+function kitapTemaUrl(gun){
+    return "temalar/" + gun + ".png";
+}
+
+// Arka planı ve sayfa tema resimlerini güncelle
+function kitapBgGuncelle(gun){
+    const solGun = gun - 1;
+    const sagGun = gun;
+
+    // Blurlu arka plan: sağ sayfanın (aktif gün) temasından
+    const bg = document.getElementById("kitap-bg");
+    if(bg){
+        const bgImg = new Image();
+        bgImg.onload = () => {
+            bg.style.backgroundImage = "url('" + bgImg.src + "')";
+        };
+        bgImg.onerror = () => {
+            bg.style.backgroundImage = "url('temalar/1.png')";
+        };
+        bgImg.src = kitapTemaUrl(sagGun);
+    }
+
+    // Sol sayfa tema resmi
+    _setTemaImg("kitap-sol-tema-img", "kitap-sol-tema", solGun >= 1 ? solGun : null);
+    // Sağ sayfa tema resmi
+    _setTemaImg("kitap-sag-tema-img", "kitap-sag-tema", sagGun);
+}
+
+function _setTemaImg(imgId, wrapId, gun){
+    const img = document.getElementById(imgId);
+    const wrap = document.getElementById(wrapId);
+    if(!img || !wrap) return;
+    if(!gun || gun < 1){
+        wrap.style.display = "none";
+        return;
+    }
+    wrap.style.display = "block";
+    const src = kitapTemaUrl(gun);
+    img.onerror = function(){
+        if(this.src.indexOf("temalar/1.png") < 0){
+            this.src = "temalar/1.png";
+        } else {
+            wrap.style.display = "none";
+        }
+    };
+    img.src = src;
+}
+
+// ---- İÇERİK HTML'İ (sadece metin — tema resmi ayrı DOM'da) ----
+function kitapSayfaIcerik(gun){
+    if(gun < 1 || gun > TOPLAM_GUN) return "";
+    const gd = kitapTumVeri["gun"+gun] || {};
+    const tarih = formatTarih(gunNo(gun));
+
+    let html = `<div style="font-size:9px;opacity:0.3;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;color:#c4a0ff;">${tarih}</div>`;
+
+    const kevser = gd.kevser;
+    const atakan = gd.atakan;
+
+    if(!kevser && !atakan){
+        html += `<div style="opacity:0.15;font-size:12px;text-align:center;margin-top:40px;font-style:italic;color:#c4a0ff;">henüz yazılmamış…</div>`;
+    }
+    if(kevser && kevser.metin){
+        html += `<div class="kitap-not-kevser">
+            <div class="kitap-not-label" style="color:#b0b0b0;">🩶 kevser</div>
+            <div class="kitap-not-metin" style="color:#d0d0d0;">${kevser.metin.replace(/\n/g,"<br>")}</div>
+            ${kevser.zaman ? `<div class="kitap-not-zaman" style="color:#b0b0b0;">${kevser.zaman}</div>` : ""}
+        </div>`;
+    }
+    if(atakan && atakan.metin){
+        html += `<div class="kitap-not-atakan">
+            <div class="kitap-not-label" style="color:#c4a0ff;">💜 atakan</div>
+            <div class="kitap-not-metin" style="color:#d8c8ff;">${atakan.metin.replace(/\n/g,"<br>")}</div>
+            ${atakan.zaman ? `<div class="kitap-not-zaman" style="color:#c4a0ff;">${atakan.zaman}</div>` : ""}
+        </div>`;
+    }
+    return html;
+}
+
+// ---- ANA RENDER ----
+function renderKitapSayfa(){
+    const gun = kitapAktifGun;
+    const solGun = gun - 1;
+    const bugun = bugunGun();
+    const tarih = formatTarih(gunNo(gun));
+
+    // Üst bar
+    document.getElementById("kitap-gun-label").textContent = gun + ". gün";
+    document.getElementById("kitap-tarih-label").textContent = tarih;
+
+    // Sol sayfa içerik
+    if(solGun >= 1){
+        document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(solGun);
+        document.getElementById("kitap-sol-sayfa").textContent = (solGun * 2 - 1) + " · " + (solGun * 2);
+    } else {
+        document.getElementById("kitap-sol-icerik").innerHTML = `<div style="opacity:0.08;text-align:center;margin-top:60px;font-size:32px;">📖</div>`;
+        document.getElementById("kitap-sol-sayfa").textContent = "";
+    }
+
+    // Sağ sayfa içerik
+    document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(gun);
+    document.getElementById("kitap-sag-sayfa").textContent = (gun * 2 - 1) + " · " + (gun * 2);
+
+    // Tema resimleri + arka plan
+    kitapBgGuncelle(gun);
+
+    // Progress
+    const pct = Math.round(((gun - 1) / Math.max(TOPLAM_GUN - 1, 1)) * 100);
+    document.getElementById("kitap-progress-bar").style.width = pct + "%";
+    document.getElementById("kitap-progress-text").textContent = gun + " / " + TOPLAM_GUN;
+
+    // Butonlar
+    document.getElementById("kitap-prev-btn").style.opacity = gun <= 1 ? "0.2" : "1";
+    document.getElementById("kitap-next-btn").style.opacity = gun >= bugun ? "0.2" : "1";
+    document.getElementById("kitap-yaz-btn").style.display = gun <= bugun ? "block" : "none";
+}
+
+// ---- MODAL AÇ/KAPAT ----
 window.toggleKitapModu = function(){
     closeGunluk();
     kitapAktifGun = bugunGun();
@@ -6079,7 +6444,6 @@ window.openKitapModu = function(){
     document.getElementById("kitap-modal").style.display = "block";
     document.body.classList.add("modal-open");
     if(!window.akDB){ renderKitapSayfa(); return; }
-    // Realtime dinle
     window.akDB.ref("gunluk").on("value", snap=>{
         kitapTumVeri = snap.val() || {};
         renderKitapSayfa();
@@ -6094,75 +6458,17 @@ window.closeKitapModu = function(){
     }
 };
 
-function kitapSayfaIcerik(gun){
-    if(gun < 1 || gun > TOPLAM_GUN) return "";
-    const gd = kitapTumVeri["gun"+gun] || {};
-    const tarih = formatTarih(gunNo(gun));
-
-    // Tema resmi: temalar/{gun}.png, yoksa temalar/1.png
-    const temaImg = `temalar/${gun}.png`;
-    const temaFallback = `temalar/1.png`;
-    let html = `<div style="position:relative;width:100%;margin-bottom:12px;border-radius:14px;overflow:hidden;">
-        <img src="${temaImg}" alt=""
-            style="width:100%;height:130px;object-fit:cover;display:block;border-radius:14px;"
-            onerror="if(this.src.indexOf('temalar/1.png')<0){this.src='${temaFallback}';}">
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:linear-gradient(transparent,rgba(0,0,0,0.65));border-radius:0 0 14px 14px;">
-            <span style="font-size:9px;opacity:0.8;letter-spacing:1.5px;text-transform:uppercase;color:#fff;">${tarih}</span>
-        </div>
-    </div>`;
-
-    const kevser = gd.kevser;
-    const atakan = gd.atakan;
-    if(!kevser && !atakan){
-        html += `<div style="opacity:0.2;font-size:12px;text-align:center;margin-top:30px;">henüz yazılmamış…</div>`;
-    }
-    if(kevser && kevser.metin){
-        html += `<div style="margin-bottom:16px;padding:10px 12px;border-radius:12px;background:rgba(176,176,176,0.07);border-left:3px solid #b0b0b0;">
-            <div style="font-size:9px;letter-spacing:1.2px;margin-bottom:6px;color:#b0b0b0;font-weight:700;">🩶 KEVSER</div>
-            <div style="color:#c8c8c8;font-size:13px;line-height:1.6;">${kevser.metin.replace(/\n/g,"<br>")}</div>
-            ${kevser.zaman ? `<div style="font-size:9px;opacity:0.4;margin-top:6px;color:#b0b0b0;">${kevser.zaman}</div>` : ""}
-        </div>`;
-    }
-    if(atakan && atakan.metin){
-        html += `<div style="padding:10px 12px;border-radius:12px;background:rgba(123,44,191,0.08);border-left:3px solid #7b2cbf;">
-            <div style="font-size:9px;letter-spacing:1.2px;margin-bottom:6px;color:#c4a0ff;font-weight:700;">💜 ATAKAN</div>
-            <div style="color:#d0c0ff;font-size:13px;line-height:1.6;">${atakan.metin.replace(/\n/g,"<br>")}</div>
-            ${atakan.zaman ? `<div style="font-size:9px;opacity:0.4;margin-top:6px;color:#c4a0ff;">${atakan.zaman}</div>` : ""}
-        </div>`;
-    }
-    return html;
-}
-
-function renderKitapSayfa(){
-    const gun = kitapAktifGun;
-    const oncekiGun = gun - 1;
-    const tarih = formatTarih(gunNo(gun));
+// ---- SAYFA ÇEVİRME ----
+function _kitapUI(gun){
     const bugun = bugunGun();
-
+    const tarih = formatTarih(gunNo(gun));
     document.getElementById("kitap-gun-label").textContent = gun + ". gün";
     document.getElementById("kitap-tarih-label").textContent = tarih;
-
-    // Sol (önceki gün)
-    if(oncekiGun >= 1){
-        document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(oncekiGun);
-        document.getElementById("kitap-sol-sayfa").textContent = (oncekiGun * 2 - 1) + " · " + (oncekiGun * 2);
-    } else {
-        document.getElementById("kitap-sol-icerik").innerHTML = `<div style="opacity:0.12;text-align:center;margin-top:70px;font-size:28px;">📖</div>`;
-        document.getElementById("kitap-sol-sayfa").textContent = "";
-    }
-
-    // Sağ (aktif gün)
-    document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(gun);
-    document.getElementById("kitap-sag-sayfa").textContent = (gun * 2 - 1) + " · " + (gun * 2);
-
-    // Progress
     const pct = Math.round(((gun - 1) / Math.max(TOPLAM_GUN - 1, 1)) * 100);
     document.getElementById("kitap-progress-bar").style.width = pct + "%";
     document.getElementById("kitap-progress-text").textContent = gun + " / " + TOPLAM_GUN;
-
-    // Buton opaklıkları
-    document.getElementById("kitap-prev-btn").style.opacity = gun <= 1 ? "0.25" : "1";
-    document.getElementById("kitap-next-btn").style.opacity = gun >= bugun ? "0.25" : "1";
+    document.getElementById("kitap-prev-btn").style.opacity = gun <= 1 ? "0.2" : "1";
+    document.getElementById("kitap-next-btn").style.opacity = gun >= bugun ? "0.2" : "1";
     document.getElementById("kitap-yaz-btn").style.display = gun <= bugun ? "block" : "none";
 }
 
@@ -6172,110 +6478,96 @@ window.kitapSayfa = function(yon){
     if(yeniGun < 1 || yeniGun > bugunGun()) return;
 
     kitapFlipping = true;
-    const flipEl  = document.getElementById("kitap-flip-el");
+    const flipEl    = document.getElementById("kitap-flip-el");
     const flipFront = document.getElementById("kitap-flip-front");
     const flipBack  = document.getElementById("kitap-flip-back");
-    const sagEl = document.getElementById("kitap-sag");
-    const solEl = document.getElementById("kitap-sol");
-
-    const sagW = sagEl.offsetWidth;
-    const solW = solEl.offsetWidth;
+    const sagEl     = document.getElementById("kitap-sag");
+    const solEl     = document.getElementById("kitap-sol");
+    const sagW      = sagEl.offsetWidth;
+    const solW      = solEl.offsetWidth;
+    const ciltW     = document.getElementById("kitap-cilt").offsetWidth;
 
     if(yon === 1){
-        // İLERİ: sağ sayfa sola kıvrılır
-        // Flip'in ön yüzü = mevcut sağ sayfa içeriği
+        // İLERİ → sağ sayfa sola kıvrılır
         flipFront.innerHTML = document.getElementById("kitap-sag-icerik").innerHTML;
-        // Flip'in arka yüzü = yeni sol sayfa (yeniGun - 1 = aktifGun)
-        flipBack.innerHTML  = kitapSayfaIcerik(kitapAktifGun);
+        flipBack.innerHTML  = kitapSayfaIcerik(kitapAktifGun); // arka = yeni sol
 
-        flipEl.style.width  = sagW + "px";
-        flipEl.style.left   = "50%";
+        // Flip konumlandır: cilt sağından başla
+        flipEl.style.width        = sagW + "px";
+        flipEl.style.height       = sagEl.offsetHeight + "px";
+        flipEl.style.left         = (solEl.offsetLeft + solW + ciltW) + "px";
+        flipEl.style.top          = sagEl.offsetTop + "px";
         flipEl.style.transformOrigin = "left center";
-        flipEl.style.transform  = "rotateY(0deg)";
-        flipEl.style.transition = "";
-        flipEl.style.display    = "block";
+        flipEl.style.transform    = "rotateY(0deg)";
+        flipEl.style.transition   = "";
+        flipEl.style.display      = "block";
 
-        // Animasyon başlarken arka plandaki sayfaları güncelle (görünmez durumdayken)
+        // Arka planda yeni sayfaları hazırla
         document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(yeniGun);
         document.getElementById("kitap-sag-sayfa").textContent = (yeniGun * 2 - 1) + " · " + (yeniGun * 2);
         if(yeniGun - 1 >= 1){
             document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
-            document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1) * 2 - 1) + " · " + ((yeniGun-1) * 2);
+            document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1)*2-1) + " · " + ((yeniGun-1)*2);
         }
+        // Tema güncelle (arka planda)
+        _setTemaImg("kitap-sag-tema-img","kitap-sag-tema", yeniGun);
+        _setTemaImg("kitap-sol-tema-img","kitap-sol-tema", yeniGun-1 >= 1 ? yeniGun-1 : null);
 
-        requestAnimationFrame(()=>{
-            requestAnimationFrame(()=>{
-                flipEl.style.transition = "transform 0.55s cubic-bezier(0.4,0,0.2,1)";
-                flipEl.style.transform  = "rotateY(-180deg)";
-            });
-        });
+        requestAnimationFrame(()=> requestAnimationFrame(()=>{
+            flipEl.style.transition = "transform 0.6s cubic-bezier(0.45,0,0.2,1)";
+            flipEl.style.transform  = "rotateY(-180deg)";
+        }));
+
         setTimeout(()=>{
             kitapAktifGun = yeniGun;
             flipEl.style.display = "none";
-            flipEl.style.transition = "";
             kitapFlipping = false;
-            // Sadece labels ve butonları güncelle, innerHTML'e dokunma
-            const tarih = formatTarih(gunNo(yeniGun));
-            document.getElementById("kitap-gun-label").textContent = yeniGun + ". gün";
-            document.getElementById("kitap-tarih-label").textContent = tarih;
-            const pct = Math.round(((yeniGun - 1) / Math.max(TOPLAM_GUN - 1, 1)) * 100);
-            document.getElementById("kitap-progress-bar").style.width = pct + "%";
-            document.getElementById("kitap-progress-text").textContent = yeniGun + " / " + TOPLAM_GUN;
-            document.getElementById("kitap-prev-btn").style.opacity = yeniGun <= 1 ? "0.25" : "1";
-            document.getElementById("kitap-next-btn").style.opacity = yeniGun >= bugunGun() ? "0.25" : "1";
-            document.getElementById("kitap-yaz-btn").style.display = yeniGun <= bugunGun() ? "block" : "none";
-        }, 570);
+            kitapBgGuncelle(yeniGun);
+            _kitapUI(yeniGun);
+        }, 630);
 
     } else {
-        // GERİ: sol sayfa sağa kıvrılır
-        // Flip'in ön yüzü = mevcut sol sayfa içeriği
+        // GERİ → sol sayfa sağa kıvrılır
         flipFront.innerHTML = kitapSayfaIcerik(yeniGun + 1);
-        // Flip'in arka yüzü = yeni sağ sayfa (yeniGun)
         flipBack.innerHTML  = document.getElementById("kitap-sol-icerik").innerHTML;
 
-        flipEl.style.width  = solW + "px";
-        flipEl.style.left   = `calc(50% - ${solW + 14}px)`;
+        flipEl.style.width        = solW + "px";
+        flipEl.style.height       = solEl.offsetHeight + "px";
+        flipEl.style.left         = solEl.offsetLeft + "px";
+        flipEl.style.top          = solEl.offsetTop + "px";
         flipEl.style.transformOrigin = "right center";
-        flipEl.style.transform  = "rotateY(0deg)";
-        flipEl.style.transition = "";
-        flipEl.style.display    = "block";
+        flipEl.style.transform    = "rotateY(0deg)";
+        flipEl.style.transition   = "";
+        flipEl.style.display      = "block";
 
-        // Arka planda sayfaları önceden güncelle
         document.getElementById("kitap-sag-icerik").innerHTML = kitapSayfaIcerik(yeniGun);
         document.getElementById("kitap-sag-sayfa").textContent = (yeniGun * 2 - 1) + " · " + (yeniGun * 2);
         if(yeniGun - 1 >= 1){
             document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
-            document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1) * 2 - 1) + " · " + ((yeniGun-1) * 2);
+            document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1)*2-1) + " · " + ((yeniGun-1)*2);
         } else {
-            document.getElementById("kitap-sol-icerik").innerHTML = `<div style="opacity:0.12;text-align:center;margin-top:70px;font-size:28px;">📖</div>`;
+            document.getElementById("kitap-sol-icerik").innerHTML = `<div style="opacity:0.08;text-align:center;margin-top:60px;font-size:32px;">📖</div>`;
             document.getElementById("kitap-sol-sayfa").textContent = "";
         }
+        _setTemaImg("kitap-sag-tema-img","kitap-sag-tema", yeniGun);
+        _setTemaImg("kitap-sol-tema-img","kitap-sol-tema", yeniGun-1 >= 1 ? yeniGun-1 : null);
 
-        requestAnimationFrame(()=>{
-            requestAnimationFrame(()=>{
-                flipEl.style.transition = "transform 0.55s cubic-bezier(0.4,0,0.2,1)";
-                flipEl.style.transform  = "rotateY(180deg)";
-            });
-        });
+        requestAnimationFrame(()=> requestAnimationFrame(()=>{
+            flipEl.style.transition = "transform 0.6s cubic-bezier(0.45,0,0.2,1)";
+            flipEl.style.transform  = "rotateY(180deg)";
+        }));
+
         setTimeout(()=>{
             kitapAktifGun = yeniGun;
             flipEl.style.display = "none";
-            flipEl.style.transition = "";
             kitapFlipping = false;
-            const tarih = formatTarih(gunNo(yeniGun));
-            document.getElementById("kitap-gun-label").textContent = yeniGun + ". gün";
-            document.getElementById("kitap-tarih-label").textContent = tarih;
-            const pct = Math.round(((yeniGun - 1) / Math.max(TOPLAM_GUN - 1, 1)) * 100);
-            document.getElementById("kitap-progress-bar").style.width = pct + "%";
-            document.getElementById("kitap-progress-text").textContent = yeniGun + " / " + TOPLAM_GUN;
-            document.getElementById("kitap-prev-btn").style.opacity = yeniGun <= 1 ? "0.25" : "1";
-            document.getElementById("kitap-next-btn").style.opacity = yeniGun >= bugunGun() ? "0.25" : "1";
-            document.getElementById("kitap-yaz-btn").style.display = yeniGun <= bugunGun() ? "block" : "none";
-        }, 570);
+            kitapBgGuncelle(yeniGun);
+            _kitapUI(yeniGun);
+        }, 630);
     }
 };
 
-// Touch kaydırma
+// ---- TOUCH KAYDIR ----
 (function(){
     let tx = 0;
     document.addEventListener("touchstart", e=>{
@@ -6285,7 +6577,7 @@ window.kitapSayfa = function(yon){
     document.addEventListener("touchend", e=>{
         if(document.getElementById("kitap-modal").style.display === "none") return;
         const dx = tx - e.changedTouches[0].clientX;
-        if(Math.abs(dx) > 50) kitapSayfa(dx > 0 ? 1 : -1);
+        if(Math.abs(dx) > 45) window.kitapSayfa(dx > 0 ? 1 : -1);
     },{passive:true});
 })();
 
@@ -6315,11 +6607,11 @@ window.setKitapYazKisi = function(k){
 function syncKitapYazKisiUI(){
     document.querySelectorAll(".kyaz-kisi-btn").forEach(b=>{
         const isMe = b.dataset.k === kitapYazKisi;
-        b.style.opacity = isMe ? "1" : "0.4";
+        b.style.opacity    = isMe ? "1" : "0.4";
         b.style.fontWeight = isMe ? "700" : "500";
         b.style.borderColor = isMe
-            ? (kitapYazKisi === "kevser" ? "rgba(176,176,176,0.7)" : "rgba(123,44,191,0.6)")
-            : (b.dataset.k === "kevser" ? "rgba(176,176,176,0.2)" : "rgba(123,44,191,0.15)");
+            ? (kitapYazKisi==="kevser" ? "rgba(176,176,176,0.7)" : "rgba(123,44,191,0.6)")
+            : (b.dataset.k==="kevser"  ? "rgba(176,176,176,0.2)" : "rgba(123,44,191,0.15)");
     });
 }
 
@@ -6329,7 +6621,8 @@ window.kaydetKitapNot = function(){
     if(!metin){ alert("bir şeyler yaz önce 🥺"); return; }
     const gun = kitapAktifGun;
     const d = new Date();
-    const zaman = d.getDate().toString().padStart(2,"0")+"."+(d.getMonth()+1).toString().padStart(2,"0")+"."+d.getFullYear()+" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
+    const zaman = d.getDate().toString().padStart(2,"0")+"."+(d.getMonth()+1).toString().padStart(2,"0")+"."+d.getFullYear()
+        +" "+d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");
 
     window.akDB.ref(dbPath(gun, kitapYazKisi)).once("value").then(snap=>{
         const old = snap.val();
@@ -6339,7 +6632,6 @@ window.kaydetKitapNot = function(){
         return window.akDB.ref(dbPath(gun, kitapYazKisi)).set({ metin, zaman });
     }).then(()=>{
         document.getElementById("kitap-yaz-modal").style.display = "none";
-        // realtime listener sayfayı otomatik günceller
     }).catch(err=>alert("kaydedilemedi: "+err.message));
 };
 
