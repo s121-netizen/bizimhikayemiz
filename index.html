@@ -891,6 +891,17 @@ body.modal-open #mini-game-btn {
     height: 200px !important; /* Izgarada daha dengeli durması için */
 }
 
+/* Telefonda ızgara (dikey) mod her zaman 2 sütun olsun, gereksiz uzun tek sütun olmasın */
+@media (max-width: 640px) {
+    .gallery-grid-mode {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+    .gallery-grid-mode .gallery-item img {
+        height: 150px !important;
+    }
+}
+
 /* YATAY MOD (Mevcut hali korumak için) */
 /* --- YATAY MOD SÜSLEMELERİ VE MOBİL FIX --- */
 .gallery-scroll {
@@ -1274,10 +1285,44 @@ body.modal-open #mini-game-btn {
     transform: translateY(-2px);
 }
 
+/* --- LIGHTBOX FAVORİ BUTONU --- */
+.lightbox-fav-btn {
+    position: absolute;
+    top: 22px;
+    right: 194px; /* indir butonunun solunda durur */
+    background: rgba(255, 77, 109, 0.18);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    z-index: 13000;
+}
+.lightbox-fav-btn.is-fav {
+    background: rgba(255, 77, 109, 0.5);
+}
+.lightbox-fav-btn:hover {
+    transform: translateY(-2px);
+}
+.lightbox-fav-btn.fav-pop {
+    animation: favPop 0.35s ease;
+}
+
 @media (max-width: 600px) {
     .modern-dl-btn {
         right: 20px;
         top: 80px; /* Mobilde diğer butonlarla çakışmaması için aşağı aldık */
+    }
+    .lightbox-fav-btn {
+        right: 74px;
+        top: 80px;
     }
 }
 
@@ -1762,18 +1807,28 @@ h1 {
 
 
 /* ===== POLAROİD EFEKTİ (GÜÇLENDİRİLMİŞ) ===== */
+:root {
+    --polaroid-bg: #fff;
+    --polaroid-text: #444;
+}
+body.theme-light   { --polaroid-bg: #fdfdfa; --polaroid-text: #3a3a3a; }
+body.theme-purple  { --polaroid-bg: #ede1fb; --polaroid-text: #3d1a66; }
+body.theme-pink    { --polaroid-bg: #ffe3ec; --polaroid-text: #7a1330; }
+body.theme-midnight{ --polaroid-bg: #dcecff; --polaroid-text: #0d2a44; }
+body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
+
 .gallery-scroll.polaroid-mode {
     gap: 24px;
     padding: 30px 20px 50px 20px;
     align-items: flex-start;
 }
 .gallery-scroll.polaroid-mode .gallery-item {
-    background: #fff !important;
+    background: var(--polaroid-bg) !important;
     padding: 10px 10px 40px 10px !important;
     border-radius: 3px !important;
     box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
     transform: rotate(-2.5deg) !important;
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.4s ease !important;
     position: relative !important;
     flex: 0 0 auto !important;
 }
@@ -1797,7 +1852,7 @@ h1 {
     position: static !important;
     display: block !important;
     text-align: center !important;
-    color: #444 !important;
+    color: var(--polaroid-text) !important;
     background: none !important;
     padding: 0 !important;
     font-size: 11px !important;
@@ -1805,6 +1860,19 @@ h1 {
     margin-top: 8px !important;
     border-radius: 0 !important;
     backdrop-filter: none !important;
+}
+
+/* Telefonda polaroid + dikey (ızgara) mod aynı anda açıkken kartlar 2'li düzgün sığsın */
+@media (max-width: 640px) {
+    .gallery-grid-mode.polaroid-mode .gallery-item {
+        padding: 8px 8px 30px 8px !important;
+        transform: none !important;
+        margin-top: 0 !important;
+    }
+    .gallery-grid-mode.polaroid-mode .gallery-item img {
+        width: 100% !important;
+        height: 130px !important;
+    }
 }
 
 /* ===== TEMA BUTONU ===== */
@@ -1953,9 +2021,71 @@ h1 {
             transition: all 0.3s ease;
             letter-spacing: 0.5px;
         ">📖 günlükler</button>
+        <button id="todo-open-btn" onclick="openTodoModu()" style="
+            background: rgba(176,176,176,0.14);
+            border: 1px solid rgba(176,176,176,0.4);
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 24px rgba(176,176,176,0.15);
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            margin-left: 10px;
+        ">🎒 okul dönüşü yapılacaklar</button>
     </div>
 
-    <!-- GÜNLÜK MODAL -->
+    <!-- YAPILACAKLAR LİSTESİ MODAL -->
+    <div id="todo-modal" style="display:none; position:fixed; inset:0; z-index:61000; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);" onclick="closeTodoOnBackdrop(event)">
+        <div id="todo-card" style="
+            position:relative;
+            width:min(520px, calc(100vw - 20px));
+            max-height:86vh;
+            margin: 6vh auto 0;
+            background: rgba(12,10,18,0.97);
+            border: 1px solid rgba(123,44,191,0.3);
+            border-radius: 22px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+        ">
+            <!-- HEADER -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px 12px; border-bottom:1px solid rgba(255,255,255,0.08); flex-shrink:0;">
+                <div>
+                    <div style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700; background:linear-gradient(90deg,#b0b0b0,#7b2cbf); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">🎒 okul dönüşü yapılacaklar</div>
+                    <div style="font-size:11px; opacity:0.6; margin-top:2px;" id="todo-progress-label">yükleniyor...</div>
+                </div>
+                <button onclick="closeTodoModu()" style="
+                    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+                    color:#fff; width:36px; height:36px; border-radius:12px; cursor:pointer; font-size:16px;
+                    display:flex; align-items:center; justify-content:center;
+                ">✕</button>
+            </div>
+
+            <!-- LİSTE -->
+            <div id="todo-list" style="flex:1; overflow-y:auto; padding:14px 18px 10px; -webkit-overflow-scrolling:touch; display:flex; flex-direction:column; gap:8px;">
+                <div style="opacity:0.5; font-size:13px; text-align:center; padding:20px 0;">yükleniyor...</div>
+            </div>
+
+            <!-- YENİ EKLEME ALANI -->
+            <div style="display:flex; gap:8px; padding:12px 18px 18px; border-top:1px solid rgba(255,255,255,0.08); flex-shrink:0;">
+                <input id="todo-input" type="text" placeholder="yeni bir şey ekle..." style="
+                    flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15);
+                    color:#fff; padding:11px 14px; border-radius:14px; font-size:14px; outline:none;
+                " onkeydown="if(event.key==='Enter') todoEkle();">
+                <button onclick="todoEkle()" title="ekle" style="
+                    width:44px; height:44px; flex-shrink:0; border-radius:14px; border:none;
+                    background:linear-gradient(135deg,#7b2cbf,#b0b0b0); color:#fff; font-size:22px;
+                    cursor:pointer; display:flex; align-items:center; justify-content:center;
+                    box-shadow:0 0 16px rgba(123,44,191,0.35);
+                ">+</button>
+            </div>
+        </div>
+    </div>
     <div id="gunluk-modal" style="display:none; position:fixed; inset:0; z-index:60000; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);" onclick="closeGunlukOnBackdrop(event)">
         <div id="gunluk-card" style="
             position:relative;
@@ -2666,6 +2796,27 @@ h1 {
 </div>
 
 
+    <style>
+        /* ---- GALERİ FAVORİ (localStorage) ---- */
+        .gallery-item { position: relative; }
+        .gallery-fav-btn{
+            position:absolute; top:6px; right:6px; z-index:5;
+            width:30px; height:30px; border-radius:50%;
+            background:rgba(0,0,0,0.45); backdrop-filter:blur(4px);
+            display:flex; align-items:center; justify-content:center;
+            font-size:16px; cursor:pointer; border:1px solid rgba(255,255,255,0.25);
+            transition: transform 0.2s ease, background 0.2s ease;
+            user-select:none;
+        }
+        .gallery-fav-btn:active{ transform:scale(0.85); }
+        .gallery-fav-btn.is-fav{ background:rgba(123,44,191,0.55); border-color:rgba(255,255,255,0.5); }
+        .gallery-fav-btn.fav-pop{ animation: favPop 0.35s ease; }
+        @keyframes favPop{
+            0%{ transform:scale(1); }
+            40%{ transform:scale(1.35); }
+            100%{ transform:scale(1); }
+        }
+    </style>
     <div class="gallery">
         <h2>bizi biz yapan şeyler yaşadığımız anılar</h2>
         <!-- ===== POLAROİD / NORMAL TOGGLE ===== -->
@@ -2696,6 +2847,7 @@ h1 {
     <button class="filter-btn" onclick="filterGallery('04.2026')">Nisan '26</button>
     <button class="filter-btn" onclick="filterGallery('05.2026')">Mayıs '26</button>
     <button class="filter-btn" onclick="filterGallery('06.2026')">Haziran '26</button>
+    <button class="filter-btn" id="fav-filter-btn" onclick="filterGallery('favorites')">❤️ Favoriler</button>
 </div>
             <div class="gallery-scroll" id="gallery-scroll">
             <div class="gallery-item"><img src="11.2025/28.11.2025.png"><span class="gallery-date">22.11.2025</span></div>
@@ -3696,6 +3848,7 @@ h1 {
 <div class="lightbox" id="lightbox">
     <span class="close" onclick="closeLightbox()">×</span>
     <button id="autoplay-btn" class="autoplay-btn" type="button">otomatik: kapalı</button>
+    <button id="lightbox-fav-btn" class="lightbox-fav-btn" type="button" onclick="toggleLightboxFavorite()" aria-label="favori">🤍</button>
  <button id="download-btn" class="modern-dl-btn" onclick="downloadImage()" aria-label="indir">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
 </button>
@@ -3733,6 +3886,118 @@ h1 {
         console.warn("Firebase başlatılamadı, sıralama sadece bu cihazda çalışacak:", e);
         window.akDB = null;
     }
+</script>
+
+<!-- ===== OKUL DÖNÜŞÜ YAPILACAKLAR LİSTESİ (Firebase Realtime Database) ===== -->
+<script>
+(function(){
+    let todoVeri = {};
+
+    function todoRef(){
+        return window.akDB ? window.akDB.ref("yapilacaklar") : null;
+    }
+
+    window.openTodoModu = function(){
+        document.getElementById("todo-modal").style.display = "block";
+        document.body.classList.add("modal-open");
+        const ref = todoRef();
+        if(!ref){
+            document.getElementById("todo-list").innerHTML =
+                "<div style='opacity:0.6;font-size:13px;text-align:center;padding:20px 0;'>bağlantı yok, liste yüklenemiyor 🥺</div>";
+            return;
+        }
+        ref.on("value", snap=>{
+            todoVeri = snap.val() || {};
+            renderTodoListesi();
+        });
+    };
+
+    window.closeTodoModu = function(){
+        document.getElementById("todo-modal").style.display = "none";
+        const ref = todoRef();
+        if(ref) ref.off();
+        if(document.getElementById("gunluk-modal").style.display === "none" &&
+           document.getElementById("kitap-modal").style.display === "none"){
+            document.body.classList.remove("modal-open");
+        }
+    };
+
+    window.closeTodoOnBackdrop = function(e){
+        if(e.target === document.getElementById("todo-modal")) closeTodoModu();
+    };
+
+    function renderTodoListesi(){
+        const list = document.getElementById("todo-list");
+        const keys = Object.keys(todoVeri).sort((a,b)=> (todoVeri[a].sira||0) - (todoVeri[b].sira||0));
+
+        if(keys.length === 0){
+            list.innerHTML = "<div style='opacity:0.5;font-size:13px;text-align:center;padding:20px 0;'>henüz bir şey eklenmedi, aşağıdan ekleyebilirsin 🎒</div>";
+        } else {
+            list.innerHTML = keys.map(k=>{
+                const item = todoVeri[k];
+                const done = !!item.tamamlandi;
+                return `
+                <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px;
+                    background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);">
+                    <div onclick="todoToggle('${k}')" style="
+                        width:24px; height:24px; flex-shrink:0; border-radius:8px; cursor:pointer;
+                        display:flex; align-items:center; justify-content:center; font-size:15px;
+                        border:1.5px solid ${done ? 'rgba(123,44,191,0.8)' : 'rgba(255,255,255,0.3)'};
+                        background:${done ? 'rgba(123,44,191,0.6)' : 'transparent'};
+                        transition: all 0.2s ease;
+                    ">${done ? '✓' : ''}</div>
+                    <div style="flex:1; font-size:14px; ${done ? 'opacity:0.45; text-decoration:line-through;' : ''}">${escapeHtmlTodo(item.metin || '')}</div>
+                    <div onclick="todoSil('${k}')" style="
+                        width:26px; height:26px; flex-shrink:0; border-radius:8px; cursor:pointer;
+                        display:flex; align-items:center; justify-content:center; font-size:14px; opacity:0.5;
+                    ">🗑️</div>
+                </div>`;
+            }).join("");
+        }
+
+        const toplam = keys.length;
+        const biten = keys.filter(k=> todoVeri[k].tamamlandi).length;
+        document.getElementById("todo-progress-label").textContent =
+            toplam === 0 ? "liste boş" : (biten + " / " + toplam + " tamamlandı");
+    }
+
+    function escapeHtmlTodo(str){
+        const d = document.createElement("div");
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    window.todoEkle = function(){
+        const ref = todoRef();
+        if(!ref){ alert("bağlantı yok"); return; }
+        const input = document.getElementById("todo-input");
+        const metin = input.value.trim();
+        if(!metin) return;
+        const yeniRef = ref.push();
+        yeniRef.set({
+            metin: metin,
+            tamamlandi: false,
+            sira: Date.now()
+        }).then(()=>{
+            input.value = "";
+            input.focus();
+        }).catch(err=> alert("eklenemedi: " + err.message));
+    };
+
+    window.todoToggle = function(key){
+        const ref = todoRef();
+        if(!ref) return;
+        const item = todoVeri[key];
+        if(!item) return;
+        ref.child(key).update({ tamamlandi: !item.tamamlandi });
+    };
+
+    window.todoSil = function(key){
+        const ref = todoRef();
+        if(!ref) return;
+        ref.child(key).remove();
+    };
+})();
 </script>
 
 <script>
@@ -3995,10 +4260,92 @@ document.body.appendChild(heart);
         img.onclick = () => { currentIdx = i; openLightbox(); };
     });
 
+    // ---- GALERİ FAVORİ SİSTEMİ (localStorage) ----
+    const FAV_KEY = "ak_galeri_favoriler";
+    const favBtnMap = {}; // src -> galeri kartındaki kalp butonu
+
+    function getFavorites() {
+        try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; }
+        catch (e) { return []; }
+    }
+
+    function saveFavorites(list) {
+        localStorage.setItem(FAV_KEY, JSON.stringify(list));
+    }
+
+    window.isFavorite = function (src) {
+        return getFavorites().includes(src);
+    };
+
+    function playFavPop(btn) {
+        if (!btn) return;
+        btn.classList.remove('fav-pop');
+        void btn.offsetWidth; // reflow, animasyonu yeniden tetikler
+        btn.classList.add('fav-pop');
+    }
+
+    function paintFavBtn(btn, fav) {
+        if (!btn) return;
+        btn.classList.toggle('is-fav', fav);
+        btn.textContent = fav ? '❤️' : '🤍';
+    }
+
+    // src: img'in getAttribute('src') değeri (favoriler bu anahtarla saklanır)
+    window.toggleFavorite = function (src) {
+        let favs = getFavorites();
+        const idx = favs.indexOf(src);
+        const nowFav = idx === -1;
+        if (idx > -1) favs.splice(idx, 1); else favs.push(src);
+        saveFavorites(favs);
+
+        // galeri kartındaki kalp
+        const gridBtn = favBtnMap[src];
+        paintFavBtn(gridBtn, nowFav);
+        playFavPop(gridBtn);
+
+        // lightbox açıksa ve şu an gösterilen resimse, oradaki kalp de güncellensin
+        const lbBtn = document.getElementById('lightbox-fav-btn');
+        if (lbBtn && imgs[currentIdx] && imgs[currentIdx].getAttribute('src') === src) {
+            paintFavBtn(lbBtn, nowFav);
+            playFavPop(lbBtn);
+        }
+    };
+
+    // Lightbox'taki kalp butonuna basılınca çalışır
+    window.toggleLightboxFavorite = function () {
+        const img = imgs[currentIdx];
+        if (!img) return;
+        toggleFavorite(img.getAttribute('src'));
+    };
+
+    // Lightbox açılırken / resim değişirken kalp ikonunu güncel resme göre ayarla
+    function syncLightboxFavBtn() {
+        const lbBtn = document.getElementById('lightbox-fav-btn');
+        const img = imgs[currentIdx];
+        if (!lbBtn || !img) return;
+        paintFavBtn(lbBtn, isFavorite(img.getAttribute('src')));
+    }
+
+    document.querySelectorAll('.gallery-item').forEach(item => {
+        const img = item.querySelector('img');
+        if (!img) return;
+        const src = img.getAttribute('src');
+        const favBtn = document.createElement('div');
+        favBtn.className = 'gallery-fav-btn' + (isFavorite(src) ? ' is-fav' : '');
+        favBtn.textContent = isFavorite(src) ? '❤️' : '🤍';
+        favBtn.onclick = (e) => {
+            e.stopPropagation();
+            toggleFavorite(src);
+        };
+        item.appendChild(favBtn);
+        favBtnMap[src] = favBtn;
+    });
+
     function openLightbox() {
         lightbox.style.display = "flex";
         lightboxImg.src = imgs[currentIdx].src;
         syncLightboxDate(currentIdx);
+        syncLightboxFavBtn();
         updateAutoplayBtn();
         startAutoSlide();
         const tb = document.getElementById('theme-toggle-btn');
@@ -4021,6 +4368,7 @@ document.body.appendChild(heart);
         currentIdx = (currentIdx + dir + imgs.length) % imgs.length;
         lightboxImg.src = imgs[currentIdx].src;
         syncLightboxDate(currentIdx);
+        syncLightboxFavBtn();
     }
 
 
@@ -4765,7 +5113,10 @@ function filterGallery(month) {
         const imgSrc = item.querySelector('img').getAttribute('src');
         let isMatch = false;
 
-        if (month === 'all') isMatch = true;
+        if (month === 'favorites') {
+            isMatch = isFavorite(imgSrc);
+        }
+        else if (month === 'all') isMatch = true;
         else if (month === '11.2025' && imgSrc.includes('11.2025')) isMatch = true;
         else if (month === '12.2025' && imgSrc.includes('2025') && !imgSrc.includes('11.2025')) isMatch = true;
         else if (month === '01.2026' && imgSrc.includes('01/')) isMatch = true;
