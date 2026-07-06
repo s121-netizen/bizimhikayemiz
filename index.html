@@ -24,6 +24,7 @@
 
         /* Mobilde scroll sırasında beyaz flaş / zıplama efektini önler */
         html {
+            --tema-img: url('temalar/1.png');
             background: #0a0a0a;
             overscroll-behavior-y: none;
             /* iOS Safari yükseklik düzeltmesi */
@@ -2258,7 +2259,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     /* Bulanık arka plan — temadan gelecek */
     #kitap-bg {
         position:absolute; inset:0;
-        background-image: url('temalar/1.png');
+        background-image: var(--tema-img);
         background-size:cover; background-position:center;
         filter:blur(30px) brightness(0.18) saturate(1.1);
         transform:scale(1.1);
@@ -2293,6 +2294,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     #kitap-sahne {
         position:absolute; inset:0;
         display:flex; align-items:center; justify-content:center;
+        -webkit-perspective:2200px;
         perspective:2200px;
         padding:58px 10px 72px;
     }
@@ -2302,6 +2304,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
         display:flex; align-items:stretch;
         filter: drop-shadow(0 40px 80px rgba(0,0,0,0.85)) drop-shadow(0 8px 20px rgba(0,0,0,0.6));
         /* rotateX kaldırıldı — mobilde yazıları bulanıklaştırıyordu */
+        -webkit-transform-style: preserve-3d;
         transform-style: preserve-3d;
         position:relative;
         /* Yazı netliği için */
@@ -2336,7 +2339,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     #kitap-sol {
         background: linear-gradient(108deg,
             rgba(30,21,48,0.55) 0%, rgba(23,16,42,0.55) 40%, rgba(19,14,34,0.55) 100%),
-            url('temalar/1.png');
+            var(--tema-img);
         background-size: cover;
         background-position: center;
         border-radius: 6px 0 0 6px;
@@ -2350,7 +2353,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     #kitap-sag {
         background: linear-gradient(72deg,
             rgba(19,14,34,0.55) 0%, rgba(23,16,42,0.55) 60%, rgba(30,21,48,0.55) 100%),
-            url('temalar/1.png');
+            var(--tema-img);
         background-size: cover;
         background-position: center;
         border-radius: 0 6px 6px 0;
@@ -2448,13 +2451,17 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
         position:absolute;
         height: min(460px, 62vh);
         transform-origin: left center;
+        -webkit-transform-style: preserve-3d;
         transform-style: preserve-3d;
+        will-change: transform;
         pointer-events:none;
         z-index:20; display:none;
     }
     .kitap-flip-yuz {
         position:absolute; inset:0;
         backface-visibility:hidden; -webkit-backface-visibility:hidden;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
         overflow:hidden;
         font-family:'Playfair Display',serif; color:#d8d0e8;
         font-size:12.5px; line-height:1.8; font-style:italic;
@@ -2463,7 +2470,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     }
     #kitap-flip-front {
         background: linear-gradient(72deg, rgba(19,14,34,0.55), rgba(23,16,42,0.55), rgba(30,21,48,0.55)),
-            url('temalar/1.png');
+            var(--tema-img);
         background-size: cover;
         background-position: center;
         border-radius:0 6px 6px 0;
@@ -2474,7 +2481,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     }
     #kitap-flip-back {
         background: linear-gradient(108deg, rgba(30,21,48,0.55), rgba(23,16,42,0.55), rgba(19,14,34,0.55)),
-            url('temalar/1.png');
+            var(--tema-img);
         background-size: cover;
         background-position: center;
         border-radius:6px 0 0 6px;
@@ -5545,7 +5552,8 @@ function getStaticAssets() {
         window.location.pathname,
         'index.html',
         'favicon.png',
-        'logo4.png'
+        'logo4.png',
+        window.TEMA_ACTIVE_URL || 'temalar/1.png'
     ];
     
     document.querySelectorAll('.gallery-item img').forEach(img => {
@@ -6497,11 +6505,50 @@ function renderHistoryView(){
     });
 }
 
-// ---- TEMA RESMİ YÜKLE (tek sabit tema: temalar/1.png) ----
+// ---- TEMA RESMİ OTOMATİK BULMA ----
+// "temalar/1.png" olması gereken ama farklı uzantı/büyük-küçük harfle
+// yüklenmiş olabilecek tema resmini otomatik tespit eder ve
+// --tema-img CSS değişkenini günceller. Böylece dosya adı
+// "1.PNG", "1.jpg", "1.jpeg", "1.webp" gibi farklı olsa bile tema kırılmaz.
+window.TEMA_ACTIVE_URL = "temalar/1.png";
+(function resolveTemaImg(){
+    const adaylar = [
+        "temalar/1.png", "temalar/1.PNG", "temalar/1.Png",
+        "temalar/1.jpg", "temalar/1.JPG", "temalar/1.jpeg",
+        "temalar/1.webp", "temalar/1.PNG".toLowerCase()
+    ];
+    let bulunduMu = false;
+    let denenenSayisi = 0;
+
+    function dene(i){
+        if(bulunduMu || i >= adaylar.length) return;
+        const test = new Image();
+        test.onload = function(){
+            if(bulunduMu) return;
+            bulunduMu = true;
+            window.TEMA_ACTIVE_URL = adaylar[i];
+            document.documentElement.style.setProperty("--tema-img", `url('${adaylar[i]}')`);
+            const img = document.getElementById("gunluk-tema-img");
+            if(img){ img.src = adaylar[i]; img.style.display = "block"; }
+            if(typeof kitapBgGuncelle === "function") kitapBgGuncelle();
+            if(i > 0) console.info("[tema] temalar/1.png bulunamadı, otomatik olarak kullanılan dosya:", adaylar[i]);
+        };
+        test.onerror = function(){
+            denenenSayisi++;
+            dene(i+1);
+            if(denenenSayisi === adaylar.length){
+                console.warn("[tema] 'temalar' klasöründe 1.png/1.jpg/1.jpeg/1.webp (büyük-küçük harf dahil) bulunamadı. Lütfen dosyanın index.html ile aynı dizindeki 'temalar' klasöründe ve tam olarak '1.png' adıyla yüklendiğinden emin olun.");
+            }
+        };
+        test.src = adaylar[i];
+    }
+    dene(0);
+})();
+
 function loadTemaImg(){
     const img = document.getElementById("gunluk-tema-img");
     if(!img) return;
-    img.src = "temalar/1.png";
+    img.src = window.TEMA_ACTIVE_URL || "temalar/1.png";
     img.style.display = "block";
 }
 
@@ -6685,16 +6732,16 @@ let kitapFlipping = false;
 let kitapYazKisi = "kevser";
 let kitapTumVeri = {};
 
-// ---- TEMA YARDIMCISI (tek sabit tema: temalar/1.png) ----
+// ---- TEMA YARDIMCISI (otomatik tespit edilen tema resmi) ----
 function kitapTemaUrl(){
-    return "temalar/1.png";
+    return window.TEMA_ACTIVE_URL || "temalar/1.png";
 }
 
 // Blurlu arka planı sabit temaya ayarla (sayfa resimleri artık CSS ile geliyor)
 function kitapBgGuncelle(){
     const bg = document.getElementById("kitap-bg");
     if(bg){
-        bg.style.backgroundImage = "url('temalar/1.png')";
+        bg.style.backgroundImage = `url('${kitapTemaUrl()}')`;
     }
 }
 
@@ -6850,7 +6897,7 @@ window.kitapSayfa = function(yon){
                 document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
                 document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1)*2-1) + " \xb7 " + ((yeniGun-1)*2);
             }
-        }, 380);
+        }, 300);
 
         setTimeout(()=>{
             kitapAktifGun = yeniGun;
@@ -6858,7 +6905,7 @@ window.kitapSayfa = function(yon){
             kitapFlipping = false;
             kitapBgGuncelle();
             _kitapUI(yeniGun);
-        }, 650);
+        }, 620);
 
     } else {
         // GERİ: sol sayfa sağa kıvrılır
@@ -6889,7 +6936,7 @@ window.kitapSayfa = function(yon){
                 document.getElementById("kitap-sol-icerik").innerHTML = "<div style=\"opacity:0.08;text-align:center;margin-top:60px;font-size:32px;\">\uD83D\uDCD6</div>";
                 document.getElementById("kitap-sol-sayfa").textContent = "";
             }
-        }, 380);
+        }, 300);
 
         setTimeout(()=>{
             kitapAktifGun = yeniGun;
@@ -6897,7 +6944,7 @@ window.kitapSayfa = function(yon){
             kitapFlipping = false;
             kitapBgGuncelle();
             _kitapUI(yeniGun);
-        }, 650);
+        }, 620);
     }
 };
 
