@@ -2855,6 +2855,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     <button class="filter-btn" onclick="filterGallery('04.2026')">Nisan '26</button>
     <button class="filter-btn" onclick="filterGallery('05.2026')">Mayıs '26</button>
     <button class="filter-btn" onclick="filterGallery('06.2026')">Haziran '26</button>
+    <button class="filter-btn" onclick="filterGallery('07.2026')">Temmuz '26</button>
     <button class="filter-btn" id="fav-filter-btn" onclick="filterGallery('favorites')">❤️ Favoriler</button>
 </div>
             <div class="gallery-scroll" id="gallery-scroll">
@@ -5156,6 +5157,7 @@ function filterGallery(month) {
         else if (month === '04.2026' && imgSrc.includes('04.2026')) isMatch = true;
         else if (month === '05.2026' && imgSrc.includes('05.2026')) isMatch = true;
         else if (month === '06.2026' && imgSrc.includes('06.2026')) isMatch = true;
+        else if (month === '07.2026' && imgSrc.includes('07.2026')) isMatch = true;
 
         item.style.display = isMatch ? 'block' : 'none';
     });
