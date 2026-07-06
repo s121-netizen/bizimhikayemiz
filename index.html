@@ -2184,7 +2184,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
             flex-direction: column;
             box-shadow: 0 28px 90px rgba(0,0,0,0.8);
         ">
-            <!-- TEMA RESMİ (o güne ait /temalar/N.png) -->
+            <!-- TEMA RESMİ (sabit: temalar/1.png) -->
             <div id="gunluk-tema-img-wrap" style="position:relative; flex-shrink:0; max-height:160px; overflow:hidden; border-radius:22px 22px 0 0;">
                 <img id="gunluk-tema-img" src="" alt="" style="width:100%; height:160px; object-fit:cover; display:block;">
                 <div style="position:absolute;inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(14,10,22,0.85));"></div>
@@ -2258,6 +2258,7 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     /* Bulanık arka plan — temadan gelecek */
     #kitap-bg {
         position:absolute; inset:0;
+        background-image: url('temalar/1.png');
         background-size:cover; background-position:center;
         filter:blur(30px) brightness(0.18) saturate(1.1);
         transform:scale(1.1);
@@ -2334,7 +2335,10 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
 
     #kitap-sol {
         background: linear-gradient(108deg,
-            #1e1530 0%, #17102a 40%, #130e22 100%);
+            rgba(30,21,48,0.55) 0%, rgba(23,16,42,0.55) 40%, rgba(19,14,34,0.55) 100%),
+            url('temalar/1.png');
+        background-size: cover;
+        background-position: center;
         border-radius: 6px 0 0 6px;
         border-top: 1px solid rgba(255,255,255,0.09);
         border-left: 1px solid rgba(255,255,255,0.07);
@@ -2345,7 +2349,10 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     }
     #kitap-sag {
         background: linear-gradient(72deg,
-            #130e22 0%, #17102a 60%, #1e1530 100%);
+            rgba(19,14,34,0.55) 0%, rgba(23,16,42,0.55) 60%, rgba(30,21,48,0.55) 100%),
+            url('temalar/1.png');
+        background-size: cover;
+        background-position: center;
         border-radius: 0 6px 6px 0;
         border-top: 1px solid rgba(255,255,255,0.09);
         border-right: 1px solid rgba(255,255,255,0.07);
@@ -2455,7 +2462,10 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
         -moz-osx-font-smoothing: grayscale;
     }
     #kitap-flip-front {
-        background: linear-gradient(72deg, #130e22, #17102a, #1e1530);
+        background: linear-gradient(72deg, rgba(19,14,34,0.55), rgba(23,16,42,0.55), rgba(30,21,48,0.55)),
+            url('temalar/1.png');
+        background-size: cover;
+        background-position: center;
         border-radius:0 6px 6px 0;
         padding:22px 20px;
         box-shadow: 6px 0 30px rgba(0,0,0,0.5);
@@ -2463,7 +2473,10 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
         border-right:1px solid rgba(255,255,255,0.06);
     }
     #kitap-flip-back {
-        background: linear-gradient(108deg, #1e1530, #17102a, #130e22);
+        background: linear-gradient(108deg, rgba(30,21,48,0.55), rgba(23,16,42,0.55), rgba(19,14,34,0.55)),
+            url('temalar/1.png');
+        background-size: cover;
+        background-position: center;
         border-radius:6px 0 0 6px;
         padding:22px 20px;
         transform:rotateY(180deg);
@@ -2549,12 +2562,6 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
 
                 <!-- Sol sayfa -->
                 <div class="kitap-sayfa" id="kitap-sol">
-                    <!-- Tema arka plan resmi (absolute, içerik üstüne değil altına) -->
-                    <img id="kitap-sol-tema-img" src="" alt="" style="
-                        position:absolute; inset:0; width:100%; height:100%;
-                        object-fit:cover; opacity:0.18; z-index:0; display:block;
-                        pointer-events:none;
-                    ">
                     <div class="kitap-icerik" id="kitap-sol-icerik"></div>
                     <div class="kitap-sayfa-no" id="kitap-sol-sayfa"></div>
                 </div>
@@ -2564,12 +2571,6 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
 
                 <!-- Sağ sayfa -->
                 <div class="kitap-sayfa" id="kitap-sag">
-                    <!-- Tema arka plan resmi (absolute, içerik üstüne değil altına) -->
-                    <img id="kitap-sag-tema-img" src="" alt="" style="
-                        position:absolute; inset:0; width:100%; height:100%;
-                        object-fit:cover; opacity:0.18; z-index:0; display:block;
-                        pointer-events:none;
-                    ">
                     <div class="kitap-icerik" id="kitap-sag-icerik"></div>
                     <div class="kitap-sayfa-no" id="kitap-sag-sayfa"></div>
                 </div>
@@ -6496,19 +6497,12 @@ function renderHistoryView(){
     });
 }
 
-// ---- TEMA RESMİ YÜKLE (temalar/N.png, yoksa oncekini dene) ----
-function loadTemaImg(gun){
+// ---- TEMA RESMİ YÜKLE (tek sabit tema: temalar/1.png) ----
+function loadTemaImg(){
     const img = document.getElementById("gunluk-tema-img");
     if(!img) return;
-    function tryLoad(n){
-        if(n < 1){ img.style.display="none"; return; }
-        const src = "temalar/" + n + ".png";
-        const test = new Image();
-        test.onload = ()=>{ img.src = src; img.style.display="block"; };
-        test.onerror = ()=>{ tryLoad(n-1); };
-        test.src = src;
-    }
-    tryLoad(gun);
+    img.src = "temalar/1.png";
+    img.style.display = "block";
 }
 
 // ---- GÜN DETAY AÇ ----
@@ -6691,55 +6685,17 @@ let kitapFlipping = false;
 let kitapYazKisi = "kevser";
 let kitapTumVeri = {};
 
-// ---- TEMA YARDIMCISI ----
-// temalar/{n}.png dene, 404 gelirse temalar/1.png'ye düş
-function kitapTemaUrl(gun){
-    return "temalar/" + gun + ".png";
+// ---- TEMA YARDIMCISI (tek sabit tema: temalar/1.png) ----
+function kitapTemaUrl(){
+    return "temalar/1.png";
 }
 
-// Arka planı ve sayfa tema resimlerini güncelle
-function kitapBgGuncelle(gun){
-    const solGun = gun - 1;
-    const sagGun = gun;
-
-    // Blurlu arka plan: sağ sayfanın (aktif gün) temasından
+// Blurlu arka planı sabit temaya ayarla (sayfa resimleri artık CSS ile geliyor)
+function kitapBgGuncelle(){
     const bg = document.getElementById("kitap-bg");
     if(bg){
-        const bgImg = new Image();
-        bgImg.onload = () => {
-            bg.style.backgroundImage = "url('" + bgImg.src + "')";
-        };
-        bgImg.onerror = () => {
-            bg.style.backgroundImage = "url('temalar/1.png')";
-        };
-        bgImg.src = kitapTemaUrl(sagGun);
+        bg.style.backgroundImage = "url('temalar/1.png')";
     }
-
-    // Sol sayfa tema resmi
-    _setTemaImg("kitap-sol-tema-img", solGun >= 1 ? solGun : null);
-    // Sağ sayfa tema resmi
-    _setTemaImg("kitap-sag-tema-img", sagGun);
-}
-
-function _setTemaImg(imgId, gun){
-    const img = document.getElementById(imgId);
-    if(!img) return;
-    if(!gun || gun < 1){
-        img.src = "";
-        img.style.opacity = "0";
-        return;
-    }
-    const src = "temalar/" + gun + ".png";
-    img.onerror = function(){
-        if(this.src.indexOf("temalar/1.png") < 0){
-            this.src = "temalar/1.png";
-        } else {
-            this.style.opacity = "0";
-        }
-    };
-    img.onload = function(){ this.style.opacity = "0.18"; };
-    img.style.opacity = "0";
-    img.src = src;
 }
 
 // ---- İÇERİK HTML'İ (sadece metin — tema resmi ayrı DOM'da) ----
@@ -6894,15 +6850,13 @@ window.kitapSayfa = function(yon){
                 document.getElementById("kitap-sol-icerik").innerHTML = kitapSayfaIcerik(yeniGun - 1);
                 document.getElementById("kitap-sol-sayfa").textContent = ((yeniGun-1)*2-1) + " \xb7 " + ((yeniGun-1)*2);
             }
-            _setTemaImg("kitap-sag-tema-img", yeniGun);
-            _setTemaImg("kitap-sol-tema-img", yeniGun-1 >= 1 ? yeniGun-1 : null);
         }, 380);
 
         setTimeout(()=>{
             kitapAktifGun = yeniGun;
             flipEl.style.display = "none";
             kitapFlipping = false;
-            kitapBgGuncelle(yeniGun);
+            kitapBgGuncelle();
             _kitapUI(yeniGun);
         }, 650);
 
@@ -6935,15 +6889,13 @@ window.kitapSayfa = function(yon){
                 document.getElementById("kitap-sol-icerik").innerHTML = "<div style=\"opacity:0.08;text-align:center;margin-top:60px;font-size:32px;\">\uD83D\uDCD6</div>";
                 document.getElementById("kitap-sol-sayfa").textContent = "";
             }
-            _setTemaImg("kitap-sag-tema-img", yeniGun);
-            _setTemaImg("kitap-sol-tema-img", yeniGun-1 >= 1 ? yeniGun-1 : null);
         }, 380);
 
         setTimeout(()=>{
             kitapAktifGun = yeniGun;
             flipEl.style.display = "none";
             kitapFlipping = false;
-            kitapBgGuncelle(yeniGun);
+            kitapBgGuncelle();
             _kitapUI(yeniGun);
         }, 650);
     }
