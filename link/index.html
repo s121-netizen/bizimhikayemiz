@@ -16,15 +16,11 @@
     --ivory:#f6efe7;
     --ivory-dim:#c9bfc3;
     --line:rgba(246,239,231,0.12);
+    --panel:#2a1c30;
   }
 
   *{box-sizing:border-box;}
-
-  html,body{
-    margin:0;
-    padding:0;
-    height:100%;
-  }
+  html,body{ margin:0; padding:0; height:100%; }
 
   body{
     background:
@@ -34,46 +30,25 @@
     color:var(--ivory);
     font-family:'Manrope', sans-serif;
     min-height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display:flex; align-items:center; justify-content:center;
     padding:24px;
     -webkit-font-smoothing:antialiased;
   }
 
-  .card{
-    width:100%;
-    max-width:560px;
-    text-align:center;
-  }
+  .card{ width:100%; max-width:560px; text-align:center; }
 
   .status{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    font-size:12px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--ivory-dim);
-    margin-bottom:38px;
-    padding:6px 14px;
-    border:1px solid var(--line);
-    border-radius:999px;
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--ivory-dim); margin-bottom:38px;
+    padding:6px 14px; border:1px solid var(--line); border-radius:999px;
   }
 
   .dot{
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background:var(--gold);
-    box-shadow:0 0 0 0 rgba(207,161,90,0.55);
-    animation:pulse 2.2s infinite;
+    width:7px; height:7px; border-radius:50%; background:var(--gold);
+    box-shadow:0 0 0 0 rgba(207,161,90,0.55); animation:pulse 2.2s infinite;
   }
-
-  .dot.off{
-    background:#8a7f83;
-    animation:none;
-  }
+  .dot.off{ background:#8a7f83; animation:none; }
 
   @keyframes pulse{
     0%{ box-shadow:0 0 0 0 rgba(207,161,90,0.45); }
@@ -82,64 +57,92 @@
   }
 
   .eyebrow{
-    font-size:12px;
-    letter-spacing:0.18em;
-    text-transform:uppercase;
-    color:var(--gold);
-    margin:0 0 14px;
+    font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 14px;
   }
 
   #content{
     font-family:'Cormorant Garamond', serif;
     font-size:clamp(28px, 5.2vw, 44px);
-    line-height:1.35;
-    font-weight:500;
-    color:var(--ivory);
-    margin:0 0 30px;
-    word-break:break-word;
+    line-height:1.35; font-weight:500; color:var(--ivory);
+    margin:0 0 30px; word-break:break-word;
     transition:opacity .5s ease, transform .5s ease;
   }
-
-  #content.fade{
-    opacity:0;
-    transform:translateY(6px);
-  }
-
+  #content.fade{ opacity:0; transform:translateY(6px); }
   #content a{
-    color:var(--blush);
-    text-decoration:none;
-    border-bottom:1px solid rgba(240,201,211,0.45);
-    padding-bottom:2px;
+    color:var(--blush); text-decoration:none;
+    border-bottom:1px solid rgba(240,201,211,0.45); padding-bottom:2px;
     transition:border-color .2s ease, color .2s ease;
   }
+  #content a:hover{ color:var(--gold); border-color:var(--gold); }
 
-  #content a:hover{
-    color:var(--gold);
-    border-color:var(--gold);
-  }
-
-  .meta{
-    font-size:12px;
-    color:var(--ivory-dim);
-    letter-spacing:0.02em;
-  }
-
-  .meta span{
-    color:var(--ivory);
-  }
-
-  .empty{
-    color:var(--ivory-dim);
-    font-style:italic;
-  }
+  .meta{ font-size:12px; color:var(--ivory-dim); letter-spacing:0.02em; }
+  .meta span{ color:var(--ivory); }
+  .empty{ color:var(--ivory-dim); font-style:italic; }
 
   footer{
-    margin-top:56px;
-    font-size:11px;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    color:rgba(201,191,195,0.45);
+    margin-top:56px; font-size:11px; letter-spacing:0.12em;
+    text-transform:uppercase; color:rgba(201,191,195,0.45);
   }
+
+  .edit-trigger{
+    position:fixed; right:18px; bottom:18px;
+    width:38px; height:38px; border-radius:50%;
+    border:1px solid var(--line); background:rgba(255,255,255,0.03);
+    color:var(--ivory-dim); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; transition:opacity .2s ease, transform .2s ease;
+    opacity:0.55;
+  }
+  .edit-trigger:hover{ opacity:1; transform:scale(1.05); }
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(15,9,17,0.72);
+    display:none; align-items:center; justify-content:center;
+    padding:24px; z-index:10;
+  }
+  .overlay.open{ display:flex; }
+
+  .panel{
+    width:100%; max-width:380px;
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:14px; padding:26px; text-align:left;
+  }
+
+  .panel h3{
+    margin:0 0 18px; font-family:'Cormorant Garamond', serif;
+    font-weight:600; font-size:22px; color:var(--ivory);
+  }
+
+  .panel label{
+    display:block; font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--ivory-dim); margin:14px 0 6px;
+  }
+
+  .panel textarea{
+    width:100%; background:rgba(255,255,255,0.04);
+    border:1px solid var(--line); border-radius:8px;
+    color:var(--ivory); font-family:'Manrope', sans-serif;
+    font-size:14px; padding:10px 12px; outline:none;
+    resize:vertical; min-height:100px;
+    transition:border-color .2s ease;
+  }
+  .panel textarea:focus{ border-color:var(--gold); }
+
+  .panel-actions{ display:flex; gap:10px; margin-top:20px; }
+
+  .btn{
+    flex:1; padding:10px 14px; border-radius:8px; border:none;
+    font-family:'Manrope', sans-serif; font-size:13px; font-weight:600;
+    letter-spacing:0.02em; cursor:pointer; transition:opacity .2s ease;
+  }
+  .btn:hover{ opacity:0.85; }
+  .btn-primary{ background:var(--gold); color:#241729; }
+  .btn-ghost{ background:transparent; color:var(--ivory-dim); border:1px solid var(--line); }
+
+  .panel-msg{ font-size:12px; margin-top:12px; min-height:16px; color:var(--ivory-dim); }
+  .panel-msg.error{ color:#e08a8a; }
+  .panel-msg.ok{ color:var(--gold); }
 </style>
 </head>
 <body>
@@ -157,13 +160,27 @@
     <footer>canlı olarak güncellenir</footer>
   </div>
 
+  <button class="edit-trigger" id="editTrigger" title="düzenle" aria-label="düzenle">✎</button>
+
+  <div class="overlay" id="overlay">
+    <div class="panel">
+      <h3>yeni içerik</h3>
+      <label for="newContent">mesaj veya link</label>
+      <textarea id="newContent" placeholder="buraya yaz…"></textarea>
+      <div class="panel-actions">
+        <button class="btn btn-ghost" id="closeWrite">kapat</button>
+        <button class="btn btn-primary" id="publishBtn">yayınla</button>
+      </div>
+      <div class="panel-msg" id="writeMsg"></div>
+    </div>
+  </div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
-    getDatabase, ref, onValue
+    getDatabase, ref, onValue, set, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  // Firebase yapılandırman
   const firebaseConfig = {
     apiKey: "AIzaSyCVufVE2sG5-qSFt3G_pt8TnE-qo6hj7eM",
     authDomain: "project-6700528244363532387.firebaseapp.com",
@@ -178,7 +195,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // --- Bağlantı durumu ---
+  /* ---- bağlantı durumu ---- */
   const dot = document.getElementById('dot');
   const statusText = document.getElementById('statusText');
   onValue(ref(db, ".info/connected"), (snap) => {
@@ -187,11 +204,10 @@
     statusText.textContent = connected ? 'bağlı' : 'bağlantı yok';
   });
 
-  // --- İçerik: "guncel" adlı tek bir düğüm dinleniyor ---
-  // Firebase konsolunda Realtime Database > guncel yolunun değerini
-  // string olarak değiştirmen yeterli, sayfa anında güncellenir.
+  /* ---- içerik gösterimi ---- */
   const contentEl = document.getElementById('content');
   const updatedAtEl = document.getElementById('updatedAt');
+  const newContentInput = document.getElementById('newContent');
 
   function linkify(text){
     const urlPattern = /(https?:\/\/[^\s]+)/g;
@@ -210,7 +226,6 @@
 
   onValue(ref(db, "guncel"), (snapshot) => {
     const val = snapshot.val();
-
     contentEl.classList.add('fade');
     setTimeout(() => {
       if (val === null || val === undefined || val === "") {
@@ -219,10 +234,42 @@
       } else {
         contentEl.classList.remove('empty');
         contentEl.innerHTML = linkify(String(val));
+        if (newContentInput.value === "") newContentInput.value = String(val);
       }
       contentEl.classList.remove('fade');
       updatedAtEl.textContent = formatTime(new Date());
     }, 220);
+  });
+
+  /* ---- düzenle paneli (giriş gerekmez) ---- */
+  const editTrigger = document.getElementById('editTrigger');
+  const overlay = document.getElementById('overlay');
+  const writeMsg = document.getElementById('writeMsg');
+
+  function openOverlay(){ overlay.classList.add('open'); }
+  function closeOverlay(){
+    overlay.classList.remove('open');
+    writeMsg.textContent = '';
+  }
+
+  editTrigger.addEventListener('click', openOverlay);
+  document.getElementById('closeWrite').addEventListener('click', closeOverlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
+
+  document.getElementById('publishBtn').addEventListener('click', async () => {
+    const val = newContentInput.value.trim();
+    writeMsg.textContent = 'yayınlanıyor…';
+    writeMsg.className = 'panel-msg';
+    try {
+      await set(ref(db, "guncel"), val);
+      await set(ref(db, "guncelZaman"), serverTimestamp());
+      writeMsg.textContent = 'yayınlandı';
+      writeMsg.className = 'panel-msg ok';
+      setTimeout(closeOverlay, 700);
+    } catch (err) {
+      writeMsg.textContent = 'yayınlanamadı, tekrar dene';
+      writeMsg.className = 'panel-msg error';
+    }
   });
 </script>
 </body>
