@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>şimdi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#1c1320;
+    --bg-deep-2:#241729;
+    --blush:#f0c9d3;
+    --gold:#cfa15a;
+    --ivory:#f6efe7;
+    --ivory-dim:#c9bfc3;
+    --line:rgba(246,239,231,0.12);
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    height:100%;
+  }
+
+  body{
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(207,161,90,0.10), transparent 55%),
+      radial-gradient(ellipse at 90% 110%, rgba(240,201,211,0.08), transparent 50%),
+      linear-gradient(180deg, var(--bg-deep), var(--bg-deep-2));
+    color:var(--ivory);
+    font-family:'Manrope', sans-serif;
+    min-height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .card{
+    width:100%;
+    max-width:560px;
+    text-align:center;
+  }
+
+  .status{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ivory-dim);
+    margin-bottom:38px;
+    padding:6px 14px;
+    border:1px solid var(--line);
+    border-radius:999px;
+  }
+
+  .dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 0 0 rgba(207,161,90,0.55);
+    animation:pulse 2.2s infinite;
+  }
+
+  .dot.off{
+    background:#8a7f83;
+    animation:none;
+  }
+
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(207,161,90,0.45); }
+    70%{ box-shadow:0 0 0 9px rgba(207,161,90,0); }
+    100%{ box-shadow:0 0 0 0 rgba(207,161,90,0); }
+  }
+
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0 0 14px;
+  }
+
+  #content{
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(28px, 5.2vw, 44px);
+    line-height:1.35;
+    font-weight:500;
+    color:var(--ivory);
+    margin:0 0 30px;
+    word-break:break-word;
+    transition:opacity .5s ease, transform .5s ease;
+  }
+
+  #content.fade{
+    opacity:0;
+    transform:translateY(6px);
+  }
+
+  #content a{
+    color:var(--blush);
+    text-decoration:none;
+    border-bottom:1px solid rgba(240,201,211,0.45);
+    padding-bottom:2px;
+    transition:border-color .2s ease, color .2s ease;
+  }
+
+  #content a:hover{
+    color:var(--gold);
+    border-color:var(--gold);
+  }
+
+  .meta{
+    font-size:12px;
+    color:var(--ivory-dim);
+    letter-spacing:0.02em;
+  }
+
+  .meta span{
+    color:var(--ivory);
+  }
+
+  .empty{
+    color:var(--ivory-dim);
+    font-style:italic;
+  }
+
+  footer{
+    margin-top:56px;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:rgba(201,191,195,0.45);
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="status">
+      <span class="dot off" id="dot"></span>
+      <span id="statusText">bağlanıyor</span>
+    </div>
+
+    <p class="eyebrow">şu an</p>
+    <div id="content" class="empty">yükleniyor…</div>
+    <div class="meta">son güncelleme: <span id="updatedAt">—</span></div>
+
+    <footer>canlı olarak güncellenir</footer>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getDatabase, ref, onValue
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  // Firebase yapılandırman
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVufVE2sG5-qSFt3G_pt8TnE-qo6hj7eM",
+    authDomain: "project-6700528244363532387.firebaseapp.com",
+    databaseURL: "https://project-6700528244363532387-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "project-6700528244363532387",
+    storageBucket: "project-6700528244363532387.firebasestorage.app",
+    messagingSenderId: "524187994352",
+    appId: "1:524187994352:web:8688a70183fab05cc6da35",
+    measurementId: "G-B54QMGT2KZ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // --- Bağlantı durumu ---
+  const dot = document.getElementById('dot');
+  const statusText = document.getElementById('statusText');
+  onValue(ref(db, ".info/connected"), (snap) => {
+    const connected = snap.val() === true;
+    dot.classList.toggle('off', !connected);
+    statusText.textContent = connected ? 'bağlı' : 'bağlantı yok';
+  });
+
+  // --- İçerik: "guncel" adlı tek bir düğüm dinleniyor ---
+  // Firebase konsolunda Realtime Database > guncel yolunun değerini
+  // string olarak değiştirmen yeterli, sayfa anında güncellenir.
+  const contentEl = document.getElementById('content');
+  const updatedAtEl = document.getElementById('updatedAt');
+
+  function linkify(text){
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlPattern, (url) => {
+      const safe = url.replace(/"/g, '&quot;');
+      return `<a href="${safe}" target="_blank" rel="noopener">${url}</a>`;
+    });
+  }
+
+  function formatTime(date){
+    return date.toLocaleString('tr-TR', {
+      day:'2-digit', month:'2-digit', year:'numeric',
+      hour:'2-digit', minute:'2-digit'
+    });
+  }
+
+  onValue(ref(db, "guncel"), (snapshot) => {
+    const val = snapshot.val();
+
+    contentEl.classList.add('fade');
+    setTimeout(() => {
+      if (val === null || val === undefined || val === "") {
+        contentEl.textContent = "henüz bir şey yok";
+        contentEl.classList.add('empty');
+      } else {
+        contentEl.classList.remove('empty');
+        contentEl.innerHTML = linkify(String(val));
+      }
+      contentEl.classList.remove('fade');
+      updatedAtEl.textContent = formatTime(new Date());
+    }, 220);
+  });
+</script>
+</body>
+</html>
