@@ -90,6 +90,19 @@ h1 {
 
         * { box-sizing: border-box; }
 
+        /* Mobilde her yerde dokununca çıkan mavi/gri vurgu kutusunu kapatır */
+        html, body, * {
+            -webkit-tap-highlight-color: transparent !important;
+        }
+        button, a, input, textarea, select, [onclick] {
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-touch-callout: none;
+            outline: none;
+        }
+        button:focus, a:focus, [onclick]:focus {
+            outline: none;
+        }
+
                 /* --- ŞİFRE EKRANI --- */
         #login-overlay {
             position: fixed;
@@ -2190,8 +2203,10 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
                 <img id="gunluk-tema-img" src="" alt="" style="width:100%; height:160px; object-fit:cover; display:block;">
                 <div style="position:absolute;inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(14,10,22,0.85));"></div>
                 <!-- Başlık tema resmi üzerinde yüzer -->
-                <div style="position:absolute; bottom:0; left:0; right:0; padding:12px 20px; display:flex; justify-content:space-between; align-items:flex-end;">
-                    <div id="gunluk-detail-title" style="font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.6);"></div>
+                <div style="position:absolute; bottom:0; left:0; right:0; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <button id="gunluk-detail-prev" onclick="gunlukDetailGit(-1)" title="önceki gün" style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); color:#fff; width:30px; height:30px; border-radius:10px; cursor:pointer; font-size:14px; flex-shrink:0;">◀</button>
+                    <div id="gunluk-detail-title" style="flex:1; text-align:center; font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.6); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
+                    <button id="gunluk-detail-next" onclick="gunlukDetailGit(1)" title="sonraki gün" style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); color:#fff; width:30px; height:30px; border-radius:10px; cursor:pointer; font-size:14px; flex-shrink:0;">▶</button>
                     <button onclick="closeGunlukDetail()" style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); color:#fff; width:34px; height:34px; border-radius:11px; cursor:pointer; font-size:15px; flex-shrink:0;">✕</button>
                 </div>
             </div>
@@ -2208,6 +2223,10 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
             <div id="gunluk-yorum-yazma" style="border-top:1px solid rgba(255,255,255,0.07); padding:10px 20px; flex-shrink:0; display:flex; gap:8px; align-items:flex-start;">
                 <div id="gunluk-yorum-avatar" style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#7b2cbf,#b0b0b0); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; margin-top:4px;">?</div>
                 <div style="flex:1;">
+                    <div style="display:flex; gap:6px; margin-bottom:7px;">
+                        <button class="yorum-kisi-btn" data-k="kevser" onclick="setYorumYazKisi('kevser')" style="padding:4px 11px; border-radius:999px; border:1px solid rgba(176,176,176,0.35); background:rgba(176,176,176,0.14); color:#d9d9d9; cursor:pointer; font-size:11px; font-weight:600;">🩶 kevser</button>
+                        <button class="yorum-kisi-btn" data-k="atakan" onclick="setYorumYazKisi('atakan')" style="padding:4px 11px; border-radius:999px; border:1px solid rgba(123,44,191,0.3); background:rgba(123,44,191,0.1); color:#c4a0ff; cursor:pointer; font-size:11px; font-weight:600;">💜 atakan</button>
+                    </div>
                     <textarea id="gunluk-yorum-textarea" placeholder="bir şey yaz..." style="
                         width:100%; min-height:52px; background:transparent;
                         border:none; border-bottom:1px solid rgba(123,44,191,0.3); color:#f5f5f5;
@@ -2289,6 +2308,28 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
         color:#fff; width:34px; height:34px; border-radius:11px; cursor:pointer; font-size:15px;
         backdrop-filter:blur(6px);
     }
+    #kitap-play-btn {
+        background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18);
+        color:#fff; width:34px; height:34px; border-radius:11px; cursor:pointer; font-size:13px;
+        backdrop-filter:blur(6px); position:relative;
+    }
+    #kitap-play-btn.active {
+        background:rgba(123,44,191,0.35); border-color:rgba(123,44,191,0.6);
+    }
+    #kitap-play-menu {
+        display:none; position:absolute; top:42px; right:0;
+        background:rgba(14,10,22,0.97); border:1px solid rgba(123,44,191,0.35);
+        border-radius:12px; padding:6px; box-shadow:0 12px 30px rgba(0,0,0,0.6);
+        flex-direction:column; gap:4px; z-index:20; min-width:92px;
+    }
+    #kitap-play-menu.show { display:flex; }
+    #kitap-play-menu button {
+        background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+        color:#eee; font-size:12px; padding:7px 10px; border-radius:8px; cursor:pointer;
+        text-align:left; font-family:'Inter',sans-serif;
+    }
+    #kitap-play-menu button:hover { background:rgba(123,44,191,0.25); }
+    #kitap-play-menu button.stop-opt { color:#ff8a8a; }
 
     /* Sahne */
     #kitap-sahne {
@@ -2555,8 +2596,15 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
         <!-- Üst bar -->
         <div id="kitap-topbar">
             <div id="kitap-topbar-title">📖 <span id="kitap-gun-label">1. gün</span></div>
-            <div id="kitap-topbar-right">
+            <div id="kitap-topbar-right" style="position:relative;">
                 <span id="kitap-tarih-label"></span>
+                <button id="kitap-play-btn" onclick="toggleKitapPlayMenu(event)" title="otomatik oynat">▶</button>
+                <div id="kitap-play-menu">
+                    <button onclick="kitapOtomatikBaslat(1)">1 sn</button>
+                    <button onclick="kitapOtomatikBaslat(2)">2 sn</button>
+                    <button onclick="kitapOtomatikBaslat(3)">3 sn</button>
+                    <button class="stop-opt" onclick="kitapOtomatikDurdur()">⏸ durdur</button>
+                </div>
                 <button id="kitap-close-btn" onclick="closeKitapModu()">✕</button>
             </div>
         </div>
@@ -2595,14 +2643,14 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
 
         <!-- Alt navigasyon -->
         <div id="kitap-bottombar">
-            <button class="kitap-nav-btn" onclick="kitapSayfa(-1)" id="kitap-prev-btn" style="color:#c0c0c0;">‹</button>
+            <button class="kitap-nav-btn" onclick="kitapOtomatikDurdur();kitapSayfa(-1)" id="kitap-prev-btn" style="color:#c0c0c0;">‹</button>
             <div id="kitap-progress-wrap">
                 <div id="kitap-progress-bar-bg">
                     <div id="kitap-progress-bar"></div>
                 </div>
                 <div id="kitap-progress-text"></div>
             </div>
-            <button class="kitap-nav-btn" onclick="kitapSayfa(1)" id="kitap-next-btn" style="color:#c4a0ff;">›</button>
+            <button class="kitap-nav-btn" onclick="kitapOtomatikDurdur();kitapSayfa(1)" id="kitap-next-btn" style="color:#c4a0ff;">›</button>
         </div>
 
         <!-- Not ekle -->
@@ -6640,17 +6688,53 @@ function openGunDetail(gun, gunData){
     // Yorumları yükle
     renderGunlukYorumlar(gun);
 
-    // Yorum avatar güncelle (aktif kişi)
-    const av = document.getElementById("gunluk-yorum-avatar");
-    if(av){
-        if(aktifKisi==="kevser") { av.textContent="🩶"; av.style.background="linear-gradient(135deg,#b0b0b0,#888)"; }
-        else if(aktifKisi==="atakan") { av.textContent="💜"; av.style.background="linear-gradient(135deg,#7b2cbf,#4a0e8f)"; }
-        else { av.textContent="?"; av.style.background="linear-gradient(135deg,#7b2cbf,#b0b0b0)"; }
-    }
+    // Yorum yazarken kim olarak yazılacağını başlat (aktif kişiyle başlar, sonra değiştirilebilir)
+    yorumYazKisi = aktifKisi === "hepsi" ? (yorumYazKisi || "kevser") : aktifKisi;
+    syncYorumKisiUI();
     document.getElementById("gunluk-yorum-textarea").value = "";
+
+    // İleri / geri gün butonlarının durumunu güncelle
+    const bugunLim = bugunGun();
+    const prevBtn = document.getElementById("gunluk-detail-prev");
+    const nextBtn = document.getElementById("gunluk-detail-next");
+    if(prevBtn) prevBtn.style.opacity = gun <= 1 ? "0.25" : "1";
+    if(nextBtn) nextBtn.style.opacity = gun >= bugunLim ? "0.25" : "1";
 
     document.getElementById("gunluk-detail-modal").style.display = "block";
 }
+
+// ---- GÜN DETAYINDA İLERİ / GERİ GİT ----
+window.gunlukDetailGit = function(yon){
+    if(seciliGun === null) return;
+    const yeniGun = seciliGun + yon;
+    const bugunLim = bugunGun();
+    if(yeniGun < 1 || yeniGun > bugunLim) return;
+    if(!window.akDB) return;
+    window.akDB.ref("gunluk/gun" + yeniGun).once("value").then(snap=>{
+        openGunDetail(yeniGun, snap.val() || {});
+    }).catch(()=>{});
+};
+
+// ---- YORUM YAZARKEN KİŞİ SEÇ ----
+let yorumYazKisi = "kevser";
+
+function syncYorumKisiUI(){
+    document.querySelectorAll(".yorum-kisi-btn").forEach(b=>{
+        const isMe = b.dataset.k === yorumYazKisi;
+        b.style.opacity = isMe ? "1" : "0.4";
+        b.style.fontWeight = isMe ? "700" : "500";
+    });
+    const av = document.getElementById("gunluk-yorum-avatar");
+    if(av){
+        if(yorumYazKisi === "kevser"){ av.textContent = "🩶"; av.style.background = "linear-gradient(135deg,#b0b0b0,#888)"; }
+        else { av.textContent = "💜"; av.style.background = "linear-gradient(135deg,#7b2cbf,#4a0e8f)"; }
+    }
+}
+
+window.setYorumYazKisi = function(k){
+    yorumYazKisi = k;
+    syncYorumKisiUI();
+};
 
 // ---- YORUMLAR ----
 function yorumPath(gun){ return "gunluk_yorumlar/gun" + gun; }
@@ -6694,7 +6778,7 @@ function renderGunlukYorumlar(gun){
 
 window.saveGunlukYorum = function(){
     if(!window.akDB){ alert("Bağlantı yok"); return; }
-    const yazKisi = aktifKisi === "hepsi" ? null : aktifKisi;
+    const yazKisi = yorumYazKisi;
     if(!yazKisi){ alert("Önce kevser ya da atakan'ı seç 💜"); return; }
     const metin = document.getElementById("gunluk-yorum-textarea").value.trim();
     if(!metin){ alert("Bir şeyler yaz 🥺"); return; }
@@ -6892,12 +6976,49 @@ window.openKitapModu = function(){
 };
 
 window.closeKitapModu = function(){
+    kitapOtomatikDurdur();
     document.getElementById("kitap-modal").style.display = "none";
     if(window.akDB) window.akDB.ref("gunluk").off();
     if(document.getElementById("gunluk-modal").style.display === "none"){
         document.body.classList.remove("modal-open");
     }
 };
+
+// ---- OTOMATİK SAYFA ÇEVİRME (OYNAT) ----
+let kitapOtomatikTimer = null;
+
+window.toggleKitapPlayMenu = function(e){
+    if(e) e.stopPropagation();
+    document.getElementById("kitap-play-menu").classList.toggle("show");
+};
+
+window.kitapOtomatikBaslat = function(saniye){
+    kitapOtomatikDurdur();
+    document.getElementById("kitap-play-menu").classList.remove("show");
+    document.getElementById("kitap-play-btn").classList.add("active");
+    document.getElementById("kitap-play-btn").textContent = "⏸";
+    kitapOtomatikTimer = setInterval(()=>{
+        if(kitapAktifGun >= bugunGun()){ kitapOtomatikDurdur(); return; }
+        if(!kitapFlipping) window.kitapSayfa(1);
+    }, saniye * 1000);
+};
+
+window.kitapOtomatikDurdur = function(){
+    if(kitapOtomatikTimer){ clearInterval(kitapOtomatikTimer); kitapOtomatikTimer = null; }
+    const btn = document.getElementById("kitap-play-btn");
+    if(btn){ btn.classList.remove("active"); btn.textContent = "▶"; }
+    const menu = document.getElementById("kitap-play-menu");
+    if(menu) menu.classList.remove("show");
+};
+
+// Menü dışına tıklanınca kapansın
+document.addEventListener("click", (e)=>{
+    const menu = document.getElementById("kitap-play-menu");
+    const btn = document.getElementById("kitap-play-btn");
+    if(menu && menu.classList.contains("show") && !menu.contains(e.target) && e.target !== btn){
+        menu.classList.remove("show");
+    }
+});
 
 // ---- SAYFA ÇEVİRME ----
 function _kitapUI(gun){
@@ -7018,7 +7139,7 @@ window.kitapSayfa = function(yon){
     document.addEventListener("touchend", e=>{
         if(document.getElementById("kitap-modal").style.display === "none") return;
         const dx = tx - e.changedTouches[0].clientX;
-        if(Math.abs(dx) > 45) window.kitapSayfa(dx > 0 ? 1 : -1);
+        if(Math.abs(dx) > 45){ if(window.kitapOtomatikDurdur) window.kitapOtomatikDurdur(); window.kitapSayfa(dx > 0 ? 1 : -1); }
     },{passive:true});
 })();
 
