@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lover — Birlikte Vakit Geçirin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<style>
+  :root{
+    --bg: #0d0a14;
+    --bg-soft: #120e1c;
+    --panel: #171225;
+    --panel-hover: #1d1730;
+    --stroke: #2a2340;
+    --violet: #8b5cf6;
+    --violet-soft: #6d4fd1;
+    --rose: #f472b6;
+    --amber: #f8c471;
+    --ink: #f3f0fa;
+    --ink-dim: #a79fc4;
+    --ink-faint: #6f6790;
+    --radius: 18px;
+  }
+
+  html[data-theme="gray"]{
+    --bg: #1a1a1e;
+    --bg-soft: #202024;
+    --panel: #26262c;
+    --panel-hover: #2e2e36;
+    --stroke: #38383f;
+    --violet: #9b8cf5;
+    --violet-soft: #7b6cd9;
+    --rose: #8f89c4;
+    --amber: #c9bdf0;
+    --ink: #f1f0f4;
+    --ink-dim: #a7a4b3;
+    --ink-faint: #726f80;
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{ background: var(--violet); color:#fff; }
+
+  h1,h2,h3{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    margin:0;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- Ambient background ---------- */
+  .glow{
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: .35;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-1{ width:520px; height:520px; top:-160px; right:-120px; background: radial-gradient(circle, var(--violet), transparent 70%); }
+  .glow-2{ width:420px; height:420px; bottom:-140px; left:220px; background: radial-gradient(circle, var(--rose), transparent 70%); opacity:.18; }
+
+  /* ---------- Layout ---------- */
+  .app{
+    display:flex;
+    min-height:100vh;
+    position:relative;
+    z-index:1;
+  }
+
+  /* Sidebar */
+  .sidebar{
+    width: 250px;
+    flex-shrink:0;
+    background: var(--bg-soft);
+    border-right: 1px solid var(--stroke);
+    display:flex;
+    flex-direction:column;
+    padding: 26px 16px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding: 4px 10px 22px;
+  }
+  .brand-mark{
+    width:34px; height:34px;
+    border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(135deg, var(--violet), var(--rose));
+    font-size:17px;
+  }
+  .brand-name{
+    font-family:'Fraunces', serif;
+    font-size: 19px;
+    font-weight:700;
+    background: linear-gradient(90deg, #d9c9ff, var(--rose));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .user-card{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding: 10px 12px;
+    margin-bottom: 22px;
+    border-radius: 14px;
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+  }
+  .avatar{
+    width:36px; height:36px;
+    border-radius:50%;
+    background: linear-gradient(135deg, var(--violet-soft), var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:14px;
+    flex-shrink:0;
+  }
+  .user-meta .u-name{ font-size:13.5px; font-weight:700; }
+
+  nav.nav-main{ display:flex; flex-direction:column; gap:3px; }
+  .nav-label{
+    font-size: 10.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 6px 12px 8px;
+    font-weight:700;
+  }
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    color: var(--ink-dim);
+    font-size: 14px;
+    font-weight:600;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition: background .15s ease, color .15s ease, transform .1s ease;
+    user-select:none;
+  }
+  .nav-item .ic{ font-size:16px; width:20px; text-align:center; }
+  .nav-item:hover{ background: var(--panel-hover); color: var(--ink); }
+  .nav-item:active{ transform: scale(.98); }
+  .nav-item.active{
+    background: linear-gradient(90deg, rgba(139,92,246,.22), rgba(244,114,182,.10));
+    color: #fff;
+    border-color: rgba(139,92,246,.4);
+  }
+
+  .sidebar-bottom{
+    margin-top:auto;
+    display:flex; flex-direction:column; gap:3px;
+    padding-top: 14px;
+    border-top: 1px solid var(--stroke);
+  }
+  .nav-item.danger{ color:#f38b8b; }
+  .nav-item.danger:hover{ background: rgba(243,139,139,.12); color:#ff9d9d; }
+  .nav-item.admin{ color: var(--amber); }
+
+  /* Main */
+  .main{
+    flex:1;
+    padding: 34px 42px 60px;
+    min-width:0;
+  }
+
+  .hero{
+    position:relative;
+    overflow:hidden;
+    border-radius: 22px;
+    padding: 34px 38px;
+    background: linear-gradient(120deg, #241a3d, #1a1330 60%, #2b1830);
+    border: 1px solid var(--stroke);
+    margin-bottom: 34px;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background: radial-gradient(circle at 85% 20%, rgba(244,114,182,.28), transparent 55%);
+    pointer-events:none;
+  }
+  .hero h1{
+    font-size: 27px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .wave{ display:inline-block; animation: wave 2.4s ease-in-out infinite; transform-origin: 70% 70%; }
+  @keyframes wave{
+    0%,60%,100%{ transform: rotate(0deg); }
+    10%{ transform: rotate(16deg); }
+    20%{ transform: rotate(-8deg); }
+    30%{ transform: rotate(16deg); }
+    40%{ transform: rotate(-4deg); }
+  }
+  .hero p{
+    margin-top: 9px;
+    color: var(--ink-dim);
+    font-size: 14.5px;
+    position:relative;
+  }
+
+  .section-title{
+    font-size: 18px;
+    margin-bottom: 16px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .section-title .count{
+    font-family:'Manrope',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    color: var(--ink-faint);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 18px;
+  }
+
+  .card{
+    position:relative;
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius);
+    padding: 22px 22px 20px;
+    cursor:pointer;
+    overflow:hidden;
+    transition: transform .18s ease, border-color .18s ease, background .18s ease;
+  }
+  .card::before{
+    content:"";
+    position:absolute; inset:0;
+    background: radial-gradient(circle at 100% 0%, var(--card-tint, rgba(139,92,246,.16)), transparent 60%);
+    opacity:0;
+    transition: opacity .2s ease;
+  }
+  .card:hover{
+    transform: translateY(-3px);
+    border-color: rgba(139,92,246,.45);
+    background: var(--panel-hover);
+  }
+  .card:hover::before{ opacity:1; }
+  .card:active{ transform: translateY(-1px) scale(.99); }
+
+  .card .emoji{
+    font-size: 26px;
+    width: 48px; height:48px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius: 13px;
+    background: rgba(139,92,246,.12);
+    margin-bottom: 16px;
+    position:relative;
+  }
+  .card h3{
+    font-size: 16.5px;
+    margin-bottom: 5px;
+    position:relative;
+    color:#fff;
+  }
+  .card p{
+    margin:0;
+    font-size: 13px;
+    color: var(--ink-dim);
+    line-height:1.45;
+    position:relative;
+  }
+
+  /* View switching */
+  .view{ display:none; }
+  .view.active{ display:block; animation: fadeUp .35s ease; }
+  @keyframes fadeUp{
+    from{ opacity:0; transform: translateY(8px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .back-row{
+    display:flex; align-items:center; gap:10px;
+    margin-bottom: 22px;
+  }
+  .back-btn{
+    display:flex; align-items:center; gap:6px;
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+    color: var(--ink-dim);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:'Manrope',sans-serif;
+    transition: all .15s ease;
+  }
+  .back-btn:hover{ color:#fff; border-color: var(--violet); }
+
+  .sub-hero{
+    display:flex; align-items:center; gap:14px;
+    margin-bottom: 26px;
+  }
+  .sub-hero .emoji-lg{
+    width:52px; height:52px;
+    border-radius:14px;
+    background: linear-gradient(135deg, rgba(139,92,246,.25), rgba(244,114,182,.2));
+    display:flex; align-items:center; justify-content:center;
+    font-size: 26px;
+  }
+  .sub-hero h2{ font-size: 22px; color:#fff; }
+  .sub-hero span{ color: var(--ink-dim); font-size: 13.5px; }
+
+  .panel-box{
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+
+  /* XOX game */
+  .xox-wrap{ display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .xox-board{
+    display:grid;
+    grid-template-columns: repeat(3, 84px);
+    grid-template-rows: repeat(3, 84px);
+    gap: 8px;
+  }
+  .xox-cell{
+    background: var(--bg-soft);
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 34px;
+    font-weight:800;
+    cursor:pointer;
+    font-family:'Fraunces', serif;
+    transition: background .15s ease;
+  }
+  .xox-cell:hover{ background: var(--panel-hover); }
+  .xox-cell.x{ color: var(--rose); }
+  .xox-cell.o{ color: var(--violet); }
+  .xox-status{ font-size:15px; color: var(--ink-dim); font-weight:600; }
+  .xox-status b{ color:#fff; }
+  .reset-btn{
+    background: linear-gradient(90deg, var(--violet), var(--rose));
+    border:none;
+    color:#fff;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-weight:700;
+    font-size: 13.5px;
+    cursor:pointer;
+    font-family:'Manrope',sans-serif;
+    transition: filter .15s ease, transform .1s ease;
+  }
+  .reset-btn:hover{ filter: brightness(1.1); }
+  .reset-btn:active{ transform: scale(.97); }
+
+  /* Truth or dare */
+  .tod-card{
+    max-width: 480px;
+    margin: 0 auto;
+    text-align:center;
+    padding: 40px 30px;
+  }
+  .tod-buttons{ display:flex; gap:12px; justify-content:center; margin-bottom: 26px; }
+  .tod-choice{
+    flex:1;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--stroke);
+    background: var(--bg-soft);
+    color: var(--ink-dim);
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    font-family:'Manrope',sans-serif;
+    transition: all .15s ease;
+  }
+  .tod-choice:hover{ border-color: var(--violet); color:#fff; }
+  .tod-choice.picked-t{ background: rgba(139,92,246,.18); border-color: var(--violet); color:#fff; }
+  .tod-choice.picked-d{ background: rgba(244,114,182,.18); border-color: var(--rose); color:#fff; }
+  .tod-prompt{
+    min-height: 90px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif;
+    font-size: 19px;
+    color:#fff;
+    line-height:1.5;
+    padding: 0 6px;
+  }
+
+  /* generic placeholder */
+  .soon-box{
+    text-align:center;
+    padding: 70px 20px;
+  }
+  .soon-box .big-emoji{ font-size:44px; margin-bottom:14px; }
+  .soon-box h3{ font-size:19px; color:#fff; margin-bottom:8px; }
+  .soon-box p{ color: var(--ink-dim); font-size: 13.5px; }
+
+  /* Song game input */
+  .song-row{ display:flex; gap:10px; max-width:460px; margin: 0 auto 18px; }
+  .song-row input{
+    flex:1;
+    background: var(--bg-soft);
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color:#fff;
+    font-size: 13.5px;
+    font-family:'Manrope',sans-serif;
+    outline:none;
+  }
+  .song-row input:focus{ border-color: var(--violet); }
+  .song-row button{
+    background: linear-gradient(90deg, var(--violet), var(--rose));
+    border:none; color:#fff; padding: 0 18px;
+    border-radius: 10px; font-weight:700; cursor:pointer;
+    font-family:'Manrope',sans-serif;
+    font-size:13px;
+  }
+
+  /* Puzzle */
+  .puzzle-board{
+    display:grid;
+    grid-template-columns: repeat(3, 96px);
+    grid-template-rows: repeat(3, 96px);
+    gap: 6px;
+    margin: 0 auto;
+  }
+  .puzzle-tile{
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif;
+    font-size: 26px;
+    font-weight:700;
+    color:#fff;
+    cursor:pointer;
+    background: linear-gradient(135deg, var(--violet-soft), var(--rose));
+    transition: transform .12s ease, opacity .12s ease;
+    user-select:none;
+  }
+  .puzzle-tile:hover{ transform: scale(.97); }
+  .puzzle-tile.empty{
+    background: var(--bg-soft);
+    border: 1px dashed var(--stroke);
+    cursor:default;
+  }
+  .puzzle-status{ font-size:14px; color: var(--ink-dim); font-weight:600; margin-bottom:16px; }
+  .puzzle-status b{ color:#fff; }
+  .puzzle-win{
+    color: var(--amber) !important;
+  }
+
+  /* Song game */
+  .field-label{
+    display:block;
+    text-align:left;
+    font-size: 12px;
+    font-weight:700;
+    color: var(--ink-faint);
+    margin: 0 auto 6px;
+    max-width: 460px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+  .song-setup{ max-width:460px; margin: 0 auto 22px; }
+  .song-video-box{
+    max-width: 560px;
+    margin: 0 auto 20px;
+    border-radius: 14px;
+    overflow:hidden;
+    border: 1px solid var(--stroke);
+    background:#000;
+  }
+  .song-video-box iframe{ width:100%; height: 315px; display:block; border:0; }
+  .song-answer-box{
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: var(--bg-soft);
+    border: 1px solid var(--stroke);
+    font-size: 14px;
+    color: var(--ink-dim);
+  }
+  .song-answer-box b{ color: var(--amber); }
+  .reveal-btn{
+    background: transparent;
+    border: 1px solid var(--stroke);
+    color: var(--ink-dim);
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-weight:700;
+    font-size: 12.5px;
+    cursor:pointer;
+    font-family:'Manrope',sans-serif;
+    margin-top: 10px;
+  }
+  .reveal-btn:hover{ border-color: var(--violet); color:#fff; }
+
+  /* Video watch */
+  .video-setup{ max-width:460px; margin: 0 auto 20px; }
+  .video-box{
+    max-width: 720px;
+    margin: 0 auto;
+    border-radius: 14px;
+    overflow:hidden;
+    border: 1px solid var(--stroke);
+    background:#000;
+  }
+  .video-box iframe{ width:100%; aspect-ratio: 16/9; display:block; border:0; }
+  .video-hint{ text-align:center; font-size:12.5px; color: var(--ink-faint); margin-top:10px; }
+
+  /* ---------- Room gate ---------- */
+  #roomGate{
+    position:fixed; inset:0; z-index:50;
+    background: var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    padding: 20px;
+  }
+  .gate-box{
+    width:100%; max-width: 420px;
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+    border-radius: 20px;
+    padding: 34px 30px;
+    text-align:center;
+  }
+  .gate-box .brand-mark{ margin: 0 auto 14px; }
+  .gate-box h2{ font-size:21px; color:#fff; margin-bottom:6px; }
+  .gate-box p{ color:var(--ink-dim); font-size:13.5px; margin-bottom:22px; }
+  .gate-row{ display:flex; gap:8px; margin-bottom:12px; }
+  .gate-row input{
+    flex:1; background: var(--bg-soft); border:1px solid var(--stroke);
+    border-radius:10px; padding:12px 14px; color:#fff; font-size:14px;
+    font-family:'Manrope',sans-serif; outline:none; text-align:center;
+    letter-spacing:.08em; text-transform:uppercase;
+  }
+  .gate-row input:focus{ border-color: var(--violet); }
+  .gate-btn{
+    background: linear-gradient(90deg, var(--violet), var(--rose));
+    border:none; color:#fff; padding:0 20px; border-radius:10px;
+    font-weight:700; font-size:13.5px; cursor:pointer; font-family:'Manrope',sans-serif;
+  }
+  .gate-divider{ color: var(--ink-faint); font-size:12px; margin: 18px 0; display:flex; align-items:center; gap:10px; }
+  .gate-divider::before, .gate-divider::after{ content:""; flex:1; height:1px; background: var(--stroke); }
+  .create-btn{
+    width:100%; padding:12px; border-radius:10px; border:1px solid var(--stroke);
+    background: var(--bg-soft); color:#fff; font-weight:700; font-size:13.5px;
+    cursor:pointer; font-family:'Manrope',sans-serif; transition: border-color .15s ease;
+  }
+  .create-btn:hover{ border-color: var(--violet); }
+  .gate-error{ color:#f38b8b; font-size:12.5px; margin-top:10px; min-height:16px; }
+
+  .room-badge{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding: 9px 12px; margin-bottom:16px;
+    border-radius:12px; background: rgba(139,92,246,.12);
+    border:1px solid rgba(139,92,246,.35);
+    font-size:12.5px; color: var(--ink-dim);
+    cursor:pointer;
+  }
+  .room-badge b{ color:#fff; letter-spacing:.06em; }
+  .room-badge:hover{ background: rgba(139,92,246,.2); }
+  .partner-dot{
+    display:inline-block; width:7px; height:7px; border-radius:50%;
+    background: var(--ink-faint); margin-right:5px;
+  }
+  .partner-dot.online{ background:#4ade80; box-shadow:0 0 6px #4ade80; }
+
+  /* Participants modal */
+  .modal-overlay{
+    position:fixed; inset:0; z-index:60;
+    background: rgba(8,6,14,.65);
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-box{
+    width:100%; max-width:340px;
+    background: var(--panel);
+    border:1px solid var(--stroke);
+    border-radius:18px;
+    padding:24px;
+    text-align:center;
+  }
+  .modal-box h3{ font-size:17px; color:#fff; margin-bottom:14px; }
+  .participant-row{
+    display:flex; align-items:center; gap:8px;
+    background: var(--bg-soft);
+    border:1px solid var(--stroke);
+    border-radius:10px;
+    padding:9px 12px;
+    margin-bottom:8px;
+    font-size:13.5px;
+    color: var(--ink-dim);
+    text-align:left;
+  }
+  .modal-box .back-btn{ width:100%; justify-content:center; margin-top:6px; }
+
+  /* XOX role badge */
+  .xox-role{
+    font-size:12px; font-weight:700; color: var(--ink-faint);
+    background: var(--bg-soft); border:1px solid var(--stroke);
+    padding:5px 12px; border-radius:999px; margin-bottom:-6px;
+  }
+  .xox-role b{ color: var(--violet); }
+
+  /* YouTube embed error box */
+  .yt-error{
+    display:none;
+    max-width:560px; margin: 12px auto 0;
+    background: rgba(243,139,139,.12);
+    border: 1px solid rgba(243,139,139,.35);
+    color:#f3b8b8;
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:13px;
+    line-height:1.5;
+  }
+  .yt-error a{ color: var(--amber); }
+
+  /* Draw color palette */
+  .draw-toolbar{
+    display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
+    gap:8px; margin-bottom:14px;
+  }
+  .color-swatch{
+    width:26px; height:26px; border-radius:50%;
+    border:2px solid transparent; cursor:pointer;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .color-swatch:hover{ transform: scale(1.12); }
+  .color-swatch.active{ border-color:#fff; transform: scale(1.12); }
+  .draw-toolbar input[type="color"]{
+    width:30px; height:30px; border:none; border-radius:50%;
+    padding:0; background:none; cursor:pointer;
+  }
+
+  /* Song guesses */
+  .song-guess-row{ display:flex; gap:10px; max-width:460px; margin: 16px auto 10px; }
+  .song-guess-row input{
+    flex:1; background: var(--bg-soft); border:1px solid var(--stroke);
+    border-radius:10px; padding:11px 14px; color:#fff; font-size:13.5px;
+    font-family:'Manrope',sans-serif; outline:none;
+  }
+  .song-guess-row input:focus{ border-color: var(--violet); }
+  .song-guess-row button{
+    background: linear-gradient(90deg, var(--violet), var(--rose));
+    border:none; color:#fff; padding:0 18px; border-radius:10px;
+    font-weight:700; cursor:pointer; font-family:'Manrope',sans-serif; font-size:13px;
+  }
+  .song-guess-list{
+    max-width:460px; margin: 0 auto; text-align:left;
+    max-height:140px; overflow-y:auto;
+  }
+  .song-guess-item{
+    font-size:13px; color: var(--ink-dim);
+    padding:6px 2px; border-bottom:1px solid var(--stroke);
+  }
+  .song-guess-item b{ color:#fff; }
+
+  @media (max-width: 880px){
+    .sidebar{ display:none; }
+    .main{ padding: 24px 18px 50px; }
+    .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+  @media (max-width: 540px){
+    .grid{ grid-template-columns: 1fr; }
+    .xox-board{ grid-template-columns: repeat(3, 72px); grid-template-rows: repeat(3, 72px); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ROOM GATE -->
+<div id="roomGate">
+  <div class="gate-box">
+    <div class="brand-mark">💞</div>
+    <h2>Odana gir</h2>
+    <p>Adını ve oda kodunu gir, partnerinle anında senkron olun.</p>
+
+    <div class="gate-row">
+      <input type="text" id="nameInput" placeholder="ADIN" maxlength="20" style="text-transform:none; letter-spacing:normal;">
+    </div>
+
+    <div class="gate-row">
+      <input type="text" id="joinCodeInput" placeholder="ODA KODU" maxlength="6">
+      <button class="gate-btn" onclick="joinRoom()">Katıl</button>
+    </div>
+
+    <div class="gate-divider">veya</div>
+
+    <button class="create-btn" onclick="createRoom()">✨ Yeni Oda Oluştur</button>
+    <div class="gate-error" id="gateError"></div>
+  </div>
+</div>
+
+<div id="participantsModal" class="modal-overlay" onclick="if(event.target===this) closeParticipants()">
+  <div class="modal-box">
+    <h3>Odadakiler</h3>
+    <div id="participantsList"></div>
+    <button class="back-btn" onclick="closeParticipants()">Kapat</button>
+  </div>
+</div>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">💞</div>
+      <div class="brand-name">Lover</div>
+    </div>
+
+    <div class="user-card">
+      <div class="avatar" id="userAvatar">?</div>
+      <div class="user-meta">
+        <div class="u-name" id="userNameLabel">İsimsiz</div>
+      </div>
+    </div>
+
+    <div class="room-badge" id="roomBadge" onclick="handleRoomBadgeClick()" title="Kopyalamak için tıkla, katılanları görmek için 3 kez tıkla">
+      <span><span class="partner-dot" id="partnerDot"></span>Oda: <b id="roomCodeLabel">—</b></span>
+      <span>📋</span>
+    </div>
+
+    <nav class="nav-main" id="navMain">
+      <div class="nav-item active" data-view="home"><span class="ic">🏠</span>Ana Sayfa</div>
+      <div class="nav-item" data-view="draw"><span class="ic">🎨</span>Ortak Çizim</div>
+      <div class="nav-item" data-view="xox"><span class="ic">❌</span>XOX</div>
+      <div class="nav-item" data-view="tod"><span class="ic">🎭</span>Truth or Dare</div>
+      <div class="nav-item" data-view="chat"><span class="ic">💬</span>Sohbet Kartları</div>
+      <div class="nav-item" data-view="song"><span class="ic">🎵</span>Şarkıyı Tahmin Et</div>
+      <div class="nav-item" data-view="puzzle"><span class="ic">🧩</span>Puzzle</div>
+      <div class="nav-item" data-view="video"><span class="ic">🎬</span>Video İzle</div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="nav-item" onclick="toggleTheme()"><span class="ic">🎨</span>Tema Değiştir</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HOME VIEW -->
+    <section class="view active" id="view-home">
+      <div class="hero">
+        <h1>Merhaba, <span id="heroName">Sen</span> <span class="wave">👋</span></h1>
+        <p>Partnerinizle birlikte bir aktivite başlatın!</p>
+      </div>
+
+      <div class="section-title">Aktiviteler <span class="count">8 aktivite</span></div>
+
+      <div class="grid" id="activityGrid">
+        <div class="card" data-view="draw" style="--card-tint: rgba(139,92,246,.2)">
+          <div class="emoji">🎨</div>
+          <h3>Ortak Çizim</h3>
+          <p>Birlikte tuval üzerinde resim yapın</p>
+        </div>
+        <div class="card" data-view="xox" style="--card-tint: rgba(244,114,182,.2)">
+          <div class="emoji">❌</div>
+          <h3>XOX</h3>
+          <p>Klasik tic-tac-toe oyunu</p>
+        </div>
+        <div class="card" data-view="tod" style="--card-tint: rgba(248,196,113,.2)">
+          <div class="emoji">🎭</div>
+          <h3>Truth or Dare</h3>
+          <p>Doğru mu? Cesaret mi?</p>
+        </div>
+        <div class="card" data-view="chat" style="--card-tint: rgba(139,92,246,.2)">
+          <div class="emoji">💬</div>
+          <h3>Sohbet Kartları</h3>
+          <p>Birbirinizi daha iyi tanıyın</p>
+        </div>
+        <div class="card" data-view="song" style="--card-tint: rgba(244,114,182,.2)">
+          <div class="emoji">🎵</div>
+          <h3>Şarkıyı Tahmin Et</h3>
+          <p>YouTube şarkılarını birlikte tahmin edin</p>
+        </div>
+        <div class="card" data-view="puzzle" style="--card-tint: rgba(139,92,246,.2)">
+          <div class="emoji">🧩</div>
+          <h3>Puzzle</h3>
+          <p>Birlikte puzzle yapın</p>
+        </div>
+        <div class="card" data-view="video" style="--card-tint: rgba(248,196,113,.2)">
+          <div class="emoji">🎬</div>
+          <h3>Beraber Video İzle</h3>
+          <p>YouTube veya özel video senkronize izleyin</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- XOX VIEW -->
+    <section class="view" id="view-xox">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">❌</div>
+        <div><h2>XOX</h2><br><span>Klasik tic-tac-toe oyununu partnerinizle oynayın</span></div>
+      </div>
+      <div class="panel-box xox-wrap">
+        <div class="xox-role" id="xoxRole">Rolün belirleniyor…</div>
+        <div class="xox-status" id="xoxStatus">Sıra: <b>X</b></div>
+        <div class="xox-board" id="xoxBoard"></div>
+        <button class="reset-btn" onclick="resetXox()">Yeniden Başlat</button>
+      </div>
+    </section>
+
+    <!-- TRUTH OR DARE VIEW -->
+    <section class="view" id="view-tod">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🎭</div>
+        <div><h2>Truth or Dare</h2><br><span>Doğru mu? Cesaret mi?</span></div>
+      </div>
+      <div class="panel-box tod-card">
+        <div class="tod-buttons">
+          <button class="tod-choice" id="btnTruth" onclick="pickTod('truth')">🤍 Doğru</button>
+          <button class="tod-choice" id="btnDare" onclick="pickTod('dare')">🔥 Cesaret</button>
+        </div>
+        <div class="tod-prompt" id="todPrompt">Bir seçim yapın ve göreviniz belirlensin.</div>
+      </div>
+    </section>
+
+    <!-- CHAT CARDS VIEW -->
+    <section class="view" id="view-chat">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">💬</div>
+        <div><h2>Sohbet Kartları</h2><br><span>Birbirinizi daha iyi tanıyın</span></div>
+      </div>
+      <div class="panel-box tod-card">
+        <div class="tod-prompt" id="chatPrompt">Kartı çekmek için butona basın</div>
+        <br>
+        <button class="reset-btn" onclick="drawChatCard()">🎴 Kart Çek</button>
+      </div>
+    </section>
+
+    <!-- SONG VIEW -->
+    <section class="view" id="view-song">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🎵</div>
+        <div><h2>Şarkıyı Tahmin Et</h2><br><span>YouTube şarkılarını birlikte tahmin edin</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="song-setup" id="songSetup">
+          <label class="field-label">YouTube Linki</label>
+          <div class="song-row">
+            <input type="text" id="songUrl" placeholder="https://youtube.com/watch?v=...">
+          </div>
+          <label class="field-label">Şarkı Adı (Cevap — gizli kalır)</label>
+          <div class="song-row">
+            <input type="text" id="songAnswer" placeholder="Örn. Tarkan - Şımarık">
+            <button onclick="startSongGame()">Başlat</button>
+          </div>
+        </div>
+
+        <div id="songPlay" style="display:none;">
+          <p style="max-width:460px;margin:0 auto 16px;font-size:13px;color:var(--ink-dim);">
+            Biriniz gizlice bir şarkı seçip başlattı. Şimdi ikiniz de dinleyin, tahmininizi aşağıya yazıp gönderin.
+            Herkesin tahminini gördükten sonra "Cevabı Göster" ile doğru cevabı açığa çıkarabilirsiniz.
+          </p>
+          <div class="song-video-box">
+            <div id="songFrame"></div>
+          </div>
+          <div class="yt-error" id="songErrorBox"></div>
+          <div class="song-guess-row">
+            <input type="text" id="songGuessInput" placeholder="Tahminini yaz..." onkeydown="if(event.key==='Enter') sendSongGuess();">
+            <button onclick="sendSongGuess()">Gönder</button>
+          </div>
+          <div class="song-guess-list" id="songGuessList"></div>
+          <div class="song-answer-box" id="songAnswerBox">Cevap gizli 🙈 — tahmininizi yazın, sonra açığa çıkarın.</div>
+          <br>
+          <button class="reveal-btn" onclick="revealSong()">👀 Cevabı Göster</button>
+          <button class="reveal-btn" onclick="resetSongGame()">🔁 Yeni Şarkı</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PUZZLE VIEW -->
+    <section class="view" id="view-puzzle">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🧩</div>
+        <div><h2>Puzzle</h2><br><span>Birlikte puzzle yapın</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="puzzle-status" id="puzzleStatus">Karoları sıraya dizin: <b>1-8</b>, boşluk sağ altta</div>
+        <div class="puzzle-board" id="puzzleBoard"></div>
+        <br>
+        <button class="reset-btn" onclick="shufflePuzzle()">🔀 Karıştır</button>
+      </div>
+    </section>
+
+    <!-- DRAW VIEW -->
+    <section class="view" id="view-draw">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🎨</div>
+        <div><h2>Ortak Çizim</h2><br><span>Birlikte tuval üzerinde resim yapın</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="draw-toolbar" id="drawToolbar"></div>
+        <canvas id="drawCanvas" width="760" height="380" style="width:100%;max-width:760px;background:#0d0a14;border-radius:12px;border:1px solid var(--stroke);cursor:crosshair;touch-action:none;"></canvas>
+        <br><br>
+        <button class="reset-btn" onclick="clearCanvas()">Tuvali Temizle</button>
+      </div>
+    </section>
+
+    <!-- VIDEO VIEW -->
+    <section class="view" id="view-video">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🎬</div>
+        <div><h2>Beraber Video İzle</h2><br><span>YouTube veya özel video senkronize izleyin</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="video-setup" id="videoSetup">
+          <label class="field-label">YouTube Linki</label>
+          <div class="song-row">
+            <input type="text" id="videoUrl" placeholder="https://youtube.com/watch?v=...">
+            <button onclick="loadVideo()">Yükle</button>
+          </div>
+        </div>
+        <div class="video-box" id="videoBox" style="display:none;">
+          <div id="videoFrame"></div>
+        </div>
+        <div class="yt-error" id="videoErrorBox"></div>
+        <div class="video-hint" id="videoHint" style="display:none;">İkinizin ekranı da Firebase üzerinden senkron yüklenir; video otomatik oynamazsa videonun üstüne bir kez tıklamanız yeterli 🎬</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // ============================================================
+  // FIREBASE SETUP — kendi firebaseConfig'ini buraya yapıştır
+  // ============================================================
+  const firebaseConfig = {
+  apiKey: "AIzaSyAevm8IEQ7zxxy7qWD-pTzEzTbxspEouN4",
+  authDomain: "lover-app-e2d16.firebaseapp.com",
+  databaseURL: "https://lover-app-e2d16-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lover-app-e2d16",
+  storageBucket: "lover-app-e2d16.firebasestorage.app",
+  messagingSenderId: "510577860511",
+  appId: "1:510577860511:web:8b998d9f01b607a214a7aa"
+};
+
+  let db = null;
+  let firebaseReady = false;
+  try{
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    firebaseReady = true;
+  } catch(e){
+    console.warn('Firebase başlatılamadı — firebaseConfig alanlarını doldurduğundan emin ol.', e);
+  }
+
+  let ROOM = null;
+  let roomRef = null;
+  let USER_NAME = '';
+  let myPresenceRef = null;
+  let myPresenceId = null;
+
+  // ---------- Theme ----------
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    try{ localStorage.setItem('lover-theme', t); }catch(e){}
+  }
+  function toggleTheme(){
+    const cur = document.documentElement.getAttribute('data-theme') || 'violet';
+    applyTheme(cur === 'violet' ? 'gray' : 'violet');
+  }
+  (function initTheme(){
+    let saved = 'violet';
+    try{ saved = localStorage.getItem('lover-theme') || 'violet'; }catch(e){}
+    applyTheme(saved);
+  })();
+
+  function showGateError(msg){
+    document.getElementById('gateError').textContent = msg;
+  }
+
+  function generateRoomCode(){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for(let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    return code;
+  }
+
+  function readNameInput(){
+    const name = document.getElementById('nameInput').value.trim();
+    if(!name){ showGateError('Lütfen adını gir.'); return null; }
+    return name;
+  }
+
+  function createRoom(){
+    if(!firebaseReady){ showGateError('Firebase henüz bağlı değil — firebaseConfig bilgilerini kontrol et.'); return; }
+    const name = readNameInput();
+    if(!name) return;
+    const code = generateRoomCode();
+    enterRoom(code, name);
+  }
+
+  function joinRoom(){
+    if(!firebaseReady){ showGateError('Firebase henüz bağlı değil — firebaseConfig bilgilerini kontrol et.'); return; }
+    const name = readNameInput();
+    if(!name) return;
+    const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+    if(code.length < 4){ showGateError('Lütfen geçerli bir oda kodu gir.'); return; }
+    enterRoom(code, name);
+  }
+
+  function enterRoom(code, name){
+    ROOM = code;
+    USER_NAME = name;
+    roomRef = db.ref('rooms/' + ROOM);
+    document.getElementById('roomGate').style.display = 'none';
+    document.getElementById('roomCodeLabel').textContent = ROOM;
+    document.getElementById('userNameLabel').textContent = USER_NAME;
+    document.getElementById('userAvatar').textContent = USER_NAME.trim().charAt(0).toUpperCase() || '?';
+    document.getElementById('heroName').textContent = USER_NAME;
+
+    // presence: mark this tab online (with name), remove on disconnect
+    myPresenceRef = roomRef.child('presence').push();
+    myPresenceId = myPresenceRef.key;
+    myPresenceRef.set({ name: USER_NAME, ts: Date.now() });
+    myPresenceRef.onDisconnect().remove();
+
+    roomRef.child('presence').on('value', snap => {
+      const val = snap.exists() ? snap.val() : {};
+      const count = Object.keys(val).length;
+      document.getElementById('partnerDot').classList.toggle('online', count > 1);
+
+      // XOX rolü: odaya giriş sırasına göre otomatik belirlenir (ilk giren X, ikinci O)
+      try{
+        const entries = Object.entries(val).sort((a, b) => {
+          const ta = (a[1] && a[1].ts) || 0;
+          const tb = (b[1] && b[1].ts) || 0;
+          return ta - tb;
+        });
+        const idx = entries.findIndex(([key]) => key === myPresenceId);
+        myXoxRole = idx === 0 ? 'X' : (idx === 1 ? 'O' : null);
+        updateXoxRoleLabel();
+      }catch(err){
+        console.error('XOX rolü hesaplanamadı:', err);
+      }
+    });
+    initXoxSync();
+    initTodSync();
+    initChatSync();
+    initSongSync();
+    initSongGuessSync();
+    initPuzzleSync();
+    initVideoSync();
+    initDrawSync();
+  }
+
+  function copyRoomCode(){
+    if(!ROOM) return;
+    navigator.clipboard.writeText(ROOM).then(() => {
+      const label = document.getElementById('roomCodeLabel');
+      const old = label.textContent;
+      label.textContent = 'Kopyalandı!';
+      setTimeout(() => { label.textContent = old; }, 1200);
+    }).catch(() => {});
+  }
+
+  // ---------- Room badge: 1 click = copy, 3 clicks = participant list ----------
+  let roomBadgeClicks = 0;
+  let roomBadgeClickTimer = null;
+  function handleRoomBadgeClick(){
+    roomBadgeClicks++;
+    clearTimeout(roomBadgeClickTimer);
+    roomBadgeClickTimer = setTimeout(() => {
+      if(roomBadgeClicks >= 3) showParticipants();
+      else copyRoomCode();
+      roomBadgeClicks = 0;
+    }, 380);
+  }
+
+  function showParticipants(){
+    if(!roomRef) return;
+    roomRef.child('presence').once('value').then(snap => {
+      const val = snap.val() || {};
+      const names = Object.values(val).map(v => (v && v.name) ? v.name : 'İsimsiz');
+      const list = document.getElementById('participantsList');
+      list.innerHTML = names.length
+        ? names.map(n => '<div class="participant-row">👤 ' + n + '</div>').join('')
+        : '<div class="participant-row">Henüz kimse yok</div>';
+      document.getElementById('participantsModal').style.display = 'flex';
+    });
+  }
+  function closeParticipants(){
+    document.getElementById('participantsModal').style.display = 'none';
+  }
+
+  // ---------- View switching ----------
+  function showView(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    document.querySelectorAll('.nav-item[data-view]').forEach(n => n.classList.remove('active'));
+    const navItem = document.querySelector('.nav-item[data-view="' + name + '"]');
+    if(navItem) navItem.classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  document.querySelectorAll('[data-view]').forEach(el => {
+    el.addEventListener('click', () => showView(el.dataset.view));
+  });
+
+  // ---------- XOX (Tic Tac Toe) — Firebase senkron ----------
+  let xoxBoard = Array(9).fill(null);
+  let xoxTurn = 'X';
+  let xoxOver = false;
+  let myXoxRole = null;
+  const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+  function updateXoxRoleLabel(){
+    const el = document.getElementById('xoxRole');
+    if(!el) return;
+    el.innerHTML = myXoxRole
+      ? ('Sen: <b>' + myXoxRole + '</b>')
+      : 'İzleyicisin — iki oyuncu zaten dolu.';
+  }
+
+  function initXoxSync(){
+    roomRef.child('xox').on('value', snap => {
+      const s = snap.val();
+      if(!s){ resetXox(); return; }
+      xoxBoard = s.board;
+      xoxTurn = s.turn;
+      xoxOver = s.over;
+      renderXox();
+      const statusEl = document.getElementById('xoxStatus');
+      if(s.over){
+        statusEl.innerHTML = s.winner ? ('🎉 Kazanan: <b>' + s.winner + '</b>') : '<b>Berabere!</b>';
+      } else {
+        statusEl.innerHTML = 'Sıra: <b>' + s.turn + '</b>';
+      }
+    });
+  }
+
+  function renderXox(){
+    const board = document.getElementById('xoxBoard');
+    board.innerHTML = '';
+    xoxBoard.forEach((val, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'xox-cell' + (val === 'X' ? ' x' : val === 'O' ? ' o' : '');
+      cell.textContent = val || '';
+      cell.addEventListener('click', () => xoxMove(i));
+      board.appendChild(cell);
+    });
+  }
+
+  function xoxMove(i){
+    if(xoxOver || xoxBoard[i] || !roomRef) return;
+    if(!myXoxRole || myXoxRole !== xoxTurn) return; // sıra sende değilse hamle geçersiz
+    const newBoard = xoxBoard.slice();
+    newBoard[i] = xoxTurn;
+    const winner = checkXoxWin(newBoard);
+    const over = !!winner || newBoard.every(c => c);
+    roomRef.child('xox').set({
+      board: newBoard,
+      turn: xoxTurn === 'X' ? 'O' : 'X',
+      over: over,
+      winner: winner || null
+    });
+  }
+
+  function checkXoxWin(b){
+    for(const [a,c,d] of wins){
+      if(b[a] && b[a] === b[c] && b[a] === b[d]) return b[a];
+    }
+    return null;
+  }
+
+  function resetXox(){
+    xoxBoard = Array(9).fill(null);
+    xoxTurn = 'X';
+    xoxOver = false;
+    renderXox();
+    const statusEl = document.getElementById('xoxStatus');
+    if(statusEl) statusEl.innerHTML = 'Sıra: <b>X</b>';
+    if(roomRef) roomRef.child('xox').set({ board: xoxBoard, turn: 'X', over: false, winner: null });
+  }
+  renderXox();
+
+  // ---------- Truth or Dare — Firebase senkron ----------
+  const truths = [
+    "En büyük hayalin nedir?",
+    "İlk aşkını hatırlıyor musun? Anlat.",
+    "Benimle ilgili en çok neyi seviyorsun?",
+    "Şu ana kadar yaptığın en cesur şey neydi?",
+    "Kendinde değiştirmek istediğin bir şey var mı?"
+  ];
+  const dares = [
+    "Partnerine 30 saniye boyunca gözlerinin içine bak.",
+    "En komik dansını yap.",
+    "Partnerine bir aşk şarkısı söyle.",
+    "Partnerine samimi bir iltifat et.",
+    "Elini tutup 1 dakika sessizce otur."
+  ];
+
+  function initTodSync(){
+    roomRef.child('tod').on('value', snap => {
+      const s = snap.val();
+      document.getElementById('btnTruth').classList.remove('picked-t');
+      document.getElementById('btnDare').classList.remove('picked-d');
+      if(!s){
+        document.getElementById('todPrompt').textContent = 'Bir seçim yapın ve göreviniz belirlensin.';
+        return;
+      }
+      document.getElementById(s.kind === 'truth' ? 'btnTruth' : 'btnDare')
+        .classList.add(s.kind === 'truth' ? 'picked-t' : 'picked-d');
+      document.getElementById('todPrompt').textContent = s.prompt;
+    });
+  }
+
+  function pickTod(kind){
+    if(!roomRef) return;
+    const list = kind === 'truth' ? truths : dares;
+    const pick = list[Math.floor(Math.random() * list.length)];
+    roomRef.child('tod').set({ kind, prompt: pick, ts: Date.now() });
+  }
+
+  // ---------- Chat cards — Firebase senkron ----------
+  const chatCards = [
+    "Birlikte gitmek istediğin hayalindeki tatil neresi?",
+    "İlişkimizde seni en çok mutlu eden an hangisiydi?",
+    "Beraber öğrenmek istediğin yeni bir hobi var mı?",
+    "Bana anlatmadığın küçük bir sırrın var mı?",
+    "5 yıl sonra birlikte nerede olmak istersin?"
+  ];
+
+  function initChatSync(){
+    roomRef.child('chat').on('value', snap => {
+      const s = snap.val();
+      document.getElementById('chatPrompt').textContent = s ? s.prompt : 'Kartı çekmek için butona basın';
+    });
+  }
+
+  function drawChatCard(){
+    if(!roomRef) return;
+    const pick = chatCards[Math.floor(Math.random() * chatCards.length)];
+    roomRef.child('chat').set({ prompt: pick, ts: Date.now() });
+  }
+
+  // ---------- Shared drawing canvas — Firebase senkron ----------
+  const canvas = document.getElementById('drawCanvas');
+  const ctx = canvas.getContext('2d');
+  const drawColors = ['#ffffff','#c9b6ff','#8b5cf6','#f472b6','#f8c471','#fca5a5','#86efac','#7dd3fc','#fdba74'];
+  let currentColor = drawColors[0];
+  ctx.strokeStyle = currentColor;
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  let drawing = false;
+  let lastPos = null;
+
+  (function buildDrawToolbar(){
+    const bar = document.getElementById('drawToolbar');
+    drawColors.forEach((c, idx) => {
+      const sw = document.createElement('div');
+      sw.className = 'color-swatch' + (idx === 0 ? ' active' : '');
+      sw.style.background = c;
+      sw.title = c;
+      sw.addEventListener('click', () => selectColor(c, sw));
+      bar.appendChild(sw);
+    });
+    const custom = document.createElement('input');
+    custom.type = 'color';
+    custom.value = currentColor;
+    custom.title = 'Özel renk';
+    custom.addEventListener('input', (e) => selectColor(e.target.value, null));
+    bar.appendChild(custom);
+  })();
+
+  function selectColor(c, swatchEl){
+    currentColor = c;
+    ctx.strokeStyle = c;
+    document.querySelectorAll('#drawToolbar .color-swatch').forEach(s => s.classList.remove('active'));
+    if(swatchEl) swatchEl.classList.add('active');
+  }
+
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+  }
+
+  function drawSegment(x0, y0, x1, y1, color){
+    ctx.save();
+    ctx.strokeStyle = color || currentColor;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function startDraw(e){ drawing = true; lastPos = getPos(e); }
+  function moveDraw(e){
+    if(!drawing) return;
+    const p = getPos(e);
+    drawSegment(lastPos.x, lastPos.y, p.x, p.y, currentColor);
+    if(roomRef) roomRef.child('draw').push({ x0: lastPos.x, y0: lastPos.y, x1: p.x, y1: p.y, color: currentColor });
+    lastPos = p;
+    e.preventDefault();
+  }
+  function endDraw(){ drawing = false; }
+
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', moveDraw);
+  canvas.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('mouseleave', endDraw);
+  canvas.addEventListener('touchstart', startDraw);
+  canvas.addEventListener('touchmove', moveDraw);
+  canvas.addEventListener('touchend', endDraw);
+
+  function clearCanvas(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(roomRef) roomRef.child('draw').remove();
+  }
+
+  function initDrawSync(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    roomRef.child('draw').on('child_added', snap => {
+      const s = snap.val();
+      drawSegment(s.x0, s.y0, s.x1, s.y1, s.color);
+    });
+  }
+
+  // ---------- YouTube helpers ----------
+  function extractYouTubeId(url){
+    if(!url) return null;
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=)([^&\s]+)/,
+      /(?:youtu\.be\/)([^?&\s]+)/,
+      /(?:youtube\.com\/embed\/)([^?&\s]+)/,
+      /(?:youtube\.com\/shorts\/)([^?&\s]+)/
+    ];
+    for(const p of patterns){
+      const m = url.match(p);
+      if(m) return m[1];
+    }
+    if(/^[a-zA-Z0-9_-]{11}$/.test(url.trim())) return url.trim();
+    return null;
+  }
+
+  // ---------- YouTube IFrame Player wrapper (with embed-error handling) ----------
+  // Hata 153/101/150: video sahibi bu videonun başka sitelere gömülmesini
+  // (embed) engellemiş demektir — bu, uygulama tarafında çözülemez, sadece
+  // videoyu doğrudan YouTube'da açan bir bağlantı sunulabilir.
+  let ytApiReady = false;
+  const ytPlayers = { song: null, video: null };
+
+  function onYouTubeIframeAPIReady(){
+    ytApiReady = true;
+  }
+
+  function ytErrorMessage(code, videoId){
+    const map = {
+      2: 'Geçersiz video kimliği.',
+      5: 'Video HTML5 oynatıcıda oynatılamadı.',
+      100: 'Video bulunamadı ya da kaldırılmış.',
+      101: 'Video sahibi bu videonun başka sitelerde oynatılmasına izin vermiyor.',
+      150: 'Video sahibi bu videonun başka sitelerde oynatılmasına izin vermiyor.',
+      153: 'Video sahibi bu videonun bu site üzerinden (gömülü olarak) oynatılmasını kısıtlamış.'
+    };
+    const reason = map[code] || ('Bilinmeyen oynatma hatası (kod ' + code + ').');
+    return '⚠️ ' + reason + ' <a href="https://www.youtube.com/watch?v=' + videoId +
+      '" target="_blank" rel="noopener">YouTube\'da izlemek için tıklayın →</a>';
+  }
+
+  function resetContainer(id){
+    const old = document.getElementById(id);
+    if(!old) return null;
+    const fresh = document.createElement('div');
+    fresh.id = id;
+    old.parentNode.replaceChild(fresh, old);
+    return fresh;
+  }
+
+  function loadYtPlayer(kind, videoId){
+    const containerId = kind === 'song' ? 'songFrame' : 'videoFrame';
+    const errorBoxId = kind === 'song' ? 'songErrorBox' : 'videoErrorBox';
+    const errorBox = document.getElementById(errorBoxId);
+    if(errorBox){ errorBox.style.display = 'none'; errorBox.innerHTML = ''; }
+
+    const build = () => {
+      if(ytPlayers[kind] && ytPlayers[kind].destroy){
+        try{ ytPlayers[kind].destroy(); }catch(e){}
+      }
+      resetContainer(containerId);
+      ytPlayers[kind] = new YT.Player(containerId, {
+        videoId: videoId,
+        playerVars: { autoplay: 1, rel: 0 },
+        events: {
+          onError: function(e){
+            if(errorBox){
+              errorBox.innerHTML = ytErrorMessage(e.data, videoId);
+              errorBox.style.display = 'block';
+            }
+          }
+        }
+      });
+    };
+
+    if(ytApiReady && window.YT && window.YT.Player){
+      build();
+    } else {
+      const check = setInterval(() => {
+        if(window.YT && window.YT.Player){
+          clearInterval(check);
+          ytApiReady = true;
+          build();
+        }
+      }, 200);
+    }
+  }
+
+  // ---------- Sliding Puzzle — Firebase senkron ----------
+  let puzzleTiles = [1,2,3,4,5,6,7,8,0];
+  const PUZZLE_SIZE = 3;
+
+  function initPuzzleSync(){
+    roomRef.child('puzzle').on('value', snap => {
+      const s = snap.val();
+      if(!s){ shufflePuzzle(); return; }
+      puzzleTiles = s.tiles;
+      renderPuzzle();
+      const el = document.getElementById('puzzleStatus');
+      if(isPuzzleSolved(puzzleTiles)){
+        el.innerHTML = '🎉 <b>Tebrikler! Puzzle tamamlandı.</b>';
+        el.classList.add('puzzle-win');
+      } else {
+        el.innerHTML = 'Karoları sıraya dizin: <b>1-8</b>, boşluk sağ altta';
+        el.classList.remove('puzzle-win');
+      }
+    });
+  }
+
+  function renderPuzzle(){
+    const board = document.getElementById('puzzleBoard');
+    board.innerHTML = '';
+    puzzleTiles.forEach((val, i) => {
+      const tile = document.createElement('div');
+      tile.className = 'puzzle-tile' + (val === 0 ? ' empty' : '');
+      tile.textContent = val === 0 ? '' : val;
+      tile.addEventListener('click', () => movePuzzleTile(i));
+      board.appendChild(tile);
+    });
+  }
+
+  function movePuzzleTile(i){
+    if(!roomRef) return;
+    const emptyIndex = puzzleTiles.indexOf(0);
+    const row = Math.floor(i / PUZZLE_SIZE), col = i % PUZZLE_SIZE;
+    const eRow = Math.floor(emptyIndex / PUZZLE_SIZE), eCol = emptyIndex % PUZZLE_SIZE;
+    const adjacent = (Math.abs(row - eRow) + Math.abs(col - eCol)) === 1;
+    if(!adjacent) return;
+    const newTiles = puzzleTiles.slice();
+    [newTiles[i], newTiles[emptyIndex]] = [newTiles[emptyIndex], newTiles[i]];
+    roomRef.child('puzzle').set({ tiles: newTiles });
+  }
+
+  function isSolvable(arr){
+    const flat = arr.filter(v => v !== 0);
+    let inv = 0;
+    for(let i=0;i<flat.length;i++) for(let j=i+1;j<flat.length;j++) if(flat[i] > flat[j]) inv++;
+    return inv % 2 === 0;
+  }
+
+  function shufflePuzzle(){
+    let arr;
+    do{
+      arr = [1,2,3,4,5,6,7,8,0];
+      for(let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    } while(!isSolvable(arr) || isPuzzleSolved(arr));
+    if(roomRef) roomRef.child('puzzle').set({ tiles: arr });
+    else { puzzleTiles = arr; renderPuzzle(); }
+  }
+
+  function isPuzzleSolved(arr){
+    for(let i=0;i<8;i++) if(arr[i] !== i+1) return false;
+    return arr[8] === 0;
+  }
+  renderPuzzle();
+
+  // ---------- Song guessing game — Firebase senkron ----------
+  // Mantık: Biriniz gizlice bir YouTube şarkısı + cevabı girip "Başlat"a basar.
+  // Video ikinizin ekranında da senkron açılır. Duyduğunuzu düşündüğünüz
+  // şarkı adını "Tahminini yaz" kutusuna yazıp gönderirsiniz — gönderilen
+  // tahminler herkese anında görünür. Doğru cevabı görmek isteyen taraf
+  // "Cevabı Göster"e basar, o an itibarıyla ikinizde de cevap açığa çıkar.
+  let lastSongId = null;
+
+  function initSongSync(){
+    roomRef.child('song').on('value', snap => {
+      const s = snap.val();
+      if(!s || !s.started){
+        document.getElementById('songSetup').style.display = 'block';
+        document.getElementById('songPlay').style.display = 'none';
+        lastSongId = null;
+        return;
+      }
+      document.getElementById('songSetup').style.display = 'none';
+      document.getElementById('songPlay').style.display = 'block';
+
+      if(s.id !== lastSongId){
+        lastSongId = s.id;
+        loadYtPlayer('song', s.id);
+        const list = document.getElementById('songGuessList');
+        if(list) list.innerHTML = '';
+      }
+
+      document.getElementById('songAnswerBox').innerHTML = s.revealed
+        ? ('Cevap: <b>' + s.answer + '</b>')
+        : 'Cevap gizli 🙈 — tahmininizi yazın, sonra açığa çıkarın.';
+    });
+  }
+
+  function initSongGuessSync(){
+    roomRef.child('song/guesses').on('child_added', snap => {
+      const g = snap.val();
+      const list = document.getElementById('songGuessList');
+      if(!list || !g) return;
+      const row = document.createElement('div');
+      row.className = 'song-guess-item';
+      row.innerHTML = '<b>' + g.name + ':</b> ' + g.text;
+      list.appendChild(row);
+      list.scrollTop = list.scrollHeight;
+    });
+  }
+
+  function sendSongGuess(){
+    if(!roomRef) return;
+    const input = document.getElementById('songGuessInput');
+    const val = input.value.trim();
+    if(!val) return;
+    roomRef.child('song/guesses').push({ name: USER_NAME || 'Anonim', text: val, ts: Date.now() });
+    input.value = '';
+  }
+
+  function startSongGame(){
+    if(!roomRef) return;
+    const url = document.getElementById('songUrl').value.trim();
+    const answer = document.getElementById('songAnswer').value.trim();
+    const id = extractYouTubeId(url);
+    if(!id){ alert('Geçerli bir YouTube linki girin.'); return; }
+    if(!answer){ alert('Şarkı adını (cevabı) girin.'); return; }
+    roomRef.child('song').set({ id, answer, started: true, revealed: false });
+  }
+
+  function revealSong(){
+    if(!roomRef) return;
+    roomRef.child('song').once('value').then(snap => {
+      const s = snap.val();
+      if(s) roomRef.child('song').update({ revealed: true });
+    });
+  }
+
+  function resetSongGame(){
+    document.getElementById('songUrl').value = '';
+    document.getElementById('songAnswer').value = '';
+    if(roomRef) roomRef.child('song').remove();
+  }
+
+  // ---------- Video watch — Firebase senkron ----------
+  let lastVideoId = null;
+
+  function initVideoSync(){
+    roomRef.child('video').on('value', snap => {
+      const s = snap.val();
+      if(!s){
+        document.getElementById('videoBox').style.display = 'none';
+        document.getElementById('videoHint').style.display = 'none';
+        lastVideoId = null;
+        return;
+      }
+      document.getElementById('videoBox').style.display = 'block';
+      document.getElementById('videoHint').style.display = 'block';
+      if(s.id !== lastVideoId){
+        lastVideoId = s.id;
+        loadYtPlayer('video', s.id);
+      }
+    });
+  }
+
+  function loadVideo(){
+    if(!roomRef) return;
+    const url = document.getElementById('videoUrl').value.trim();
+    const id = extractYouTubeId(url);
+    if(!id){ alert('Geçerli bir YouTube linki girin.'); return; }
+    roomRef.child('video').set({ id });
+  }
+</script>
+
+</body>
+</html>
