@@ -41,7 +41,15 @@
     --ink-faint: #726f80;
   }
 
-  *{ box-sizing: border-box; }
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  button, .card, .nav-item, .xox-cell, .color-swatch, .back-btn, .reset-btn,
+  .gate-btn, .create-btn, .tod-choice, .reveal-btn, .room-badge, .puzzle-tile,
+  input, a{
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    touch-action: manipulation;
+  }
+  button::-moz-focus-inner{ border: 0; }
   html,body{ height:100%; }
   body{
     margin:0;
@@ -676,7 +684,18 @@
   }
   .song-guess-item b{ color:#fff; }
 
+  .mobile-fab{
+    display:none;
+    position:fixed; right:16px; bottom:16px; z-index:45;
+    width:46px; height:46px; border-radius:50%;
+    background: linear-gradient(135deg, var(--violet), var(--rose));
+    align-items:center; justify-content:center;
+    font-size:20px; border:none; cursor:pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,.35);
+  }
+
   @media (max-width: 880px){
+    .mobile-fab{ display:flex; }
     .sidebar{ display:none; }
     .main{ padding: 24px 18px 50px; }
     .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -719,6 +738,8 @@
     <button class="back-btn" onclick="closeParticipants()">Kapat</button>
   </div>
 </div>
+
+<button class="mobile-fab" onclick="toggleTheme()" title="Tema Değiştir">🎨</button>
 
 <div class="glow glow-1"></div>
 <div class="glow glow-2"></div>
@@ -947,7 +968,7 @@
           <div id="videoFrame"></div>
         </div>
         <div class="yt-error" id="videoErrorBox"></div>
-        <div class="video-hint" id="videoHint" style="display:none;">İkinizin ekranı da Firebase üzerinden senkron yüklenir; video otomatik oynamazsa videonun üstüne bir kez tıklamanız yeterli 🎬</div>
+        <div class="video-hint" id="videoHint" style="display:none;">Oynat, durdur ya da ileri/geri sar — diğer taraf otomatik olarak senkronize olur 🎬</div>
       </div>
     </section>
 
@@ -1378,6 +1399,12 @@
   // videoyu doğrudan YouTube'da açan bir bağlantı sunulabilir.
   let ytApiReady = false;
   const ytPlayers = { song: null, video: null };
+  // Senkron oynatma durumu: her taraf oynat/durdur/ileri-geri sardığında
+  // Firebase'e yazar, diğer taraf bunu okuyup kendi oynatıcısına uygular.
+  const ytSync = {
+    song:  { applyingRemote: false, pollTimer: null, lastPolledTime: null, stateListenerAttached: false },
+    video: { applyingRemote: false, pollTimer: null, lastPolledTime: null, stateListenerAttached: false }
+  };
 
   function onYouTubeIframeAPIReady(){
     ytApiReady = true;
@@ -1406,6 +1433,77 @@
     return fresh;
   }
 
+  // Kendi tarafımızda oynat/durdur/sar olduğunda diğer tarafa yayınla
+  function broadcastPlaybackState(kind, action){
+    if(!roomRef) return;
+    if(ytSync[kind].applyingRemote) return; // uzaktan gelen bir değişikliği yansıtmayalım (sonsuz döngü olmasın)
+    const player = ytPlayers[kind];
+    if(!player || typeof player.getCurrentTime !== 'function') return;
+    let time = 0;
+    try{ time = player.getCurrentTime(); }catch(e){ return; }
+    roomRef.child(kind + '/state').set({
+      action: action,
+      time: time,
+      ts: Date.now(),
+      by: myPresenceId
+    });
+  }
+
+  // Duraklatılmışken sürükleme (scrub) yapılırsa play/pause olayı tetiklenmeyebilir,
+  // bu yüzden kısa aralıklarla zaman sıçraması olup olmadığını kontrol ediyoruz.
+  function startSyncPoll(kind){
+    if(ytSync[kind].pollTimer) clearInterval(ytSync[kind].pollTimer);
+    ytSync[kind].lastPolledTime = null;
+    ytSync[kind].pollTimer = setInterval(() => {
+      const player = ytPlayers[kind];
+      if(!player || typeof player.getCurrentTime !== 'function' || typeof player.getPlayerState !== 'function') return;
+      if(ytSync[kind].applyingRemote) return;
+      let state, t;
+      try{ state = player.getPlayerState(); t = player.getCurrentTime(); }catch(e){ return; }
+      if(state === 2){ // PAUSED — sürükleme burada state değiştirmeyebilir
+        if(ytSync[kind].lastPolledTime !== null && Math.abs(t - ytSync[kind].lastPolledTime) > 1){
+          broadcastPlaybackState(kind, 'pause');
+        }
+        ytSync[kind].lastPolledTime = t;
+      } else {
+        ytSync[kind].lastPolledTime = null;
+      }
+    }, 1200);
+  }
+
+  function stopSyncPoll(kind){
+    if(ytSync[kind].pollTimer){ clearInterval(ytSync[kind].pollTimer); ytSync[kind].pollTimer = null; }
+  }
+
+  // Diğer taraftan gelen play/pause/seek olaylarını dinle (kind başına bir kere kurulur)
+  function attachStateListener(kind){
+    if(ytSync[kind].stateListenerAttached || !roomRef) return;
+    ytSync[kind].stateListenerAttached = true;
+    roomRef.child(kind + '/state').on('value', snap => {
+      const s = snap.val();
+      if(!s || s.by === myPresenceId) return; // kendi yazdığımızı tekrar uygulamayalım
+      const player = ytPlayers[kind];
+      if(!player || typeof player.seekTo !== 'function') return;
+
+      ytSync[kind].applyingRemote = true;
+      try{
+        let targetTime = s.time || 0;
+        if(s.action === 'play'){
+          const elapsed = (Date.now() - (s.ts || Date.now())) / 1000;
+          targetTime = targetTime + Math.max(0, elapsed);
+        }
+        let cur = 0;
+        try{ cur = player.getCurrentTime(); }catch(e){}
+        if(Math.abs(cur - targetTime) > 1.2){ player.seekTo(targetTime, true); }
+        if(s.action === 'play' && typeof player.playVideo === 'function') player.playVideo();
+        else if(s.action === 'pause' && typeof player.pauseVideo === 'function') player.pauseVideo();
+      }catch(e){
+        console.error('YouTube senkronizasyonu uygulanamadı:', e);
+      }
+      setTimeout(() => { ytSync[kind].applyingRemote = false; }, 700);
+    });
+  }
+
   function loadYtPlayer(kind, videoId){
     const containerId = kind === 'song' ? 'songFrame' : 'videoFrame';
     const errorBoxId = kind === 'song' ? 'songErrorBox' : 'videoErrorBox';
@@ -1416,11 +1514,20 @@
       if(ytPlayers[kind] && ytPlayers[kind].destroy){
         try{ ytPlayers[kind].destroy(); }catch(e){}
       }
+      stopSyncPoll(kind);
       resetContainer(containerId);
       ytPlayers[kind] = new YT.Player(containerId, {
         videoId: videoId,
         playerVars: { autoplay: 1, rel: 0 },
         events: {
+          onReady: function(){
+            startSyncPoll(kind);
+            attachStateListener(kind);
+          },
+          onStateChange: function(e){
+            if(e.data === YT.PlayerState.PLAYING) broadcastPlaybackState(kind, 'play');
+            else if(e.data === YT.PlayerState.PAUSED) broadcastPlaybackState(kind, 'pause');
+          },
           onError: function(e){
             if(errorBox){
               errorBox.innerHTML = ytErrorMessage(e.data, videoId);
