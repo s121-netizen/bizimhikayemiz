@@ -708,13 +708,62 @@
   .draw-canvas-wrap.fullscreen .draw-fs-hint{ display:block; }
   .draw-canvas-wrap.fullscreen .draw-toolbar{ flex-shrink:0; }
 
-  /* while drawing fullscreen: hide/park the rest of the floating chrome so nothing overlaps */
-  body.draw-fs-active .chat-fab,
-  body.draw-fs-active .chat-drawer,
+  /* while drawing fullscreen: hide/park the rest of the floating chrome so nothing overlaps,
+     ama sohbet butonu (ve açıksa paneli) tam ekranın ÜSTÜNDE görünür kalsın */
   body.draw-fs-active .mobile-topbar,
   body.draw-fs-active .mobile-fab,
   body.draw-fs-active .sidebar{
     display:none !important;
+  }
+  body.draw-fs-active .chat-fab{
+    z-index: 230;
+  }
+  body.draw-fs-active .chat-drawer.open{
+    display:flex !important;
+    z-index: 231;
+  }
+
+  /* Çizim araç çubuğundaki ek butonlar (geri al / temizle) — tam ekranda da erişilebilir */
+  .draw-tool-btn{
+    width:30px; height:30px; border-radius:9px;
+    border:1px solid var(--stroke); background: var(--panel);
+    color: var(--ink-dim); font-size:14px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: all .15s ease; margin-left:2px;
+  }
+  .draw-tool-btn:hover{ border-color: var(--violet); color:#fff; }
+  .draw-tool-btn:active{ transform: scale(.93); }
+  .draw-tool-btn.active-tool{ background: rgba(139,92,246,.28); border-color: var(--violet); color:#fff; }
+  .draw-toolbar-sep{ width:1px; height:20px; background: var(--stroke); margin:0 4px; }
+
+  /* Rock Paper Scissors */
+  .rps-wrap{ display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .rps-score{
+    display:flex; align-items:center; gap:14px;
+    font-size:14px; font-weight:700; color: var(--ink-dim);
+  }
+  .rps-score b{ color:#fff; font-size:20px; }
+  .rps-arena{
+    display:flex; align-items:center; justify-content:center; gap:22px;
+    font-size:46px; min-height:60px;
+  }
+  .rps-arena .vs{ font-size:15px; color: var(--ink-faint); font-weight:700; }
+  .rps-choices{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .rps-choice{
+    width:64px; height:64px; border-radius:16px;
+    background: var(--bg-soft); border:1px solid var(--stroke);
+    font-size:28px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition: all .15s ease;
+  }
+  .rps-choice:hover{ border-color: var(--violet); transform: translateY(-2px); }
+  .rps-choice.picked{ background: rgba(139,92,246,.22); border-color: var(--violet); }
+  .rps-result{ font-size:14.5px; color: var(--ink-dim); text-align:center; min-height:20px; }
+  .rps-result b{ color:#fff; }
+
+  /* Emoji Tahmin Et */
+  .emoji-riddle{
+    font-size:54px; letter-spacing:6px; text-align:center;
+    margin: 4px auto 20px; line-height:1.3;
   }
 
   /* Song guesses */
@@ -1055,6 +1104,8 @@
       <div class="nav-item" data-view="song"><span class="ic">🎵</span>Şarkıyı Tahmin Et</div>
       <div class="nav-item" data-view="puzzle"><span class="ic">🧩</span>Puzzle</div>
       <div class="nav-item" data-view="video"><span class="ic">🎬</span>Video İzle</div>
+      <div class="nav-item" data-view="emoji"><span class="ic">🧠</span>Emoji Tahmin Et</div>
+      <div class="nav-item" data-view="rps"><span class="ic">✂️</span>Taş Kağıt Makas</div>
     </nav>
 
     <div class="sidebar-bottom">
@@ -1072,7 +1123,7 @@
         <p>Partnerinizle birlikte bir aktivite başlatın!</p>
       </div>
 
-      <div class="section-title">Aktiviteler <span class="count">8 aktivite</span></div>
+      <div class="section-title">Aktiviteler <span class="count">10 aktivite</span></div>
 
       <div class="grid" id="activityGrid">
         <div class="card" data-view="draw" style="--card-tint: rgba(139,92,246,.2)">
@@ -1109,6 +1160,16 @@
           <div class="emoji">🎬</div>
           <h3>Beraber Video İzle</h3>
           <p>YouTube veya özel video senkronize izleyin</p>
+        </div>
+        <div class="card" data-view="emoji" style="--card-tint: rgba(139,92,246,.2)">
+          <div class="emoji">🧠</div>
+          <h3>Emoji Tahmin Et</h3>
+          <p>Emojilerden kelimeyi/filmi bulmaya çalışın</p>
+        </div>
+        <div class="card" data-view="rps" style="--card-tint: rgba(244,114,182,.2)">
+          <div class="emoji">✂️</div>
+          <h3>Taş Kağıt Makas</h3>
+          <p>Klasik taş kağıt makas — canlı skorla</p>
         </div>
       </div>
     </section>
@@ -1262,6 +1323,77 @@
       </div>
     </section>
 
+    <!-- EMOJI GUESS VIEW -->
+    <section class="view" id="view-emoji">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🧠</div>
+        <div><h2>Emoji Tahmin Et</h2><br><span>Emojilerden kelimeyi, filmi ya da diziyi bulmaya çalışın</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="song-setup" id="emojiSetup">
+          <label class="field-label">Emojiler</label>
+          <div class="song-row">
+            <input type="text" id="emojiInput" placeholder="Örn. 🎬🚢🧊">
+          </div>
+          <label class="field-label">Cevap (gizli kalır)</label>
+          <div class="song-row">
+            <input type="text" id="emojiAnswer" placeholder="Örn. Titanic">
+            <button onclick="startEmojiGame()">Başlat</button>
+          </div>
+        </div>
+
+        <div id="emojiPlay" style="display:none;">
+          <p style="max-width:460px;margin:0 auto 16px;font-size:13px;color:var(--ink-dim);">
+            Biriniz gizlice bir emoji bilmecesi hazırlayıp başlattı. Tahmininizi yazıp gönderin,
+            ikiniz de birbirinizin tahminlerini anında görürsünüz. Cevabı görmek için "Cevabı Göster"e basın.
+          </p>
+          <div class="emoji-riddle" id="emojiRiddle">🎬🚢🧊</div>
+          <div class="song-guess-row">
+            <input type="text" id="emojiGuessInput" placeholder="Tahminini yaz..." onkeydown="if(event.key==='Enter') sendEmojiGuess();">
+            <button onclick="sendEmojiGuess()">Gönder</button>
+          </div>
+          <div class="song-guess-list" id="emojiGuessList"></div>
+          <div class="song-answer-box" id="emojiAnswerBox">Cevap gizli 🙈 — tahmininizi yazın, sonra açığa çıkarın.</div>
+          <br>
+          <button class="reveal-btn" onclick="revealEmoji()">👀 Cevabı Göster</button>
+          <button class="reveal-btn" onclick="resetEmojiGame()">🔁 Yeni Bilmece</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROCK PAPER SCISSORS VIEW -->
+    <section class="view" id="view-rps">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">✂️</div>
+        <div><h2>Taş Kağıt Makas</h2><br><span>Aynı anda seçin, kazananı görün</span></div>
+      </div>
+      <div class="panel-box rps-wrap">
+        <div class="xox-role" id="rpsRole">Rolün belirleniyor…</div>
+        <div class="rps-score">
+          <span>Sen: <b id="rpsScoreMe">0</b></span>
+          <span style="color:var(--ink-faint)">—</span>
+          <span>Partner: <b id="rpsScoreOpp">0</b></span>
+        </div>
+        <div class="rps-arena">
+          <span id="rpsMePick">❔</span>
+          <span class="vs">VS</span>
+          <span id="rpsOppPick">❔</span>
+        </div>
+        <div class="rps-choices">
+          <button class="rps-choice" id="rpsBtnRock" onclick="pickRps('rock')">🪨</button>
+          <button class="rps-choice" id="rpsBtnPaper" onclick="pickRps('paper')">📄</button>
+          <button class="rps-choice" id="rpsBtnScissors" onclick="pickRps('scissors')">✂️</button>
+        </div>
+        <div class="rps-result" id="rpsResult">Bir seçim yapın, partneriniz de seçince sonuç görünecek.</div>
+        <div style="display:flex; gap:10px;">
+          <button class="reset-btn" onclick="nextRpsRound()">🔁 Yeni Tur</button>
+          <button class="reset-btn" onclick="resetRpsScore()">♻️ Skoru Sıfırla</button>
+        </div>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -1294,6 +1426,24 @@
   let USER_NAME = '';
   let myPresenceRef = null;
   let myPresenceId = null;
+
+  // Sayfa yenilense/kapatılıp açılsa bile AYNI cihaz/tarayıcı için sabit kalan bir kimlik.
+  // Böylece presence her seferinde yeni bir anahtarla oluşmaz ve XOX/RPS rolleri
+  // (X/O, P1/P2) yenilemede birbirine karışmaz — her cihaz hep aynı role sahip olur.
+  function getClientId(){
+    try{
+      let id = localStorage.getItem('lover_client_id');
+      if(!id){
+        id = 'c_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+        localStorage.setItem('lover_client_id', id);
+      }
+      return id;
+    }catch(e){
+      // localStorage kapalıysa (gizli sekme vb.) oturum boyunca sabit kalan bir yedek kimlik üret
+      if(!window.__loverFallbackId) window.__loverFallbackId = 'c_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      return window.__loverFallbackId;
+    }
+  }
 
   // ---------- Theme ----------
   function applyTheme(t){
@@ -1357,9 +1507,9 @@
     document.getElementById('roomCodeLabelMobile').textContent = ROOM;
     document.getElementById('mobileUserName').textContent = USER_NAME;
 
-    // presence: mark this tab online (with name), remove on disconnect
-    myPresenceRef = roomRef.child('presence').push();
-    myPresenceId = myPresenceRef.key;
+    // presence: bu cihazı odada "çevrimiçi" işaretle (sabit kimlikle — yenilemede kaybolmaz), bağlantı kesilince kaldır
+    myPresenceId = getClientId();
+    myPresenceRef = roomRef.child('presence').child(myPresenceId);
     myPresenceRef.set({ name: USER_NAME, ts: Date.now() });
     myPresenceRef.onDisconnect().remove();
 
@@ -1369,21 +1519,21 @@
       document.getElementById('partnerDot').classList.toggle('online', count > 1);
       const mobileDot = document.getElementById('partnerDotMobile');
       if(mobileDot) mobileDot.classList.toggle('online', count > 1);
-
-      // XOX rolü: odaya giriş sırasına göre otomatik belirlenir (ilk giren X, ikinci O)
-      try{
-        const entries = Object.entries(val).sort((a, b) => {
-          const ta = (a[1] && a[1].ts) || 0;
-          const tb = (b[1] && b[1].ts) || 0;
-          return ta - tb;
-        });
-        const idx = entries.findIndex(([key]) => key === myPresenceId);
-        myXoxRole = idx === 0 ? 'X' : (idx === 1 ? 'O' : null);
-        updateXoxRoleLabel();
-      }catch(err){
-        console.error('XOX rolü hesaplanamadı:', err);
-      }
     });
+
+    // XOX / RPS rolleri: her cihaz odaya ilk katıldığında BİR KEZ kalıcı olarak atanır ve
+    // roomRef altında saklanır — presence sırası her değiştiğinde yeniden hesaplanmadığı için
+    // sayfa yenileme / kısa bağlantı kopması sırasında roller birbirine karışmaz.
+    claimRoles();
+    roomRef.child('roles').on('value', snap => {
+      const all = snap.val() || {};
+      const mine = all[myPresenceId] || {};
+      myXoxRole = mine.xox || null;
+      myRpsRole = mine.rps || null;
+      updateXoxRoleLabel();
+      updateRpsRoleLabel();
+    });
+
     initXoxSync();
     initTodSync();
     initChatSync();
@@ -1393,6 +1543,27 @@
     initVideoSync();
     initDrawSync();
     initLiveChatSync();
+    initEmojiSync();
+    initEmojiGuessSync();
+    initRpsSync();
+  }
+
+  // Odaya katılan her cihaz için X/O ve P1/P2 rollerini KALICI ve ÇAKIŞMASIZ şekilde atar.
+  // Transaction kullanılır çünkü iki taraf da aynı anda katılabilir — bu, ikisinin de
+  // aynı rolü almasını (ör. ikisinin de X olmasını) engeller. Rol bir kez atandıktan sonra
+  // hiç değişmez; presence sırası değişse (yenileme, kısa kopma vb.) bile sabit kalır.
+  function claimRoles(){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('roles').transaction(current => {
+      current = current || {};
+      if(current[myPresenceId]) return current; // bu cihaz zaten bir rol almış, dokunma
+      const usedXox = new Set(Object.values(current).map(r => r && r.xox).filter(Boolean));
+      const usedRps = new Set(Object.values(current).map(r => r && r.rps).filter(Boolean));
+      const xoxRole = !usedXox.has('X') ? 'X' : (!usedXox.has('O') ? 'O' : null);
+      const rpsRole = !usedRps.has('P1') ? 'P1' : (!usedRps.has('P2') ? 'P2' : null);
+      current[myPresenceId] = { xox: xoxRole, rps: rpsRole };
+      return current;
+    });
   }
 
   function copyRoomCode(){
@@ -1767,15 +1938,17 @@
   // ---------- Shared drawing canvas — Firebase senkron ----------
   const canvas = document.getElementById('drawCanvas');
   const ctx = canvas.getContext('2d');
-  const drawColors = ['#ffffff','#c9b6ff','#8b5cf6','#f472b6','#f8c471','#fca5a5','#86efac','#7dd3fc','#fdba74'];
+  const drawColors = ['#ffffff','#9ca3af','#c9b6ff','#8b5cf6','#f472b6','#f8c471','#fca5a5','#86efac','#7dd3fc','#fdba74'];
   let currentColor = drawColors[0];
   ctx.strokeStyle = currentColor;
   ctx.lineCap = 'round';
   let drawing = false;
   let lastPos = null;
-  let strokeHistory = []; // yeniden boyutlandırmada tuvali tekrar çizebilmek için (normalize 0-1 koordinatlar)
+  let strokeHistory = []; // yeniden boyutlandırmada tuvali tekrar çizebilmek için (normalize 0-1 koordinatlar), her biri _key taşır
   let lastClearTs = 0;
   let drawClearInitialized = false;
+  let currentStrokeKeys = []; // şu an çizilmekte olan vuruşun Firebase anahtarları
+  let myStrokeGroups = [];    // kendi geçmiş vuruşlarım (her biri bir anahtar dizisi) — sadece kendi "geri al" tuşum için
 
   (function buildDrawToolbar(){
     const bar = document.getElementById('drawToolbar');
@@ -1793,11 +1966,42 @@
     custom.title = 'Özel renk';
     custom.addEventListener('input', (e) => selectColor(e.target.value, null));
     bar.appendChild(custom);
+
+    const sep = document.createElement('div');
+    sep.className = 'draw-toolbar-sep';
+    bar.appendChild(sep);
+
+    const eraserBtn = document.createElement('button');
+    eraserBtn.type = 'button';
+    eraserBtn.className = 'draw-tool-btn';
+    eraserBtn.id = 'drawEraserBtn';
+    eraserBtn.title = 'Silgi — üzerine sürdüğün yeri siler (tüm tuvali silmez)';
+    eraserBtn.textContent = '🧽';
+    eraserBtn.addEventListener('click', toggleEraser);
+    bar.appendChild(eraserBtn);
+
+    const undoBtn = document.createElement('button');
+    undoBtn.type = 'button';
+    undoBtn.className = 'draw-tool-btn';
+    undoBtn.title = 'Kendi son vuruşunu geri al';
+    undoBtn.textContent = '↩️';
+    undoBtn.addEventListener('click', undoLastStroke);
+    bar.appendChild(undoBtn);
   })();
+
+  let isErasing = false;
+  function toggleEraser(){
+    isErasing = !isErasing;
+    const btn = document.getElementById('drawEraserBtn');
+    if(btn) btn.classList.toggle('active-tool', isErasing);
+  }
 
   function selectColor(c, swatchEl){
     currentColor = c;
     ctx.strokeStyle = c;
+    isErasing = false;
+    const eraserBtn = document.getElementById('drawEraserBtn');
+    if(eraserBtn) eraserBtn.classList.remove('active-tool');
     document.querySelectorAll('#drawToolbar .color-swatch').forEach(s => s.classList.remove('active'));
     if(swatchEl) swatchEl.classList.add('active');
   }
@@ -1819,7 +2023,7 @@
 
   function redrawAll(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    strokeHistory.forEach(s => drawSegment(s.x0, s.y0, s.x1, s.y1, s.color));
+    strokeHistory.forEach(s => drawSegment(s.x0, s.y0, s.x1, s.y1, s.color, s.erase));
   }
 
   // getPos / drawSegment 0-1 arası normalize koordinat kullanır (canvas boyutundan bağımsız)
@@ -1833,11 +2037,20 @@
     };
   }
 
-  function drawSegment(nx0, ny0, nx1, ny1, color){
-    const lw = Math.max(2, Math.min(canvas.width, canvas.height) * 0.006);
+  function drawSegment(nx0, ny0, nx1, ny1, color, erase){
+    const lw = erase
+      ? Math.max(16, Math.min(canvas.width, canvas.height) * 0.028)  // silgi daha kalın
+      : Math.max(2, Math.min(canvas.width, canvas.height) * 0.006);
     ctx.save();
-    ctx.strokeStyle = color || currentColor;
+    if(erase){
+      ctx.globalCompositeOperation = 'destination-out'; // sadece bu vuruşun üzerinden geçtiği pikselleri siler
+      ctx.strokeStyle = 'rgba(0,0,0,1)';
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = color || currentColor;
+    }
     ctx.lineWidth = lw;
+    ctx.lineCap = 'round';
     ctx.beginPath();
     ctx.moveTo(nx0 * canvas.width, ny0 * canvas.height);
     ctx.lineTo(nx1 * canvas.width, ny1 * canvas.height);
@@ -1845,18 +2058,30 @@
     ctx.restore();
   }
 
-  function startDraw(e){ drawing = true; lastPos = getPos(e); }
+  function startDraw(e){ drawing = true; lastPos = getPos(e); currentStrokeKeys = []; }
   function moveDraw(e){
     if(!drawing) return;
     const p = getPos(e);
-    const seg = { x0: lastPos.x, y0: lastPos.y, x1: p.x, y1: p.y, color: currentColor };
-    drawSegment(seg.x0, seg.y0, seg.x1, seg.y1, seg.color);
-    strokeHistory.push(seg);
-    if(roomRef) roomRef.child('draw/strokes').push(seg);
+    const seg = { x0: lastPos.x, y0: lastPos.y, x1: p.x, y1: p.y, color: currentColor, erase: !!isErasing };
+    drawSegment(seg.x0, seg.y0, seg.x1, seg.y1, seg.color, seg.erase);
+    let key = null;
+    if(roomRef){
+      const ref = roomRef.child('draw/strokes').push(seg);
+      key = ref.key;
+      currentStrokeKeys.push(key);
+    }
+    strokeHistory.push({ ...seg, _key: key });
     lastPos = p;
     e.preventDefault();
   }
-  function endDraw(){ drawing = false; }
+  function endDraw(){
+    if(drawing && currentStrokeKeys.length){
+      myStrokeGroups.push(currentStrokeKeys);
+      if(myStrokeGroups.length > 40) myStrokeGroups.shift(); // hafızayı şişirmeyelim
+    }
+    currentStrokeKeys = [];
+    drawing = false;
+  }
 
   canvas.addEventListener('mousedown', startDraw);
   canvas.addEventListener('mousemove', moveDraw);
@@ -1866,9 +2091,22 @@
   canvas.addEventListener('touchmove', moveDraw, { passive:false });
   canvas.addEventListener('touchend', endDraw);
 
+  // Kendi son vuruşunu geri al — sadece kendi çizdiklerini siler, partnerinkine dokunmaz.
+  // Tek bir toplu (atomik) Firebase güncellemesiyle siliniyor, böylece ikinizin ekranında da
+  // tutarlı ve eksiksiz şekilde anında uygulanıyor.
+  function undoLastStroke(){
+    if(!roomRef || !myStrokeGroups.length) return;
+    const keys = myStrokeGroups.pop();
+    const updates = {};
+    keys.forEach(k => { if(k) updates[k] = null; });
+    if(Object.keys(updates).length) roomRef.child('draw/strokes').update(updates);
+  }
+
   // Tuvali temizle — ikinizin ekranında da anında temizlenir (Firebase üzerinden senkron sinyal)
   function clearCanvas(){
     strokeHistory = [];
+    myStrokeGroups = [];
+    currentStrokeKeys = [];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if(roomRef){
       roomRef.child('draw/strokes').remove();
@@ -1878,12 +2116,23 @@
 
   function initDrawSync(){
     strokeHistory = [];
+    myStrokeGroups = [];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     roomRef.child('draw/strokes').on('child_added', snap => {
       const s = snap.val();
       if(!s) return;
-      strokeHistory.push(s);
-      drawSegment(s.x0, s.y0, s.x1, s.y1, s.color);
+      const key = snap.key;
+      if(strokeHistory.some(h => h._key === key)) return; // zaten yerel olarak çizilmiş (kendi vuruşumuz)
+      strokeHistory.push({ ...s, _key: key });
+      drawSegment(s.x0, s.y0, s.x1, s.y1, s.color, s.erase);
+    });
+    roomRef.child('draw/strokes').on('child_removed', snap => {
+      const key = snap.key;
+      const idx = strokeHistory.findIndex(h => h._key === key);
+      if(idx !== -1){
+        strokeHistory.splice(idx, 1);
+        redrawAll();
+      }
     });
     roomRef.child('draw/clearedAt').on('value', snap => {
       const ts = snap.val();
@@ -1891,6 +2140,7 @@
       if(ts && ts !== lastClearTs){
         lastClearTs = ts;
         strokeHistory = [];
+        myStrokeGroups = [];
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
     });
@@ -1898,39 +2148,24 @@
   }
 
   // ---------- Çizim: Tam Ekran ----------
+  // NOT: Bilerek tarayıcının GERÇEK Fullscreen API'sini (requestFullscreen) KULLANMIYORUZ.
+  // Çünkü gerçek fullscreen'e geçince, o elementin dışındaki her şey (sohbet butonu dahil,
+  // kardeş element olduğu için) tamamen render dışı kalıyor ve hiçbir CSS z-index onu göstermiyor.
+  // Bunun yerine sadece CSS ile ekranı kaplayan bir "sahte tam ekran" kullanıyoruz —
+  // böylece sohbet butonu her zaman erişilebilir kalıyor.
   function toggleDrawFullscreen(){
     const wrap = document.getElementById('drawCanvasWrap');
     const isFullscreen = wrap.classList.contains('fullscreen');
     if(!isFullscreen){
       wrap.classList.add('fullscreen');
       document.body.classList.add('draw-fs-active');
-      if(chatDrawerOpen) toggleChatDrawer();
-      if(wrap.requestFullscreen){
-        wrap.requestFullscreen().catch(() => {});
-      } else if(wrap.webkitRequestFullscreen){
-        wrap.webkitRequestFullscreen();
-      }
     } else {
       wrap.classList.remove('fullscreen');
       document.body.classList.remove('draw-fs-active');
-      if(document.fullscreenElement){
-        document.exitFullscreen().catch(() => {});
-      } else if(document.webkitFullscreenElement && document.webkitExitFullscreen){
-        document.webkitExitFullscreen();
-      }
     }
     setTimeout(resizeDrawCanvas, 60);
     setTimeout(resizeDrawCanvas, 300);
   }
-
-  document.addEventListener('fullscreenchange', () => {
-    const wrap = document.getElementById('drawCanvasWrap');
-    if(!document.fullscreenElement && wrap.classList.contains('fullscreen')){
-      wrap.classList.remove('fullscreen');
-      document.body.classList.remove('draw-fs-active');
-      setTimeout(resizeDrawCanvas, 60);
-    }
-  });
 
   let drawResizeTimer = null;
   window.addEventListener('resize', () => {
@@ -2021,6 +2256,7 @@
   function startSyncPoll(kind){
     if(ytSync[kind].pollTimer) clearInterval(ytSync[kind].pollTimer);
     ytSync[kind].lastPolledTime = null;
+    ytSync[kind].heartbeatTick = 0;
     ytSync[kind].pollTimer = setInterval(() => {
       const player = ytPlayers[kind];
       if(!player || typeof player.getCurrentTime !== 'function' || typeof player.getPlayerState !== 'function') return;
@@ -2032,6 +2268,12 @@
           broadcastPlaybackState(kind, 'pause');
         }
         ytSync[kind].lastPolledTime = t;
+      } else if(state === 1){ // PLAYING — zamanla oluşan kaymayı düzeltmek için periyodik olarak zamanı yeniden yayınla
+        ytSync[kind].lastPolledTime = null;
+        ytSync[kind].heartbeatTick = (ytSync[kind].heartbeatTick || 0) + 1;
+        if(ytSync[kind].heartbeatTick % 3 === 0){ // ~3.6 sn'de bir
+          broadcastPlaybackState(kind, 'play');
+        }
       } else {
         ytSync[kind].lastPolledTime = null;
       }
@@ -2295,6 +2537,156 @@
     const id = extractYouTubeId(url);
     if(!id){ alert('Geçerli bir YouTube linki girin.'); return; }
     roomRef.child('video').set({ id });
+  }
+
+  // ---------- Emoji Tahmin Et — Firebase senkron ----------
+  // Mantık: song oyunu ile aynı — biriniz gizlice emoji + cevap girip başlatır,
+  // ikiniz de tahmin yazar, tahminler anında görünür, "Cevabı Göster" ile açığa çıkar.
+  let lastEmojiId = null;
+
+  function initEmojiSync(){
+    roomRef.child('emoji').on('value', snap => {
+      const s = snap.val();
+      if(!s || !s.started){
+        document.getElementById('emojiSetup').style.display = 'block';
+        document.getElementById('emojiPlay').style.display = 'none';
+        lastEmojiId = null;
+        return;
+      }
+      document.getElementById('emojiSetup').style.display = 'none';
+      document.getElementById('emojiPlay').style.display = 'block';
+
+      if(s.ts !== lastEmojiId){
+        lastEmojiId = s.ts;
+        const list = document.getElementById('emojiGuessList');
+        if(list) list.innerHTML = '';
+      }
+
+      document.getElementById('emojiRiddle').textContent = s.emojis || '';
+      document.getElementById('emojiAnswerBox').innerHTML = s.revealed
+        ? ('Cevap: <b>' + s.answer + '</b>')
+        : 'Cevap gizli 🙈 — tahmininizi yazın, sonra açığa çıkarın.';
+    });
+  }
+
+  function initEmojiGuessSync(){
+    roomRef.child('emoji/guesses').on('child_added', snap => {
+      const g = snap.val();
+      const list = document.getElementById('emojiGuessList');
+      if(!list || !g) return;
+      const row = document.createElement('div');
+      row.className = 'song-guess-item';
+      row.innerHTML = '<b>' + g.name + ':</b> ' + g.text;
+      list.appendChild(row);
+      list.scrollTop = list.scrollHeight;
+    });
+  }
+
+  function sendEmojiGuess(){
+    if(!roomRef) return;
+    const input = document.getElementById('emojiGuessInput');
+    const val = input.value.trim();
+    if(!val) return;
+    roomRef.child('emoji/guesses').push({ name: USER_NAME || 'Anonim', text: val, ts: Date.now() });
+    input.value = '';
+  }
+
+  function startEmojiGame(){
+    if(!roomRef) return;
+    const emojis = document.getElementById('emojiInput').value.trim();
+    const answer = document.getElementById('emojiAnswer').value.trim();
+    if(!emojis){ alert('Emojileri girin.'); return; }
+    if(!answer){ alert('Cevabı girin.'); return; }
+    roomRef.child('emoji').set({ emojis, answer, started: true, revealed: false, ts: Date.now() });
+  }
+
+  function revealEmoji(){
+    if(!roomRef) return;
+    roomRef.child('emoji').update({ revealed: true });
+  }
+
+  function resetEmojiGame(){
+    document.getElementById('emojiInput').value = '';
+    document.getElementById('emojiAnswer').value = '';
+    if(roomRef) roomRef.child('emoji').remove();
+  }
+
+  // ---------- Taş Kağıt Makas — Firebase senkron ----------
+  // Rol ataması XOX ile aynı mantık: odaya ilk giren P1, ikinci giren P2 olur (bkz. presence dinleyicisi).
+  // İkiniz de seçiminizi yaptığında P1 tarafı sonucu hesaplayıp skoru günceller (çifte sayım olmasın diye).
+  let myRpsRole = null;
+  const rpsEmoji = { rock: '🪨', paper: '📄', scissors: '✂️' };
+  const rpsBeats = { rock: 'scissors', paper: 'rock', scissors: 'paper' };
+  const rpsNames = { rock: 'Taş', paper: 'Kağıt', scissors: 'Makas' };
+
+  function updateRpsRoleLabel(){
+    const el = document.getElementById('rpsRole');
+    if(!el) return;
+    el.innerHTML = myRpsRole
+      ? ('Sen: <b>' + myRpsRole + '</b>')
+      : 'Rakip bekleniyor…';
+  }
+
+  function initRpsSync(){
+    roomRef.child('rps').on('value', snap => {
+      const s = snap.val() || {};
+      const p1 = s.p1 || null, p2 = s.p2 || null;
+      const score = s.score || { p1: 0, p2: 0 };
+
+      const meChoice = myRpsRole === 'P1' ? p1 : (myRpsRole === 'P2' ? p2 : null);
+      const oppChoice = myRpsRole === 'P1' ? p2 : (myRpsRole === 'P2' ? p1 : null);
+
+      document.getElementById('rpsScoreMe').textContent = myRpsRole === 'P2' ? score.p2 || 0 : score.p1 || 0;
+      document.getElementById('rpsScoreOpp').textContent = myRpsRole === 'P2' ? score.p1 || 0 : score.p2 || 0;
+
+      document.querySelectorAll('.rps-choice').forEach(b => b.classList.remove('picked'));
+      if(meChoice === 'rock') document.getElementById('rpsBtnRock').classList.add('picked');
+      if(meChoice === 'paper') document.getElementById('rpsBtnPaper').classList.add('picked');
+      if(meChoice === 'scissors') document.getElementById('rpsBtnScissors').classList.add('picked');
+
+      const resultEl = document.getElementById('rpsResult');
+      if(p1 && p2){
+        document.getElementById('rpsMePick').textContent = rpsEmoji[meChoice] || '❔';
+        document.getElementById('rpsOppPick').textContent = rpsEmoji[oppChoice] || '❔';
+        if(meChoice === oppChoice){
+          resultEl.innerHTML = '🤝 <b>Berabere!</b> İkiniz de ' + rpsNames[meChoice] + ' seçti.';
+        } else if(rpsBeats[meChoice] === oppChoice){
+          resultEl.innerHTML = '🎉 <b>Kazandın!</b> ' + rpsNames[meChoice] + ', ' + rpsNames[oppChoice] + ' karşısında kazanır.';
+        } else {
+          resultEl.innerHTML = '😅 <b>Kaybettin.</b> ' + rpsNames[oppChoice] + ', ' + rpsNames[meChoice] + ' karşısında kazanır.';
+        }
+
+        // Çifte sayım olmasın diye skoru sadece P1 tarafı günceller
+        if(myRpsRole === 'P1' && !s.scored){
+          const winner = p1 === p2 ? null : (rpsBeats[p1] === p2 ? 'p1' : 'p2');
+          const updates = { scored: true };
+          if(winner) updates['score/' + winner] = (score[winner] || 0) + 1;
+          roomRef.child('rps').update(updates);
+        }
+      } else {
+        document.getElementById('rpsMePick').textContent = meChoice ? rpsEmoji[meChoice] : '❔';
+        document.getElementById('rpsOppPick').textContent = '❔';
+        resultEl.textContent = meChoice
+          ? 'Seçimin kaydedildi, partnerin seçince sonuç görünecek.'
+          : 'Bir seçim yapın, partneriniz de seçince sonuç görünecek.';
+      }
+    });
+  }
+
+  function pickRps(choice){
+    if(!roomRef || !myRpsRole) return;
+    const field = myRpsRole === 'P1' ? 'p1' : 'p2';
+    roomRef.child('rps/' + field).set(choice);
+  }
+
+  function nextRpsRound(){
+    if(!roomRef) return;
+    roomRef.child('rps').update({ p1: null, p2: null, scored: false });
+  }
+
+  function resetRpsScore(){
+    if(!roomRef) return;
+    roomRef.child('rps').update({ p1: null, p2: null, scored: false, score: { p1: 0, p2: 0 } });
   }
 </script>
 
