@@ -694,15 +694,133 @@
     box-shadow: 0 6px 18px rgba(0,0,0,.35);
   }
 
+  /* ---------- Mobile top bar (room code + presence) ---------- */
+  .mobile-topbar{
+    display:none;
+    position:fixed; top:0; left:0; right:0; z-index:46;
+    align-items:center; justify-content:space-between;
+    gap:10px;
+    padding: 10px 14px;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--stroke);
+  }
+  .mobile-topbar .mt-left{ display:flex; align-items:center; gap:8px; min-width:0; }
+  .mobile-topbar .brand-mark{ width:28px; height:28px; border-radius:8px; font-size:14px; flex-shrink:0; }
+  .mobile-topbar .mt-name{ font-size:13px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90px; }
+  .mobile-topbar .room-badge{ margin-bottom:0; padding:7px 10px; flex-shrink:0; }
+  .mobile-topbar .room-badge span:first-child{ font-size:11.5px; }
+
+  /* ---------- Floating chat (global, all views) ---------- */
+  .chat-fab{
+    position:fixed; right:16px; bottom:16px; z-index:45;
+    width:52px; height:52px; border-radius:50%;
+    background: linear-gradient(135deg, var(--violet), var(--rose));
+    align-items:center; justify-content:center;
+    font-size:22px; border:none; cursor:pointer; color:#fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,.4);
+    display:flex;
+  }
+  .chat-fab .chat-badge{
+    position:absolute; top:-4px; right:-4px;
+    min-width:19px; height:19px; padding:0 5px;
+    border-radius:999px; background:#f38b8b; color:#fff;
+    font-size:11px; font-weight:800;
+    display:none; align-items:center; justify-content:center;
+    font-family:'Manrope',sans-serif;
+    border:2px solid var(--bg);
+  }
+  .chat-fab .chat-badge.show{ display:flex; }
+
+  .chat-drawer{
+    position:fixed; right:16px; bottom:82px; z-index:47;
+    width:340px; max-width: calc(100vw - 32px);
+    height: 460px; max-height: 65vh;
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+    border-radius: 18px;
+    display:none;
+    flex-direction:column;
+    overflow:hidden;
+    box-shadow: 0 14px 40px rgba(0,0,0,.5);
+  }
+  .chat-drawer.open{ display:flex; animation: fadeUp .25s ease; }
+  .chat-drawer-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 12px 16px;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--stroke);
+    flex-shrink:0;
+  }
+  .chat-drawer-head h3{ font-size:14.5px; color:#fff; display:flex; align-items:center; gap:8px; }
+  .chat-drawer-close{
+    background:none; border:none; color: var(--ink-dim); font-size:18px; cursor:pointer;
+    width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  }
+  .chat-drawer-close:hover{ background: var(--panel-hover); color:#fff; }
+  .chat-drawer-body{
+    flex:1; overflow-y:auto; padding: 12px 14px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .chat-drawer-empty{
+    margin:auto; text-align:center; color: var(--ink-faint); font-size:13px; padding: 20px;
+  }
+  .chat-msg{
+    max-width: 78%;
+    padding: 8px 12px;
+    border-radius: 14px;
+    font-size: 13.5px;
+    line-height:1.4;
+    word-wrap: break-word;
+    background: var(--bg-soft);
+    border: 1px solid var(--stroke);
+    align-self:flex-start;
+  }
+  .chat-msg.me{
+    align-self:flex-end;
+    background: linear-gradient(120deg, var(--violet-soft), var(--violet));
+    border-color: transparent;
+    color:#fff;
+  }
+  .chat-msg .chat-msg-name{
+    display:block; font-size:10.5px; font-weight:800;
+    color: var(--violet); margin-bottom:2px;
+    text-transform:uppercase; letter-spacing:.03em;
+  }
+  .chat-msg.me .chat-msg-name{ color: rgba(255,255,255,.85); }
+  .chat-drawer-foot{
+    display:flex; gap:8px; padding: 10px 12px;
+    border-top: 1px solid var(--stroke);
+    flex-shrink:0;
+  }
+  .chat-drawer-foot input{
+    flex:1; background: var(--bg-soft); border:1px solid var(--stroke);
+    border-radius:10px; padding:10px 12px; color:#fff; font-size:13.5px;
+    font-family:'Manrope',sans-serif; outline:none; min-width:0;
+  }
+  .chat-drawer-foot input:focus{ border-color: var(--violet); }
+  .chat-drawer-foot button{
+    background: linear-gradient(90deg, var(--violet), var(--rose));
+    border:none; color:#fff; padding:0 16px; border-radius:10px;
+    font-weight:700; cursor:pointer; font-family:'Manrope',sans-serif; font-size:13px;
+    flex-shrink:0;
+  }
+
   @media (max-width: 880px){
     .mobile-fab{ display:flex; }
+    .mobile-topbar{ display:flex; }
     .sidebar{ display:none; }
-    .main{ padding: 24px 18px 50px; }
+    .main{ padding: 78px 18px 50px; }
     .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .chat-fab{ bottom:74px; }
+    .chat-drawer{
+      right:8px; left:8px; width:auto; max-width:none;
+      bottom: 134px; height: 55vh; max-height:55vh;
+    }
   }
   @media (max-width: 540px){
     .grid{ grid-template-columns: 1fr; }
     .xox-board{ grid-template-columns: repeat(3, 72px); grid-template-rows: repeat(3, 72px); }
+    .mobile-topbar .mt-name{ max-width:60px; }
   }
 </style>
 </head>
@@ -739,7 +857,37 @@
   </div>
 </div>
 
+<div class="mobile-topbar" id="mobileTopbar">
+  <div class="mt-left">
+    <div class="brand-mark">💞</div>
+    <span class="mt-name" id="mobileUserName">İsimsiz</span>
+  </div>
+  <div class="room-badge" id="roomBadgeMobile" onclick="handleRoomBadgeClick()" title="Kopyalamak için tıkla, katılanları görmek için 3 kez tıkla">
+    <span><span class="partner-dot" id="partnerDotMobile"></span>Oda: <b id="roomCodeLabelMobile">—</b></span>
+    <span>📋</span>
+  </div>
+</div>
+
 <button class="mobile-fab" onclick="toggleTheme()" title="Tema Değiştir">🎨</button>
+
+<button class="chat-fab" onclick="toggleChatDrawer()" title="Sohbet">
+  💬
+  <span class="chat-badge" id="chatBadge">0</span>
+</button>
+
+<div class="chat-drawer" id="chatDrawer">
+  <div class="chat-drawer-head">
+    <h3>💬 Sohbet</h3>
+    <button class="chat-drawer-close" onclick="toggleChatDrawer()">✕</button>
+  </div>
+  <div class="chat-drawer-body" id="chatDrawerBody">
+    <div class="chat-drawer-empty" id="chatDrawerEmpty">Henüz mesaj yok. İlk mesajı sen yaz 👋</div>
+  </div>
+  <div class="chat-drawer-foot">
+    <input type="text" id="chatMsgInput" placeholder="Mesaj yaz..." maxlength="500" onkeydown="if(event.key==='Enter') sendLiveChatMessage();">
+    <button onclick="sendLiveChatMessage()">Gönder</button>
+  </div>
+</div>
 
 <div class="glow glow-1"></div>
 <div class="glow glow-2"></div>
@@ -1063,6 +1211,9 @@
     document.getElementById('userNameLabel').textContent = USER_NAME;
     document.getElementById('userAvatar').textContent = USER_NAME.trim().charAt(0).toUpperCase() || '?';
     document.getElementById('heroName').textContent = USER_NAME;
+    // mobil üst bar (sidebar mobilde gizli olduğu için oda kodu buradan görünür)
+    document.getElementById('roomCodeLabelMobile').textContent = ROOM;
+    document.getElementById('mobileUserName').textContent = USER_NAME;
 
     // presence: mark this tab online (with name), remove on disconnect
     myPresenceRef = roomRef.child('presence').push();
@@ -1074,6 +1225,8 @@
       const val = snap.exists() ? snap.val() : {};
       const count = Object.keys(val).length;
       document.getElementById('partnerDot').classList.toggle('online', count > 1);
+      const mobileDot = document.getElementById('partnerDotMobile');
+      if(mobileDot) mobileDot.classList.toggle('online', count > 1);
 
       // XOX rolü: odaya giriş sırasına göre otomatik belirlenir (ilk giren X, ikinci O)
       try{
@@ -1097,6 +1250,7 @@
     initPuzzleSync();
     initVideoSync();
     initDrawSync();
+    initLiveChatSync();
   }
 
   function copyRoomCode(){
@@ -1287,6 +1441,76 @@
     if(!roomRef) return;
     const pick = chatCards[Math.floor(Math.random() * chatCards.length)];
     roomRef.child('chat').set({ prompt: pick, ts: Date.now() });
+  }
+
+  // ---------- Canlı Sohbet (tüm ekranlarda yüzen sohbet paneli) — Firebase senkron ----------
+  let chatDrawerOpen = false;
+  let unreadChatCount = 0;
+  let liveChatListenerAttached = false;
+
+  function toggleChatDrawer(){
+    chatDrawerOpen = !chatDrawerOpen;
+    const drawer = document.getElementById('chatDrawer');
+    drawer.classList.toggle('open', chatDrawerOpen);
+    if(chatDrawerOpen){
+      unreadChatCount = 0;
+      updateChatBadge();
+      const body = document.getElementById('chatDrawerBody');
+      body.scrollTop = body.scrollHeight;
+      setTimeout(() => { const inp = document.getElementById('chatMsgInput'); if(inp) inp.focus(); }, 80);
+    }
+  }
+
+  function updateChatBadge(){
+    const badge = document.getElementById('chatBadge');
+    if(!badge) return;
+    if(unreadChatCount > 0){
+      badge.textContent = unreadChatCount > 9 ? '9+' : String(unreadChatCount);
+      badge.classList.add('show');
+    } else {
+      badge.classList.remove('show');
+    }
+  }
+
+  function appendChatMessage(m){
+    const body = document.getElementById('chatDrawerBody');
+    const empty = document.getElementById('chatDrawerEmpty');
+    if(!body || !m) return;
+    if(empty) empty.remove();
+    const row = document.createElement('div');
+    row.className = 'chat-msg' + (m.name === USER_NAME ? ' me' : '');
+    row.innerHTML = '<span class="chat-msg-name">' + escapeHtml(m.name || 'Anonim') + '</span>' + escapeHtml(m.text || '');
+    body.appendChild(row);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function initLiveChatSync(){
+    if(liveChatListenerAttached || !roomRef) return;
+    liveChatListenerAttached = true;
+    roomRef.child('messages').limitToLast(200).on('child_added', snap => {
+      const m = snap.val();
+      appendChatMessage(m);
+      if(!chatDrawerOpen && m && m.name !== USER_NAME){
+        unreadChatCount++;
+        updateChatBadge();
+      }
+    });
+  }
+
+  function sendLiveChatMessage(){
+    if(!roomRef) return;
+    const input = document.getElementById('chatMsgInput');
+    const val = input.value.trim();
+    if(!val) return;
+    roomRef.child('messages').push({ name: USER_NAME || 'Anonim', text: val, ts: Date.now() });
+    input.value = '';
+    input.focus();
   }
 
   // ---------- Shared drawing canvas — Firebase senkron ----------
