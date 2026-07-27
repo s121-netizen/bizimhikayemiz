@@ -1811,9 +1811,17 @@
   // Tasarım: her hamle roomRef.child('xox').transaction(...) ile atomik olarak uygulanır.
   // Bu sayede iki taraf da aynı anda yazmaya çalışsa bile (ağ gecikmesi, çift tıklama vb.)
   // Firebase çakışan yazımı otomatik tekrar dener ve tahtanın asla tutarsız/çift hamleli
-  // bir duruma düşmesini engeller — eski versiyondaki .set() tabanlı yaklaşımın yarış
-  // durumu (race condition) riski tamamen ortadan kalkar.
-  let xoxBoard = Array(9).fill(null);
+  // bir duruma düşmesini engeller.
+  //
+  // KRİTİK NOT: Firebase Realtime Database, değeri `null` olan anahtarları otomatik
+  // olarak SİLER. Tahta hücreleri `null` ile boş tutulursa (örn. Array(9).fill(null)),
+  // ilk hamleden sonra sunucudaki dizi sadece dolu olan tek elemana küçülür
+  // (ör. [null,null,'X',null,...] -> sunucuda sadece {2:'X'} kalır, uzunluk 1'e düşer).
+  // Bu da "ilk hamleden sonra tahta tek kutuya iniyor, başka kutuya tıklayınca her şey
+  // çöküyor" hatasının tam sebebiydi. Çözüm: boş hücreleri null yerine '' (boş string)
+  // ile tutmak (falsy ama Firebase tarafından silinmiyor) ve okurken tahtayı her zaman
+  // normalizeXoxBoard() ile 9 elemanlı sabit bir diziye zorlamak.
+  let xoxBoard = Array(9).fill('');
   let xoxPrevBoard = null; // son render'daki tahta — hangi hücrenin yeni işaretlendiğini bulup pop animasyonu vermek için
   let xoxTurn = 'X';
   let xoxOver = false;
@@ -1822,6 +1830,21 @@
   let xoxScore = { X: 0, O: 0 };
   let myXoxRole = null;
   const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+  // Firebase'den (veya transaction içindeki `cur`dan) gelen tahtayı her zaman
+  // 9 elemanlı, sadece 'X'/'O'/'' içeren güvenli bir diziye çevirir. Firebase bazen
+  // (null-silme yüzünden) diziyi kısaltılmış olarak ya da {2:'X'} gibi bir nesne
+  // olarak döndürebilir — bracket erişimi (raw[i]) her iki durumda da çalışır.
+  function normalizeXoxBoard(raw){
+    const out = Array(9).fill('');
+    if(raw){
+      for(let i = 0; i < 9; i++){
+        const v = raw[i];
+        if(v === 'X' || v === 'O') out[i] = v;
+      }
+    }
+    return out;
+  }
   // Her win pattern'in tahta üzerinde yüzde (%) cinsinden başlangıç/bitiş koordinatları —
   // xox-board her boyutta (masaüstü/mobil) aynı oranda kalacağı için piksel yerine % kullanılıyor.
   const xoxLineCoords = [
@@ -1849,7 +1872,7 @@
       const s = snap.val();
       if(!s){
         xoxPrevBoard = null;
-        xoxBoard = Array(9).fill(null);
+        xoxBoard = Array(9).fill('');
         xoxTurn = 'X'; xoxOver = false; xoxWinner = null; xoxLine = null;
         xoxScore = { X: 0, O: 0 };
         renderXox();
@@ -1860,7 +1883,7 @@
         return;
       }
       xoxPrevBoard = xoxBoard;
-      xoxBoard = s.board || Array(9).fill(null);
+      xoxBoard = normalizeXoxBoard(s.board);
       xoxTurn = s.turn || 'X';
       xoxOver = !!s.over;
       xoxWinner = s.winner || null;
@@ -1937,11 +1960,11 @@
     if(xoxOver || xoxBoard[i]) return; // hızlı yerel kontrol (UX için) — asıl karar transaction içinde
     roomRef.child('xox').transaction(cur => {
       if(!cur){
-        cur = { board: Array(9).fill(null), turn: 'X', over: false, winner: null, line: null, score: { X: 0, O: 0 } };
+        cur = { board: Array(9).fill(''), turn: 'X', over: false, winner: null, line: null, score: { X: 0, O: 0 } };
       }
       if(cur.over) return; // oyun bitmiş — işlemi iptal et (yazma yapma)
       if(cur.turn !== myXoxRole) return; // sıra sende değil — iptal
-      const board = (cur.board || Array(9).fill(null)).slice();
+      const board = normalizeXoxBoard(cur.board);
       if(board[i]) return; // hücre zaten dolu — iptal
       board[i] = myXoxRole;
       const win = checkXoxWin(board);
@@ -1964,7 +1987,7 @@
     if(!roomRef) return;
     roomRef.child('xox').transaction(cur => {
       cur = cur || {};
-      return { board: Array(9).fill(null), turn: 'X', over: false, winner: null, line: null, score: cur.score || { X: 0, O: 0 } };
+      return { board: Array(9).fill(''), turn: 'X', over: false, winner: null, line: null, score: cur.score || { X: 0, O: 0 } };
     });
   }
 
@@ -1972,7 +1995,7 @@
   function resetXoxScore(){
     if(!roomRef) return;
     roomRef.child('xox').transaction(() => ({
-      board: Array(9).fill(null), turn: 'X', over: false, winner: null, line: null, score: { X: 0, O: 0 }
+      board: Array(9).fill(''), turn: 'X', over: false, winner: null, line: null, score: { X: 0, O: 0 }
     }));
   }
 
