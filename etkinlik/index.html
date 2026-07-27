@@ -359,11 +359,28 @@
     font-family:'Fraunces', serif;
     transition: background .15s ease;
   }
-  .xox-cell:hover{ background: var(--panel-hover); }
+  @media (hover:hover){ .xox-cell:hover{ background: var(--panel-hover); } }
   .xox-cell.x{ color: var(--rose); }
   .xox-cell.o{ color: var(--violet); }
+  .xox-cell.disabled{ cursor:not-allowed; opacity:.55; }
+  .xox-cell.new{ animation: xoxPop .28s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes xoxPop{ from{ transform:scale(.35); opacity:0; } to{ transform:scale(1); opacity:1; } }
   .xox-status{ font-size:15px; color: var(--ink-dim); font-weight:600; }
   .xox-status b{ color:#fff; }
+  .xox-board-wrap{ position:relative; }
+  .xox-winline{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .xox-winline line{
+    stroke: var(--amber); stroke-width:5; stroke-linecap:round;
+    filter: drop-shadow(0 0 6px rgba(248,196,113,.7));
+    animation: xoxLineDraw .28s ease;
+  }
+  @keyframes xoxLineDraw{ from{ opacity:0; } to{ opacity:1; } }
+  .xox-score{ display:flex; align-items:center; gap:16px; }
+  .xox-score-item{ display:flex; flex-direction:column; align-items:center; gap:2px; min-width:38px; }
+  .xox-score-label{ font-size:11px; color: var(--ink-faint); font-weight:800; letter-spacing:.04em; }
+  .xox-score-val{ font-family:'Fraunces',serif; font-size:22px; font-weight:800; color:#fff; }
+  .xox-score-div{ color: var(--ink-faint); font-size:13px; }
+  .xox-actions{ display:flex; gap:10px; }
   .reset-btn{
     background: linear-gradient(90deg, var(--violet), var(--rose));
     border:none;
@@ -378,6 +395,12 @@
   }
   .reset-btn:hover{ filter: brightness(1.1); }
   .reset-btn:active{ transform: scale(.97); }
+  .reset-btn.ghost{
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+    color: var(--ink-dim);
+  }
+  .reset-btn.ghost:hover{ filter:none; background: var(--panel-hover); color:#fff; }
 
   /* Truth or dare */
   .tod-card{
@@ -523,6 +546,58 @@
   }
   .reveal-btn:hover{ border-color: var(--violet); color:#fff; }
 
+  /* Adam Asmaca (Hangman) */
+  .hangman-setup{ max-width:460px; margin: 0 auto 22px; }
+  .hangman-wrap{ display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .hangman-figure-box{
+    width:180px; height:180px;
+    background: var(--bg-soft);
+    border: 1px solid var(--stroke);
+    border-radius: 16px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hangman-figure-box svg{ width:150px; height:150px; }
+  .hangman-figure-box svg .hp{ stroke: var(--ink); stroke-width:4; stroke-linecap:round; fill:none; }
+  .hangman-figure-box svg .hp.head{ fill:none; stroke: var(--rose); }
+  .hangman-figure-box svg .gallows{ stroke: var(--ink-faint); }
+  .hangman-wrong-label{ font-size:13px; color: var(--ink-dim); font-weight:600; }
+  .hangman-wrong-label b{ color: var(--rose); }
+  .hangman-word{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:8px;
+    max-width:520px;
+  }
+  .hangman-letter{
+    width:32px; height:40px;
+    border-bottom: 3px solid var(--stroke);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-size:22px; font-weight:700; color:#fff;
+    text-transform:uppercase;
+  }
+  .hangman-letter.space{ border-bottom-color: transparent; width:16px; }
+  .hangman-letter.revealed{ border-bottom-color: var(--violet); animation: xoxPop .25s ease; }
+  .hangman-keyboard{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:6px;
+    max-width:560px;
+  }
+  .hangman-key{
+    min-width:32px; height:38px; padding:0 8px;
+    border-radius:8px; border:1px solid var(--stroke);
+    background: var(--bg-soft); color:#fff;
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:14px;
+    cursor:pointer; text-transform:uppercase;
+    transition: background .15s ease, opacity .15s ease, transform .1s ease;
+  }
+  @media (hover:hover){ .hangman-key:hover:not(:disabled){ background: var(--panel-hover); } }
+  .hangman-key:active:not(:disabled){ transform: scale(.94); }
+  .hangman-key:disabled{ cursor:not-allowed; opacity:.35; }
+  .hangman-key.correct{ background: rgba(139,92,246,.35); border-color: var(--violet); opacity:1; }
+  .hangman-key.wrong{ background: rgba(243,139,139,.25); border-color:#f38b8b; opacity:1; color:#f3b8b8; }
+  .hangman-status{ font-size:15px; color: var(--ink-dim); font-weight:600; text-align:center; }
+  .hangman-status b{ color:#fff; }
+  .hangman-status.win{ color: var(--amber); }
+  .hangman-status.lose{ color:#f38b8b; }
+  .hangman-actions{ display:flex; gap:10px; justify-content:center; }
+
   /* Video watch */
   .video-setup{ max-width:460px; margin: 0 auto 20px; }
   .video-box{
@@ -643,6 +718,29 @@
     line-height:1.5;
   }
   .yt-error a{ color: var(--amber); }
+
+  /* YouTube sync control bar (mute + speed) */
+  .yt-sync-bar{
+    display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
+    gap:8px; max-width:560px; margin: 12px auto 0;
+  }
+  .yt-mute-btn{
+    background: var(--bg-soft); border:1px solid var(--stroke); color:#fff;
+    padding:8px 14px; border-radius:10px; font-weight:700; font-size:12.5px;
+    cursor:pointer; font-family:'Manrope',sans-serif;
+  }
+  .yt-mute-btn:hover{ border-color: var(--violet); }
+  .yt-speed-row{ display:flex; gap:5px; }
+  .yt-speed-row button{
+    background: var(--bg-soft); border:1px solid var(--stroke); color: var(--ink-dim);
+    padding:8px 11px; border-radius:10px; font-weight:700; font-size:12px;
+    cursor:pointer; font-family:'Manrope',sans-serif;
+  }
+  .yt-speed-row button:hover{ border-color: var(--violet); color:#fff; }
+  .yt-speed-row button.active{ background: linear-gradient(90deg, var(--violet), var(--rose)); border-color:transparent; color:#fff; }
+  .yt-sync-hint{
+    text-align:center; font-size:11.5px; color: var(--ink-faint); margin-top:6px;
+  }
 
   /* Draw color palette */
   .draw-toolbar{
@@ -1106,6 +1204,7 @@
       <div class="nav-item" data-view="video"><span class="ic">🎬</span>Video İzle</div>
       <div class="nav-item" data-view="emoji"><span class="ic">🧠</span>Emoji Tahmin Et</div>
       <div class="nav-item" data-view="rps"><span class="ic">✂️</span>Taş Kağıt Makas</div>
+      <div class="nav-item" data-view="hangman"><span class="ic">🪢</span>Adam Asmaca</div>
     </nav>
 
     <div class="sidebar-bottom">
@@ -1123,7 +1222,7 @@
         <p>Partnerinizle birlikte bir aktivite başlatın!</p>
       </div>
 
-      <div class="section-title">Aktiviteler <span class="count">10 aktivite</span></div>
+      <div class="section-title">Aktiviteler <span class="count">11 aktivite</span></div>
 
       <div class="grid" id="activityGrid">
         <div class="card" data-view="draw" style="--card-tint: rgba(139,92,246,.2)">
@@ -1171,6 +1270,11 @@
           <h3>Taş Kağıt Makas</h3>
           <p>Klasik taş kağıt makas — canlı skorla</p>
         </div>
+        <div class="card" data-view="hangman" style="--card-tint: rgba(139,92,246,.2)">
+          <div class="emoji">🪢</div>
+          <h3>Adam Asmaca</h3>
+          <p>Kelimeyi harf harf tahmin edin</p>
+        </div>
       </div>
     </section>
 
@@ -1183,9 +1287,22 @@
       </div>
       <div class="panel-box xox-wrap">
         <div class="xox-role" id="xoxRole">Rolün belirleniyor…</div>
+        <div class="xox-score">
+          <div class="xox-score-item"><span class="xox-score-label">X</span><span class="xox-score-val" id="xoxScoreX">0</span></div>
+          <div class="xox-score-div">—</div>
+          <div class="xox-score-item"><span class="xox-score-label">O</span><span class="xox-score-val" id="xoxScoreO">0</span></div>
+        </div>
         <div class="xox-status" id="xoxStatus">Sıra: <b>X</b></div>
-        <div class="xox-board" id="xoxBoard"></div>
-        <button class="reset-btn" onclick="resetXox()">Yeniden Başlat</button>
+        <div class="xox-board-wrap">
+          <div class="xox-board" id="xoxBoard"></div>
+          <svg class="xox-winline" id="xoxWinLine" viewBox="0 0 100 100" preserveAspectRatio="none" style="display:none;">
+            <line id="xoxWinLineEl" x1="0" y1="0" x2="0" y2="0"/>
+          </svg>
+        </div>
+        <div class="xox-actions">
+          <button class="reset-btn" onclick="newXoxRound()">🔁 Yeni Oyun</button>
+          <button class="reset-btn ghost" onclick="resetXoxScore()">♻️ Skoru Sıfırla</button>
+        </div>
       </div>
     </section>
 
@@ -1248,6 +1365,16 @@
             <div id="songFrame"></div>
           </div>
           <div class="yt-error" id="songErrorBox"></div>
+          <div class="yt-sync-bar" id="songSyncBar">
+            <button class="yt-mute-btn" id="songMuteBtn" onclick="toggleYtMute('song')">🔇 Sesi Aç</button>
+            <div class="yt-speed-row" id="songSpeedRow">
+              <button data-rate="0.5" onclick="setYtRate('song',0.5)">0.5x</button>
+              <button data-rate="1" class="active" onclick="setYtRate('song',1)">1x</button>
+              <button data-rate="1.25" onclick="setYtRate('song',1.25)">1.25x</button>
+              <button data-rate="1.5" onclick="setYtRate('song',1.5)">1.5x</button>
+              <button data-rate="2" onclick="setYtRate('song',2)">2x</button>
+            </div>
+          </div>
           <div class="song-guess-row">
             <input type="text" id="songGuessInput" placeholder="Tahminini yaz..." onkeydown="if(event.key==='Enter') sendSongGuess();">
             <button onclick="sendSongGuess()">Gönder</button>
@@ -1319,7 +1446,20 @@
           <div id="videoFrame"></div>
         </div>
         <div class="yt-error" id="videoErrorBox"></div>
+        <div class="yt-sync-bar" id="videoSyncBar" style="display:none;">
+          <button class="yt-mute-btn" id="videoMuteBtn" onclick="toggleYtMute('video')">🔇 Sesi Aç</button>
+          <div class="yt-speed-row" id="videoSpeedRow">
+            <button data-rate="0.5" onclick="setYtRate('video',0.5)">0.5x</button>
+            <button data-rate="1" class="active" onclick="setYtRate('video',1)">1x</button>
+            <button data-rate="1.25" onclick="setYtRate('video',1.25)">1.25x</button>
+            <button data-rate="1.5" onclick="setYtRate('video',1.5)">1.5x</button>
+            <button data-rate="2" onclick="setYtRate('video',2)">2x</button>
+          </div>
+        </div>
         <div class="video-hint" id="videoHint" style="display:none;">Oynat, durdur ya da ileri/geri sar — diğer taraf otomatik olarak senkronize olur 🎬</div>
+        <div class="yt-sync-hint" id="videoSyncHint" style="display:none;">Video başta sessiz açılır (tarayıcı kuralları gereği) — senkron bozulmasın diye sesi kendi tarafında aç 🔊</div>
+        <br>
+        <button class="reveal-btn" id="videoCloseBtn" style="display:none;" onclick="closeVideo()">✕ Videoyu Kapat</button>
       </div>
     </section>
 
@@ -1390,6 +1530,50 @@
         <div style="display:flex; gap:10px;">
           <button class="reset-btn" onclick="nextRpsRound()">🔁 Yeni Tur</button>
           <button class="reset-btn" onclick="resetRpsScore()">♻️ Skoru Sıfırla</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- HANGMAN (ADAM ASMACA) VIEW -->
+    <section class="view" id="view-hangman">
+      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🪢</div>
+        <div><h2>Adam Asmaca</h2><br><span>Biriniz kelimeyi gizlice girsin, ikiniz de harf harf tahmin edin</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="hangman-setup" id="hangmanSetup">
+          <label class="field-label">Kelime / Kelime Grubu (gizli kalır)</label>
+          <div class="song-row">
+            <input type="text" id="hangmanWordInput" placeholder="Örn. İSTANBUL BOĞAZI" maxlength="40">
+            <button onclick="startHangmanGame()">Başlat</button>
+          </div>
+        </div>
+
+        <div id="hangmanPlay" style="display:none;">
+          <div class="hangman-wrap">
+            <div class="hangman-figure-box">
+              <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <line class="hp gallows" x1="10" y1="112" x2="80" y2="112"/>
+                <line class="hp gallows" x1="30" y1="112" x2="30" y2="10"/>
+                <line class="hp gallows" x1="30" y1="10" x2="80" y2="10"/>
+                <line class="hp gallows" x1="80" y1="10" x2="80" y2="26"/>
+                <circle class="hp head" id="hmPart1" cx="80" cy="38" r="12" style="display:none;"/>
+                <line class="hp" id="hmPart2" x1="80" y1="50" x2="80" y2="80" style="display:none;"/>
+                <line class="hp" id="hmPart3" x1="80" y1="58" x2="66" y2="70" style="display:none;"/>
+                <line class="hp" id="hmPart4" x1="80" y1="58" x2="94" y2="70" style="display:none;"/>
+                <line class="hp" id="hmPart5" x1="80" y1="80" x2="68" y2="102" style="display:none;"/>
+                <line class="hp" id="hmPart6" x1="80" y1="80" x2="92" y2="102" style="display:none;"/>
+              </svg>
+            </div>
+            <div class="hangman-wrong-label">Yanlış tahmin: <b id="hangmanWrongCount">0</b>/6</div>
+            <div class="hangman-word" id="hangmanWord"></div>
+            <div class="hangman-keyboard" id="hangmanKeyboard"></div>
+            <div class="hangman-status" id="hangmanStatus">Bir harf seçin.</div>
+            <div class="hangman-actions">
+              <button class="reset-btn" onclick="resetHangmanGame()">🔁 Yeni Kelime</button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1546,6 +1730,7 @@
     initEmojiSync();
     initEmojiGuessSync();
     initRpsSync();
+    initHangmanSync();
   }
 
   // Odaya katılan her cihaz için X/O ve P1/P2 rollerini KALICI ve ÇAKIŞMASIZ şekilde atar.
@@ -1622,12 +1807,33 @@
     el.addEventListener('click', () => showView(el.dataset.view));
   });
 
-  // ---------- XOX (Tic Tac Toe) — Firebase senkron ----------
+  // ---------- XOX (Tic Tac Toe) — Firebase senkron (0'dan sağlam yeniden yazıldı) ----------
+  // Tasarım: her hamle roomRef.child('xox').transaction(...) ile atomik olarak uygulanır.
+  // Bu sayede iki taraf da aynı anda yazmaya çalışsa bile (ağ gecikmesi, çift tıklama vb.)
+  // Firebase çakışan yazımı otomatik tekrar dener ve tahtanın asla tutarsız/çift hamleli
+  // bir duruma düşmesini engeller — eski versiyondaki .set() tabanlı yaklaşımın yarış
+  // durumu (race condition) riski tamamen ortadan kalkar.
   let xoxBoard = Array(9).fill(null);
+  let xoxPrevBoard = null; // son render'daki tahta — hangi hücrenin yeni işaretlendiğini bulup pop animasyonu vermek için
   let xoxTurn = 'X';
   let xoxOver = false;
+  let xoxWinner = null;
+  let xoxLine = null; // kazanan üçlünün "wins" dizisindeki index'i (çizgi çizmek için)
+  let xoxScore = { X: 0, O: 0 };
   let myXoxRole = null;
   const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  // Her win pattern'in tahta üzerinde yüzde (%) cinsinden başlangıç/bitiş koordinatları —
+  // xox-board her boyutta (masaüstü/mobil) aynı oranda kalacağı için piksel yerine % kullanılıyor.
+  const xoxLineCoords = [
+    { x1:0,     y1:16.67, x2:100,   y2:16.67 }, // üst satır
+    { x1:0,     y1:50,    x2:100,   y2:50    }, // orta satır
+    { x1:0,     y1:83.33, x2:100,   y2:83.33 }, // alt satır
+    { x1:16.67, y1:0,     x2:16.67, y2:100   }, // sol sütun
+    { x1:50,    y1:0,     x2:50,    y2:100   }, // orta sütun
+    { x1:83.33, y1:0,     x2:83.33, y2:100   }, // sağ sütun
+    { x1:0,     y1:0,     x2:100,   y2:100   }, // çapraz ↘
+    { x1:100,   y1:0,     x2:0,     y2:100   }  // çapraz ↙
+  ];
 
   function updateXoxRoleLabel(){
     const el = document.getElementById('xoxRole');
@@ -1635,69 +1841,144 @@
     el.innerHTML = myXoxRole
       ? ('Sen: <b>' + myXoxRole + '</b>')
       : 'İzleyicisin — iki oyuncu zaten dolu.';
+    renderXox(); // rol geldiğinde tahtanın tıklanabilirliği (canPlay) güncellensin
   }
 
   function initXoxSync(){
     roomRef.child('xox').on('value', snap => {
       const s = snap.val();
-      if(!s){ resetXox(); return; }
-      xoxBoard = s.board;
-      xoxTurn = s.turn;
-      xoxOver = s.over;
+      if(!s){
+        xoxPrevBoard = null;
+        xoxBoard = Array(9).fill(null);
+        xoxTurn = 'X'; xoxOver = false; xoxWinner = null; xoxLine = null;
+        xoxScore = { X: 0, O: 0 };
+        renderXox();
+        renderXoxWinLine();
+        updateXoxScoreLabel();
+        const statusEl = document.getElementById('xoxStatus');
+        if(statusEl) statusEl.innerHTML = 'Sıra: <b>X</b>';
+        return;
+      }
+      xoxPrevBoard = xoxBoard;
+      xoxBoard = s.board || Array(9).fill(null);
+      xoxTurn = s.turn || 'X';
+      xoxOver = !!s.over;
+      xoxWinner = s.winner || null;
+      xoxLine = (s.line === undefined) ? null : s.line;
+      xoxScore = s.score || { X: 0, O: 0 };
       renderXox();
+      renderXoxWinLine();
+      updateXoxScoreLabel();
       const statusEl = document.getElementById('xoxStatus');
-      if(s.over){
-        statusEl.innerHTML = s.winner ? ('🎉 Kazanan: <b>' + s.winner + '</b>') : '<b>Berabere!</b>';
+      if(xoxOver){
+        statusEl.innerHTML = xoxWinner ? ('🎉 Kazanan: <b>' + xoxWinner + '</b>') : '<b>Berabere!</b>';
+      } else if(myXoxRole){
+        statusEl.innerHTML = (xoxTurn === myXoxRole)
+          ? ('Sıra <b>sende</b> (' + myXoxRole + ')')
+          : ('Sırada <b>rakibin</b> (' + xoxTurn + ')');
       } else {
-        statusEl.innerHTML = 'Sıra: <b>' + s.turn + '</b>';
+        statusEl.innerHTML = 'Sıra: <b>' + xoxTurn + '</b>';
       }
     });
   }
 
   function renderXox(){
     const board = document.getElementById('xoxBoard');
+    if(!board) return;
     board.innerHTML = '';
+    const canPlay = !!myXoxRole && !xoxOver && xoxTurn === myXoxRole;
     xoxBoard.forEach((val, i) => {
       const cell = document.createElement('div');
-      cell.className = 'xox-cell' + (val === 'X' ? ' x' : val === 'O' ? ' o' : '');
+      let cls = 'xox-cell' + (val === 'X' ? ' x' : val === 'O' ? ' o' : '');
+      if(!val && !canPlay) cls += ' disabled';
+      if(val && xoxPrevBoard && xoxPrevBoard[i] !== val) cls += ' new';
+      cell.className = cls;
       cell.textContent = val || '';
       cell.addEventListener('click', () => xoxMove(i));
       board.appendChild(cell);
     });
   }
 
-  function xoxMove(i){
-    if(xoxOver || xoxBoard[i] || !roomRef) return;
-    if(!myXoxRole || myXoxRole !== xoxTurn) return; // sıra sende değilse hamle geçersiz
-    const newBoard = xoxBoard.slice();
-    newBoard[i] = xoxTurn;
-    const winner = checkXoxWin(newBoard);
-    const over = !!winner || newBoard.every(c => c);
-    roomRef.child('xox').set({
-      board: newBoard,
-      turn: xoxTurn === 'X' ? 'O' : 'X',
-      over: over,
-      winner: winner || null
-    });
+  function renderXoxWinLine(){
+    const svg = document.getElementById('xoxWinLine');
+    const line = document.getElementById('xoxWinLineEl');
+    if(!svg || !line) return;
+    if(xoxLine === null || xoxLine === undefined || !xoxOver){
+      svg.style.display = 'none';
+      return;
+    }
+    const c = xoxLineCoords[xoxLine];
+    if(!c){ svg.style.display = 'none'; return; }
+    line.setAttribute('x1', c.x1); line.setAttribute('y1', c.y1);
+    line.setAttribute('x2', c.x2); line.setAttribute('y2', c.y2);
+    svg.style.display = 'block';
+  }
+
+  function updateXoxScoreLabel(){
+    const xEl = document.getElementById('xoxScoreX');
+    const oEl = document.getElementById('xoxScoreO');
+    if(xEl) xEl.textContent = (xoxScore && xoxScore.X) || 0;
+    if(oEl) oEl.textContent = (xoxScore && xoxScore.O) || 0;
   }
 
   function checkXoxWin(b){
-    for(const [a,c,d] of wins){
-      if(b[a] && b[a] === b[c] && b[a] === b[d]) return b[a];
+    for(let li = 0; li < wins.length; li++){
+      const [a,c,d] = wins[li];
+      if(b[a] && b[a] === b[c] && b[a] === b[d]) return { winner: b[a], line: li };
     }
     return null;
   }
 
-  function resetXox(){
-    xoxBoard = Array(9).fill(null);
-    xoxTurn = 'X';
-    xoxOver = false;
-    renderXox();
-    const statusEl = document.getElementById('xoxStatus');
-    if(statusEl) statusEl.innerHTML = 'Sıra: <b>X</b>';
-    if(roomRef) roomRef.child('xox').set({ board: xoxBoard, turn: 'X', over: false, winner: null });
+  // Hamle: transaction ile atomik uygulanır — sunucudaki GÜNCEL veriye göre
+  // "sıra bende mi", "hücre boş mu", "oyun bitmiş mi" kontrolü tekrar yapılır,
+  // böylece stale (bayat) local state yüzünden geçersiz bir hamle asla kabul edilmez.
+  function xoxMove(i){
+    if(!roomRef || !myXoxRole) return;
+    if(xoxOver || xoxBoard[i]) return; // hızlı yerel kontrol (UX için) — asıl karar transaction içinde
+    roomRef.child('xox').transaction(cur => {
+      if(!cur){
+        cur = { board: Array(9).fill(null), turn: 'X', over: false, winner: null, line: null, score: { X: 0, O: 0 } };
+      }
+      if(cur.over) return; // oyun bitmiş — işlemi iptal et (yazma yapma)
+      if(cur.turn !== myXoxRole) return; // sıra sende değil — iptal
+      const board = (cur.board || Array(9).fill(null)).slice();
+      if(board[i]) return; // hücre zaten dolu — iptal
+      board[i] = myXoxRole;
+      const win = checkXoxWin(board);
+      const isDraw = !win && board.every(c => c);
+      const score = Object.assign({ X: 0, O: 0 }, cur.score);
+      if(win) score[win.winner] = (score[win.winner] || 0) + 1;
+      return {
+        board: board,
+        turn: myXoxRole === 'X' ? 'O' : 'X',
+        over: !!win || isDraw,
+        winner: win ? win.winner : null,
+        line: win ? win.line : null,
+        score: score
+      };
+    });
   }
+
+  // Yeni oyun: tahtayı sıfırlar, skoru KORUR.
+  function newXoxRound(){
+    if(!roomRef) return;
+    roomRef.child('xox').transaction(cur => {
+      cur = cur || {};
+      return { board: Array(9).fill(null), turn: 'X', over: false, winner: null, line: null, score: cur.score || { X: 0, O: 0 } };
+    });
+  }
+
+  // Skoru sıfırla: tahtayı da sıfırlar, skoru 0'a çeker.
+  function resetXoxScore(){
+    if(!roomRef) return;
+    roomRef.child('xox').transaction(() => ({
+      board: Array(9).fill(null), turn: 'X', over: false, winner: null, line: null, score: { X: 0, O: 0 }
+    }));
+  }
+
   renderXox();
+  renderXoxWinLine();
+  updateXoxScoreLabel();
 
   // ---------- Truth or Dare — Firebase senkron ----------
   const truths = [
@@ -2195,17 +2476,29 @@
     return null;
   }
 
-  // ---------- YouTube IFrame Player wrapper (with embed-error handling) ----------
-  // Hata 153/101/150: video sahibi bu videonun başka sitelere gömülmesini
-  // (embed) engellemiş demektir — bu, uygulama tarafında çözülemez, sadece
-  // videoyu doğrudan YouTube'da açan bir bağlantı sunulabilir.
+  // ---------- YouTube IFrame Player wrapper — 0'dan sağlam yeniden yazıldı ----------
+  //
+  // ÖNEMLİ TESPİT: Eski sürümde senkron HİÇ ÇALIŞMIYORDU çünkü partnerin tarafında
+  // Firebase'den gelen bir "play" komutu, kullanıcı etkileşimi (tıklama) OLMADAN,
+  // asenkron bir callback içinden player.playVideo() olarak çağrılıyordu. Tarayıcıların
+  // "autoplay policy" kuralları SESLİ videonun kullanıcı jesti olmadan programatik
+  // şekilde başlatılmasını sessizce (hatasız!) ENGELLER — yani video partnerin tarafında
+  // hiç oynamıyor, dolayısıyla "aynı anda durmuyor/ilerlemiyor" gibi görünüyordu.
+  //
+  // ÇÖZÜM: Oynatıcı her zaman SESSİZ (muted:1) olarak başlatılır — sessiz autoplay
+  // tüm tarayıcılarda her koşulda izinlidir, bu yüzden play/pause/seek/hız komutları
+  // artık %100 güvenilir şekilde iki tarafta da uygulanır. Kullanıcı isterse kendi
+  // tarafında "Sesi Aç" butonuna basar (bu gerçek bir tıklama olduğu için izinlidir).
+  //
+  // Ayrıca: hız (playbackRate) değişikliği artık ayrı bir olay olarak yayınlanıyor,
+  // ve periyodik "heartbeat" ile kayan zamanlar daha sık (2.5 sn'de bir) düzeltiliyor.
   let ytApiReady = false;
   const ytPlayers = { song: null, video: null };
-  // Senkron oynatma durumu: her taraf oynat/durdur/ileri-geri sardığında
-  // Firebase'e yazar, diğer taraf bunu okuyup kendi oynatıcısına uygular.
+  // Senkron oynatma durumu: her taraf oynat/durdur/ileri-geri sar/hız değiştir yaptığında
+  // Firebase'e { playing, time, rate, ts, by } yazar; diğer taraf bunu okuyup uygular.
   const ytSync = {
-    song:  { applyingRemote: false, pollTimer: null, lastPolledTime: null, stateListenerAttached: false },
-    video: { applyingRemote: false, pollTimer: null, lastPolledTime: null, stateListenerAttached: false }
+    song:  { applyingRemote: false, pollTimer: null, stateListenerAttached: false, ready: false },
+    video: { applyingRemote: false, pollTimer: null, stateListenerAttached: false, ready: false }
   };
 
   function onYouTubeIframeAPIReady(){
@@ -2235,56 +2528,53 @@
     return fresh;
   }
 
-  // Kendi tarafımızda oynat/durdur/sar olduğunda diğer tarafa yayınla
-  function broadcastPlaybackState(kind, action){
+  function ytSyncElIds(kind){
+    return kind === 'song'
+      ? { mute: 'songMuteBtn', speedRow: 'songSpeedRow', bar: 'songSyncBar' }
+      : { mute: 'videoMuteBtn', speedRow: 'videoSpeedRow', bar: 'videoSyncBar' };
+  }
+
+  // Kendi tarafımızda oynat/durdur/sar/hız değiştir olduğunda diğer tarafa TÜM durumu yayınla.
+  function broadcastYtState(kind){
     if(!roomRef) return;
-    if(ytSync[kind].applyingRemote) return; // uzaktan gelen bir değişikliği yansıtmayalım (sonsuz döngü olmasın)
+    if(ytSync[kind].applyingRemote) return; // uzaktan gelen bir değişikliği geri yansıtmayalım (sonsuz döngü olmasın)
     const player = ytPlayers[kind];
-    if(!player || typeof player.getCurrentTime !== 'function') return;
-    let time = 0;
-    try{ time = player.getCurrentTime(); }catch(e){ return; }
+    if(!player || typeof player.getCurrentTime !== 'function' || typeof player.getPlayerState !== 'function') return;
+    let time = 0, rate = 1, state = -1;
+    try{
+      time = player.getCurrentTime();
+      rate = (typeof player.getPlaybackRate === 'function') ? (player.getPlaybackRate() || 1) : 1;
+      state = player.getPlayerState();
+    }catch(e){ return; }
     roomRef.child(kind + '/state').set({
-      action: action,
+      playing: state === 1, // YT.PlayerState.PLAYING
       time: time,
+      rate: rate,
       ts: Date.now(),
       by: myPresenceId
     });
   }
 
-  // Duraklatılmışken sürükleme (scrub) yapılırsa play/pause olayı tetiklenmeyebilir,
-  // bu yüzden kısa aralıklarla zaman sıçraması olup olmadığını kontrol ediyoruz.
+  // Sürükleyerek sarma (scrub) sırasında play/pause olayı hep tetiklenmeyebilir,
+  // bu yüzden oynarken periyodik olarak zamanı yeniden yayınlayıp kaymayı düzeltiyoruz.
   function startSyncPoll(kind){
     if(ytSync[kind].pollTimer) clearInterval(ytSync[kind].pollTimer);
-    ytSync[kind].lastPolledTime = null;
-    ytSync[kind].heartbeatTick = 0;
     ytSync[kind].pollTimer = setInterval(() => {
-      const player = ytPlayers[kind];
-      if(!player || typeof player.getCurrentTime !== 'function' || typeof player.getPlayerState !== 'function') return;
       if(ytSync[kind].applyingRemote) return;
-      let state, t;
-      try{ state = player.getPlayerState(); t = player.getCurrentTime(); }catch(e){ return; }
-      if(state === 2){ // PAUSED — sürükleme burada state değiştirmeyebilir
-        if(ytSync[kind].lastPolledTime !== null && Math.abs(t - ytSync[kind].lastPolledTime) > 1){
-          broadcastPlaybackState(kind, 'pause');
-        }
-        ytSync[kind].lastPolledTime = t;
-      } else if(state === 1){ // PLAYING — zamanla oluşan kaymayı düzeltmek için periyodik olarak zamanı yeniden yayınla
-        ytSync[kind].lastPolledTime = null;
-        ytSync[kind].heartbeatTick = (ytSync[kind].heartbeatTick || 0) + 1;
-        if(ytSync[kind].heartbeatTick % 3 === 0){ // ~3.6 sn'de bir
-          broadcastPlaybackState(kind, 'play');
-        }
-      } else {
-        ytSync[kind].lastPolledTime = null;
-      }
-    }, 1200);
+      const player = ytPlayers[kind];
+      if(!player || typeof player.getPlayerState !== 'function') return;
+      let state;
+      try{ state = player.getPlayerState(); }catch(e){ return; }
+      if(state === 1) broadcastYtState(kind); // PLAYING — ~2.5 sn'de bir zaman/hız düzeltmesi yayınla
+    }, 2500);
   }
 
   function stopSyncPoll(kind){
     if(ytSync[kind].pollTimer){ clearInterval(ytSync[kind].pollTimer); ytSync[kind].pollTimer = null; }
   }
 
-  // Diğer taraftan gelen play/pause/seek olaylarını dinle (kind başına bir kere kurulur)
+  // Diğer taraftan gelen play/pause/seek/hız olaylarını dinle (kind başına bir kere kurulur —
+  // video değişse bile aynı dinleyici geçerli kalır çünkü ytPlayers[kind] içeriden okunuyor).
   function attachStateListener(kind){
     if(ytSync[kind].stateListenerAttached || !roomRef) return;
     ytSync[kind].stateListenerAttached = true;
@@ -2296,21 +2586,62 @@
 
       ytSync[kind].applyingRemote = true;
       try{
+        const rate = s.rate || 1;
         let targetTime = s.time || 0;
-        if(s.action === 'play'){
+        if(s.playing){
           const elapsed = (Date.now() - (s.ts || Date.now())) / 1000;
-          targetTime = targetTime + Math.max(0, elapsed);
+          targetTime += Math.max(0, elapsed) * rate;
+        }
+        if(typeof player.setPlaybackRate === 'function'){
+          let curRate = 1;
+          try{ curRate = player.getPlaybackRate() || 1; }catch(e){}
+          if(Math.abs(curRate - rate) > 0.01) player.setPlaybackRate(rate);
         }
         let cur = 0;
         try{ cur = player.getCurrentTime(); }catch(e){}
-        if(Math.abs(cur - targetTime) > 1.2){ player.seekTo(targetTime, true); }
-        if(s.action === 'play' && typeof player.playVideo === 'function') player.playVideo();
-        else if(s.action === 'pause' && typeof player.pauseVideo === 'function') player.pauseVideo();
+        if(Math.abs(cur - targetTime) > 1){ player.seekTo(targetTime, true); }
+        // Oynatıcı sessiz başlatıldığı için play() burada tarayıcı tarafından ASLA engellenmez.
+        if(s.playing && typeof player.playVideo === 'function') player.playVideo();
+        else if(!s.playing && typeof player.pauseVideo === 'function') player.pauseVideo();
       }catch(e){
         console.error('YouTube senkronizasyonu uygulanamadı:', e);
       }
-      setTimeout(() => { ytSync[kind].applyingRemote = false; }, 700);
+      setTimeout(() => { ytSync[kind].applyingRemote = false; }, 900);
     });
+  }
+
+  function updateYtMuteBtn(kind){
+    const ids = ytSyncElIds(kind);
+    const btn = document.getElementById(ids.mute);
+    const player = ytPlayers[kind];
+    if(!btn || !player || typeof player.isMuted !== 'function') return;
+    let muted = true;
+    try{ muted = player.isMuted(); }catch(e){}
+    btn.textContent = muted ? '🔇 Sesi Aç' : '🔊 Sesi Kapat';
+  }
+
+  function toggleYtMute(kind){
+    const player = ytPlayers[kind];
+    if(!player) return;
+    try{
+      if(typeof player.isMuted === 'function' && player.isMuted()) player.unMute();
+      else player.mute();
+    }catch(e){}
+    updateYtMuteBtn(kind);
+  }
+
+  function setYtRate(kind, rate){
+    const player = ytPlayers[kind];
+    if(!player || typeof player.setPlaybackRate !== 'function') return;
+    try{ player.setPlaybackRate(rate); }catch(e){ return; }
+    broadcastYtState(kind);
+    const ids = ytSyncElIds(kind);
+    const row = document.getElementById(ids.speedRow);
+    if(row){
+      row.querySelectorAll('button').forEach(b => {
+        b.classList.toggle('active', parseFloat(b.dataset.rate) === rate);
+      });
+    }
   }
 
   function loadYtPlayer(kind, videoId){
@@ -2318,6 +2649,17 @@
     const errorBoxId = kind === 'song' ? 'songErrorBox' : 'videoErrorBox';
     const errorBox = document.getElementById(errorBoxId);
     if(errorBox){ errorBox.style.display = 'none'; errorBox.innerHTML = ''; }
+
+    // Önceki videodan kalma senkron durumunu temizle ki yeni video eskinin
+    // zaman/hızını miras almasın.
+    if(roomRef) roomRef.child(kind + '/state').remove();
+    ytSync[kind].applyingRemote = false;
+
+    const ids = ytSyncElIds(kind);
+    const bar = document.getElementById(ids.bar);
+    const speedRow = document.getElementById(ids.speedRow);
+    if(bar) bar.style.display = 'flex';
+    if(speedRow) speedRow.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.rate === '1'));
 
     const build = () => {
       if(ytPlayers[kind] && ytPlayers[kind].destroy){
@@ -2327,15 +2669,23 @@
       resetContainer(containerId);
       ytPlayers[kind] = new YT.Player(containerId, {
         videoId: videoId,
-        playerVars: { autoplay: 1, rel: 0 },
+        playerVars: { autoplay: 1, rel: 0, playsinline: 1, mute: 1 },
         events: {
-          onReady: function(){
+          onReady: function(ev){
+            // Sessiz başlat — bkz. yukarıdaki açıklama: bu, senkronun HER ZAMAN
+            // çalışmasını garanti eder. Kullanıcı "Sesi Aç" ile açabilir.
+            try{ ev.target.mute(); }catch(e){}
+            updateYtMuteBtn(kind);
             startSyncPoll(kind);
             attachStateListener(kind);
           },
           onStateChange: function(e){
-            if(e.data === YT.PlayerState.PLAYING) broadcastPlaybackState(kind, 'play');
-            else if(e.data === YT.PlayerState.PAUSED) broadcastPlaybackState(kind, 'pause');
+            if(e.data === YT.PlayerState.PLAYING || e.data === YT.PlayerState.PAUSED){
+              broadcastYtState(kind);
+            }
+          },
+          onPlaybackRateChange: function(){
+            broadcastYtState(kind);
           },
           onError: function(e){
             if(errorBox){
@@ -2445,6 +2795,8 @@
       if(!s || !s.started){
         document.getElementById('songSetup').style.display = 'block';
         document.getElementById('songPlay').style.display = 'none';
+        if(ytPlayers.song && ytPlayers.song.destroy){ try{ ytPlayers.song.destroy(); }catch(e){} ytPlayers.song = null; }
+        stopSyncPoll('song');
         lastSongId = null;
         return;
       }
@@ -2507,6 +2859,8 @@
   function resetSongGame(){
     document.getElementById('songUrl').value = '';
     document.getElementById('songAnswer').value = '';
+    if(ytPlayers.song && ytPlayers.song.destroy){ try{ ytPlayers.song.destroy(); }catch(e){} ytPlayers.song = null; }
+    stopSyncPoll('song');
     if(roomRef) roomRef.child('song').remove();
   }
 
@@ -2519,11 +2873,23 @@
       if(!s){
         document.getElementById('videoBox').style.display = 'none';
         document.getElementById('videoHint').style.display = 'none';
+        const bar = document.getElementById('videoSyncBar');
+        const hint = document.getElementById('videoSyncHint');
+        const closeBtn = document.getElementById('videoCloseBtn');
+        if(bar) bar.style.display = 'none';
+        if(hint) hint.style.display = 'none';
+        if(closeBtn) closeBtn.style.display = 'none';
+        if(ytPlayers.video && ytPlayers.video.destroy){ try{ ytPlayers.video.destroy(); }catch(e){} ytPlayers.video = null; }
+        stopSyncPoll('video');
         lastVideoId = null;
         return;
       }
       document.getElementById('videoBox').style.display = 'block';
       document.getElementById('videoHint').style.display = 'block';
+      const hint = document.getElementById('videoSyncHint');
+      const closeBtn = document.getElementById('videoCloseBtn');
+      if(hint) hint.style.display = 'block';
+      if(closeBtn) closeBtn.style.display = 'inline-block';
       if(s.id !== lastVideoId){
         lastVideoId = s.id;
         loadYtPlayer('video', s.id);
@@ -2537,6 +2903,12 @@
     const id = extractYouTubeId(url);
     if(!id){ alert('Geçerli bir YouTube linki girin.'); return; }
     roomRef.child('video').set({ id });
+  }
+
+  function closeVideo(){
+    if(!roomRef) return;
+    document.getElementById('videoUrl').value = '';
+    roomRef.child('video').remove();
   }
 
   // ---------- Emoji Tahmin Et — Firebase senkron ----------
@@ -2687,6 +3059,154 @@
   function resetRpsScore(){
     if(!roomRef) return;
     roomRef.child('rps').update({ p1: null, p2: null, scored: false, score: { p1: 0, p2: 0 } });
+  }
+
+  // ---------- Adam Asmaca (Hangman) — Firebase senkron ----------
+  // Mantık: Biriniz gizlice bir kelime/kelime grubu girip "Başlat"a basar (song/emoji
+  // oyunlarıyla aynı desen). Kelime Firebase'de saklanır (diğer gizli cevaplar gibi),
+  // ama harfler doğru tahmin edildikçe ikinizin ekranında da açığa çıkar. Yanlış her
+  // tahminde adam asmaca figürü bir parça daha tamamlanır (toplam 6 yanlışta oyun biter).
+  const HANGMAN_ALPHABET = ['A','B','C','Ç','D','E','F','G','Ğ','H','I','İ','J','K','L','M','N','O','Ö','P','R','S','Ş','T','U','Ü','V','Y','Z'];
+  const HANGMAN_MAX_WRONG = 6;
+  let hangmanWord = '';
+  let hangmanGuessed = [];
+  let hangmanWrong = [];
+  let lastHangmanTs = null;
+
+  function turkishUpper(str){
+    // Türkçe'de standart .toUpperCase() "i" harfini yanlış büyütür (İ yerine I),
+    // bu yüzden dönüşümü elle yapıyoruz.
+    return str
+      .replace(/i/g, 'İ')
+      .replace(/ı/g, 'I')
+      .replace(/ğ/g, 'Ğ')
+      .replace(/ü/g, 'Ü')
+      .replace(/ş/g, 'Ş')
+      .replace(/ö/g, 'Ö')
+      .replace(/ç/g, 'Ç')
+      .toUpperCase();
+  }
+
+  function initHangmanSync(){
+    roomRef.child('hangman').on('value', snap => {
+      const s = snap.val();
+      if(!s || !s.started){
+        document.getElementById('hangmanSetup').style.display = 'block';
+        document.getElementById('hangmanPlay').style.display = 'none';
+        lastHangmanTs = null;
+        return;
+      }
+      document.getElementById('hangmanSetup').style.display = 'none';
+      document.getElementById('hangmanPlay').style.display = 'block';
+
+      hangmanWord = s.word || '';
+      hangmanGuessed = s.guessed || [];
+      hangmanWrong = s.wrong || [];
+
+      if(s.ts !== lastHangmanTs){
+        lastHangmanTs = s.ts;
+      }
+
+      renderHangmanFigure();
+      renderHangmanWord();
+      renderHangmanKeyboard();
+
+      const won = hangmanWord.split('').every(ch => ch === ' ' || hangmanGuessed.includes(ch));
+      const lost = hangmanWrong.length >= HANGMAN_MAX_WRONG;
+      const statusEl = document.getElementById('hangmanStatus');
+      const wrongCountEl = document.getElementById('hangmanWrongCount');
+      if(wrongCountEl) wrongCountEl.textContent = hangmanWrong.length;
+
+      if(won){
+        statusEl.innerHTML = '🎉 <b>Kazandınız!</b> Kelime: <b>' + hangmanWord + '</b>';
+        statusEl.className = 'hangman-status win';
+      } else if(lost){
+        statusEl.innerHTML = '😢 <b>Kaybettiniz.</b> Kelime: <b>' + hangmanWord + '</b>';
+        statusEl.className = 'hangman-status lose';
+      } else {
+        statusEl.innerHTML = 'Bir harf seçin — kalan hak: <b>' + (HANGMAN_MAX_WRONG - hangmanWrong.length) + '</b>';
+        statusEl.className = 'hangman-status';
+      }
+    });
+  }
+
+  function renderHangmanFigure(){
+    const wrongN = hangmanWrong.length;
+    for(let i = 1; i <= HANGMAN_MAX_WRONG; i++){
+      const part = document.getElementById('hmPart' + i);
+      if(part) part.style.display = (i <= wrongN) ? 'block' : 'none';
+    }
+  }
+
+  function renderHangmanWord(){
+    const wrap = document.getElementById('hangmanWord');
+    if(!wrap) return;
+    wrap.innerHTML = '';
+    hangmanWord.split('').forEach(ch => {
+      const box = document.createElement('div');
+      if(ch === ' '){
+        box.className = 'hangman-letter space';
+      } else {
+        const revealed = hangmanGuessed.includes(ch);
+        box.className = 'hangman-letter' + (revealed ? ' revealed' : '');
+        box.textContent = revealed ? ch : '';
+      }
+      wrap.appendChild(box);
+    });
+  }
+
+  function renderHangmanKeyboard(){
+    const wrap = document.getElementById('hangmanKeyboard');
+    if(!wrap) return;
+    const won = hangmanWord.split('').every(ch => ch === ' ' || hangmanGuessed.includes(ch));
+    const lost = hangmanWrong.length >= HANGMAN_MAX_WRONG;
+    const over = won || lost;
+    wrap.innerHTML = '';
+    HANGMAN_ALPHABET.forEach(letter => {
+      const btn = document.createElement('button');
+      const used = hangmanGuessed.includes(letter) || hangmanWrong.includes(letter);
+      let cls = 'hangman-key';
+      if(hangmanGuessed.includes(letter)) cls += ' correct';
+      else if(hangmanWrong.includes(letter)) cls += ' wrong';
+      btn.className = cls;
+      btn.textContent = letter;
+      btn.disabled = used || over;
+      btn.addEventListener('click', () => guessHangmanLetter(letter));
+      wrap.appendChild(btn);
+    });
+  }
+
+  // Harf tahmini de XOX gibi transaction ile atomik uygulanır — iki taraf da
+  // aynı anda farklı harfe basarsa bile hiçbir tahmin kaybolmaz ya da çakışmaz.
+  function guessHangmanLetter(letter){
+    if(!roomRef) return;
+    roomRef.child('hangman').transaction(cur => {
+      if(!cur || !cur.started) return;
+      const guessed = cur.guessed || [];
+      const wrong = cur.wrong || [];
+      if(guessed.includes(letter) || wrong.includes(letter)) return; // zaten denenmiş — iptal
+      const won = (cur.word || '').split('').every(ch => ch === ' ' || guessed.includes(ch));
+      const lost = wrong.length >= HANGMAN_MAX_WRONG;
+      if(won || lost) return; // oyun bitmiş — iptal
+      if((cur.word || '').includes(letter)){
+        return Object.assign({}, cur, { guessed: guessed.concat([letter]) });
+      }
+      return Object.assign({}, cur, { wrong: wrong.concat([letter]) });
+    });
+  }
+
+  function startHangmanGame(){
+    if(!roomRef) return;
+    const raw = document.getElementById('hangmanWordInput').value.trim();
+    if(!raw){ alert('Bir kelime ya da kelime grubu girin.'); return; }
+    const word = turkishUpper(raw).replace(/[^A-ZÇĞİÖŞÜ ]/g, '').replace(/\s+/g, ' ').trim();
+    if(!word){ alert('Geçerli bir kelime girin (sadece harfler).'); return; }
+    document.getElementById('hangmanWordInput').value = '';
+    roomRef.child('hangman').set({ word: word, guessed: [], wrong: [], started: true, ts: Date.now() });
+  }
+
+  function resetHangmanGame(){
+    if(roomRef) roomRef.child('hangman').remove();
   }
 </script>
 
