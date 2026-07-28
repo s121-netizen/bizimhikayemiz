@@ -654,6 +654,11 @@
   .hangman-figure-box svg .gallows{ stroke: var(--ink-faint); }
   .hangman-wrong-label{ font-size:13px; color: var(--ink-dim); font-weight:600; }
   .hangman-wrong-label b{ color: var(--rose); }
+  .hangman-category{
+    font-size:12.5px; font-weight:700; color: var(--violet);
+    background: rgba(139,92,246,.14); border:1px solid rgba(139,92,246,.35);
+    padding:5px 14px; border-radius:20px; letter-spacing:.02em;
+  }
   .hangman-word{
     display:flex; flex-wrap:wrap; justify-content:center; gap:8px;
     max-width:520px;
@@ -1507,6 +1512,26 @@
       </div>
       <div class="panel-box" style="text-align:center;">
         <div class="song-setup" id="songSetup">
+          <label class="field-label">Şarkı Ara</label>
+          <div class="song-row">
+            <input type="text" id="songSearchInput" placeholder="Sanatçı - şarkı adı yaz..." onkeydown="if(event.key==='Enter'){ event.preventDefault(); searchSongOnYoutube(); }">
+            <button type="button" onclick="searchSongOnYoutube()">🔍 Ara</button>
+          </div>
+
+          <div id="songSearchPreview" style="display:none; margin: 4px 0 18px;">
+            <div class="song-video-box" style="max-width:320px; margin:0 auto 10px;">
+              <div id="songSearchFrame"></div>
+            </div>
+            <div id="songSearchTitle" style="font-size:12.5px; color:var(--ink-dim); margin-bottom:12px;"></div>
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+              <button type="button" class="reset-btn" onclick="songSearchPrev()">⬅️ Önceki</button>
+              <button type="button" class="reset-btn" onclick="songSearchNext()">Sonraki ➡️</button>
+              <button type="button" class="reset-btn" onclick="pickSongSearchResult()">✅ Bu Şarkıyı Seç</button>
+            </div>
+          </div>
+
+          <div class="gate-divider">veya linki yapıştır</div>
+
           <label class="field-label">YouTube Linki</label>
           <div class="song-row">
             <input type="text" id="songUrl" placeholder="https://youtube.com/watch?v=...">
@@ -1705,15 +1730,22 @@
       </div>
       <div class="panel-box" style="text-align:center;">
         <div class="hangman-setup" id="hangmanSetup">
+          <label class="field-label">Kategori (opsiyonel)</label>
+          <div class="song-row">
+            <input type="text" id="hangmanCategoryInput" placeholder="Örn. Hayvanlar, Ülkeler, Filmler..." maxlength="24">
+          </div>
           <label class="field-label">Kelime / Kelime Grubu (gizli kalır)</label>
           <div class="song-row">
             <input type="text" id="hangmanWordInput" placeholder="Örn. İSTANBUL BOĞAZI" maxlength="40">
             <button onclick="startHangmanGame()">Başlat</button>
           </div>
+          <div class="gate-divider">veya</div>
+          <button class="reset-btn" type="button" onclick="startHangmanRandomGame()" style="width:100%;">🎲 Rastgele Kelime ile Başlat</button>
         </div>
 
         <div id="hangmanPlay" style="display:none;">
           <div class="hangman-wrap">
+            <div class="hangman-category" id="hangmanCategory" style="display:none;"></div>
             <div class="hangman-figure-box">
               <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
                 <line class="hp gallows" x1="10" y1="112" x2="80" y2="112"/>
@@ -3303,7 +3335,86 @@
     }
   }
 
-  // ---------- Sliding Puzzle — Firebase senkron ----------
+  // ---------- Şarkı arama (API key gerekmez) ----------
+  // YouTube IFrame API'nin "listType: search" özelliğini kullanır — bir video/playlist ID'si
+  // yerine arama sorgusu vererek küçük bir önizleme oynatıcısı açar. Sonuçlar arasında
+  // "Sonraki/Önceki" ile gezip beğendiğinizde "Bu Şarkıyı Seç" ile o videonun linkini
+  // otomatik olarak YouTube Linki alanına doldurur.
+  let songSearchPlayer = null;
+
+  function searchSongOnYoutube(){
+    const q = (document.getElementById('songSearchInput').value || '').trim();
+    if(!q) return;
+    document.getElementById('songSearchPreview').style.display = 'block';
+
+    const build = () => {
+      if(songSearchPlayer && songSearchPlayer.loadPlaylist){
+        try{
+          songSearchPlayer.loadPlaylist({ listType:'search', list:q });
+          songSearchPlayer.mute();
+        }catch(e){}
+        return;
+      }
+      resetContainer('songSearchFrame');
+      songSearchPlayer = new YT.Player('songSearchFrame', {
+        height:'180', width:'100%',
+        playerVars: { autoplay:1, rel:0, playsinline:1, mute:1, listType:'search', list:q },
+        events: {
+          onReady: function(ev){
+            try{ ev.target.mute(); }catch(e){}
+            setTimeout(updateSongSearchTitle, 400);
+          },
+          onStateChange: function(){ setTimeout(updateSongSearchTitle, 300); }
+        }
+      });
+    };
+
+    if(ytApiReady && window.YT && window.YT.Player){
+      build();
+    } else {
+      const check = setInterval(() => {
+        if(window.YT && window.YT.Player){
+          clearInterval(check);
+          ytApiReady = true;
+          build();
+        }
+      }, 200);
+    }
+  }
+
+  function updateSongSearchTitle(){
+    const el = document.getElementById('songSearchTitle');
+    if(!el || !songSearchPlayer || !songSearchPlayer.getVideoData) return;
+    try{
+      const d = songSearchPlayer.getVideoData();
+      el.textContent = (d && d.title) ? ('🎧 ' + d.title) : '';
+    }catch(e){}
+  }
+
+  function songSearchNext(){
+    if(!songSearchPlayer || !songSearchPlayer.nextVideo) return;
+    try{ songSearchPlayer.nextVideo(); }catch(e){}
+    setTimeout(updateSongSearchTitle, 500);
+  }
+  function songSearchPrev(){
+    if(!songSearchPlayer || !songSearchPlayer.previousVideo) return;
+    try{ songSearchPlayer.previousVideo(); }catch(e){}
+    setTimeout(updateSongSearchTitle, 500);
+  }
+
+  function pickSongSearchResult(){
+    if(!songSearchPlayer || !songSearchPlayer.getVideoData) return;
+    let d;
+    try{ d = songSearchPlayer.getVideoData(); }catch(e){ return; }
+    if(!d || !d.video_id) return;
+    document.getElementById('songUrl').value = 'https://www.youtube.com/watch?v=' + d.video_id;
+    const answerEl = document.getElementById('songAnswer');
+    if(answerEl && !answerEl.value.trim() && d.title){
+      answerEl.value = d.title; // otomatik dolduruyoruz, istersen gizlemek için değiştirebilirsin
+    }
+    try{ songSearchPlayer.stopVideo(); }catch(e){}
+    document.getElementById('songSearchPreview').style.display = 'none';
+  }
   let puzzleTiles = [1,2,3,4,5,6,7,8,0];
   const PUZZLE_SIZE = 3;
 
@@ -3436,8 +3547,13 @@
     const url = document.getElementById('songUrl').value.trim();
     const answer = document.getElementById('songAnswer').value.trim();
     const id = extractYouTubeId(url);
-    if(!id){ alert('Geçerli bir YouTube linki girin.'); return; }
+    if(!id){ alert('Geçerli bir YouTube linki girin ya da yukarıdan arama yapıp bir şarkı seçin.'); return; }
     if(!answer){ alert('Şarkı adını (cevabı) girin.'); return; }
+    if(songSearchPlayer && songSearchPlayer.stopVideo){ try{ songSearchPlayer.stopVideo(); }catch(e){} }
+    const previewBox = document.getElementById('songSearchPreview');
+    if(previewBox) previewBox.style.display = 'none';
+    const searchInput = document.getElementById('songSearchInput');
+    if(searchInput) searchInput.value = '';
     roomRef.child('song').set({ id, answer, started: true, revealed: false });
   }
 
@@ -3665,6 +3781,41 @@
   let hangmanGuessed = [];
   let hangmanWrong = [];
   let lastHangmanTs = null;
+  let lastRandomHangmanWord = null;
+
+  // Rastgele kelime havuzu — kategori + kelime çiftleri. "🎲 Rastgele Kelime ile Başlat"
+  // butonuna basınca buradan rastgele biri seçilir, kimse kelimeyi önceden bilmez.
+  const HANGMAN_WORD_BANK = [
+    { category:'Hayvanlar', word:'ZÜRAFA' }, { category:'Hayvanlar', word:'PENGUEN' },
+    { category:'Hayvanlar', word:'KANGURU' }, { category:'Hayvanlar', word:'YUNUS' },
+    { category:'Hayvanlar', word:'KAPLUMBAĞA' }, { category:'Hayvanlar', word:'ÇITA' },
+    { category:'Meyveler', word:'KARPUZ' }, { category:'Meyveler', word:'NAR' },
+    { category:'Meyveler', word:'ÇİLEK' }, { category:'Meyveler', word:'MUZ' },
+    { category:'Meyveler', word:'AVOKADO' }, { category:'Meyveler', word:'KIRAZ' },
+    { category:'Ülkeler', word:'JAPONYA' }, { category:'Ülkeler', word:'BREZİLYA' },
+    { category:'Ülkeler', word:'İTALYA' }, { category:'Ülkeler', word:'KANADA' },
+    { category:'Ülkeler', word:'MISIR' }, { category:'Ülkeler', word:'YUNANİSTAN' },
+    { category:'Şehirler', word:'İSTANBUL' }, { category:'Şehirler', word:'PARİS' },
+    { category:'Şehirler', word:'NEW YORK' }, { category:'Şehirler', word:'ROMA' },
+    { category:'Şehirler', word:'KAPADOKYA' }, { category:'Şehirler', word:'ANTALYA' },
+    { category:'Meslekler', word:'ÖĞRETMEN' }, { category:'Meslekler', word:'MÜHENDİS' },
+    { category:'Meslekler', word:'AŞÇI' }, { category:'Meslekler', word:'PİLOT' },
+    { category:'Meslekler', word:'DOKTOR' }, { category:'Meslekler', word:'MİMAR' },
+    { category:'Yiyecekler', word:'MANTI' }, { category:'Yiyecekler', word:'PİZZA' },
+    { category:'Yiyecekler', word:'BAKLAVA' }, { category:'Yiyecekler', word:'LAHMACUN' },
+    { category:'Yiyecekler', word:'SUSHI' }, { category:'Yiyecekler', word:'MERCİMEK ÇORBASI' },
+    { category:'Eşyalar', word:'KULAKLIK' }, { category:'Eşyalar', word:'ŞEMSİYE' },
+    { category:'Eşyalar', word:'AYNA' }, { category:'Eşyalar', word:'BAVUL' },
+    { category:'Eşyalar', word:'YASTIK' }, { category:'Eşyalar', word:'MUM' },
+    { category:'Duygular', word:'ÖZLEM' }, { category:'Duygular', word:'HEYECAN' },
+    { category:'Duygular', word:'MUTLULUK' }, { category:'Duygular', word:'GURUR' },
+    { category:'Sporlar', word:'YÜZME' }, { category:'Sporlar', word:'BASKETBOL' },
+    { category:'Sporlar', word:'TENİS' }, { category:'Sporlar', word:'BİSİKLET' },
+    { category:'Renkler', word:'TURKUAZ' }, { category:'Renkler', word:'BORDO' },
+    { category:'Renkler', word:'LACİVERT' }, { category:'Renkler', word:'MOR' },
+    { category:'Filmler', word:'TİTANİK' }, { category:'Filmler', word:'AVATAR' },
+    { category:'Filmler', word:'LA LA LAND' }, { category:'Filmler', word:'İNTERSTELLAR' }
+  ];
 
   function turkishUpper(str){
     // Türkçe'de standart .toUpperCase() "i" harfini yanlış büyütür (İ yerine I),
@@ -3695,6 +3846,16 @@
       hangmanWord = s.word || '';
       hangmanGuessed = s.guessed || [];
       hangmanWrong = s.wrong || [];
+
+      const catEl = document.getElementById('hangmanCategory');
+      if(catEl){
+        if(s.category){
+          catEl.textContent = '🏷️ Kategori: ' + s.category;
+          catEl.style.display = 'inline-block';
+        } else {
+          catEl.style.display = 'none';
+        }
+      }
 
       if(s.ts !== lastHangmanTs){
         lastHangmanTs = s.ts;
@@ -3794,8 +3955,23 @@
     if(!raw){ alert('Bir kelime ya da kelime grubu girin.'); return; }
     const word = turkishUpper(raw).replace(/[^A-ZÇĞİÖŞÜ ]/g, '').replace(/\s+/g, ' ').trim();
     if(!word){ alert('Geçerli bir kelime girin (sadece harfler).'); return; }
+    const catRaw = (document.getElementById('hangmanCategoryInput').value || '').trim();
     document.getElementById('hangmanWordInput').value = '';
-    roomRef.child('hangman').set({ word: word, guessed: [], wrong: [], started: true, ts: Date.now() });
+    document.getElementById('hangmanCategoryInput').value = '';
+    roomRef.child('hangman').set({ word: word, category: catRaw || null, guessed: [], wrong: [], started: true, ts: Date.now() });
+  }
+
+  // Rastgele kelime: havuzdan (son seçilenle aynısı gelmesin diye basit bir kontrolle)
+  // bir kelime+kategori çifti seçilip doğrudan oyun başlatılır — kimse kelimeyi önceden
+  // yazmaz, ikiniz de sıfırdan birlikte tahmin edersiniz.
+  function startHangmanRandomGame(){
+    if(!roomRef) return;
+    let pick;
+    do{
+      pick = HANGMAN_WORD_BANK[Math.floor(Math.random() * HANGMAN_WORD_BANK.length)];
+    } while(HANGMAN_WORD_BANK.length > 1 && lastRandomHangmanWord && pick.word === lastRandomHangmanWord);
+    lastRandomHangmanWord = pick.word;
+    roomRef.child('hangman').set({ word: pick.word, category: pick.category, guessed: [], wrong: [], started: true, ts: Date.now() });
   }
 
   function resetHangmanGame(){
