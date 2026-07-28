@@ -1282,6 +1282,9 @@
     <span class="mt-name" id="mobileUserName">İsimsiz</span>
   </div>
   <div class="mt-presence" id="mtPresence"></div>
+  <button class="room-badge" id="inviteBtnMobile" onclick="inviteFriend()" title="Partnerini davet et">
+    <span>🔗</span>
+  </button>
   <div class="room-badge" id="roomBadgeMobile" onclick="handleRoomBadgeClick()" title="Kopyalamak için tıkla, katılanları görmek için 3 kez tıkla">
     <span><span class="partner-dot" id="partnerDotMobile"></span>Oda: <b id="roomCodeLabelMobile">—</b></span>
     <span>📋</span>
@@ -1339,6 +1342,10 @@
       <span><span class="partner-dot" id="partnerDot"></span>Oda: <b id="roomCodeLabel">—</b></span>
       <span>📋</span>
     </div>
+
+    <button class="room-badge" id="inviteBtn" onclick="inviteFriend()" title="Partnerine davet linki gönder" style="width:100%; cursor:pointer; font:inherit; margin-top:8px;">
+      <span>🔗 Partnerini Davet Et</span>
+    </button>
 
     <nav class="nav-main" id="navMain">
       <div class="nav-item active" data-view="home"><span class="ic">🏠</span>Ana Sayfa</div>
@@ -1853,6 +1860,21 @@
     document.getElementById('gateError').textContent = msg;
   }
 
+  // Davet linkiyle gelindiyse (?room=KOD), oda kodu otomatik dolsun — kullanıcı
+  // sadece adını yazıp "Katıl"a bassın, kodu elle yazmasına gerek kalmasın.
+  (function prefillRoomFromInviteLink(){
+    try{
+      const params = new URLSearchParams(window.location.search);
+      const invited = (params.get('room') || '').trim().toUpperCase();
+      if(invited){
+        const input = document.getElementById('joinCodeInput');
+        if(input) input.value = invited;
+        const nameInput = document.getElementById('nameInput');
+        if(nameInput) setTimeout(() => nameInput.focus(), 50);
+      }
+    }catch(e){}
+  })();
+
   function generateRoomCode(){
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let code = '';
@@ -1917,6 +1939,7 @@
     claimRoles();
     roomRef.child('roles').on('value', snap => {
       const all = snap.val() || {};
+      reconcileRoleConflicts(all);
       const mine = all[myPresenceId] || {};
       myXoxRole = mine.xox || null;
       updateQaRoleLabel();
@@ -1955,9 +1978,31 @@
       const usedRps = new Set(Object.values(current).map(r => r && r.rps).filter(Boolean));
       const xoxRole = !usedXox.has('X') ? 'X' : (!usedXox.has('O') ? 'O' : null);
       const rpsRole = !usedRps.has('P1') ? 'P1' : (!usedRps.has('P2') ? 'P2' : null);
-      current[myPresenceId] = { xox: xoxRole, rps: rpsRole };
+      current[myPresenceId] = { xox: xoxRole, rps: rpsRole, ts: Date.now() };
       return current;
     });
+  }
+
+  // Kendi kendini onaran çakışma düzeltmesi: normalde transaction() aynı role iki
+  // cihazın birden atanmasını zaten engeller, ama eski/yarım kalmış oda verisi ya da
+  // ağ kesintisi yüzünden nadiren iki cihaz da "X" (ya da "P1") olarak kaydedilmiş
+  // olabilir. Her cihaz SADECE KENDİ satırına dokunur (çakışma yok): odaya SONRADAN
+  // katılan taraf (ts'i büyük olan) otomatik olarak boş kalan diğer role geçer.
+  function reconcileRoleConflicts(all){
+    const mine = all[myPresenceId];
+    if(!mine) return;
+    const fix = (key, roleA, roleB) => {
+      const myRole = mine[key];
+      if(!myRole) return;
+      const others = Object.entries(all).filter(([id]) => id !== myPresenceId);
+      const sameRoleEarlier = others.some(([, r]) => r && r[key] === myRole && (r.ts || 0) < (mine.ts || 0));
+      if(!sameRoleEarlier) return; // çakışma yok, ya da ben daha önce katılmışım — dokunma
+      const otherRole = myRole === roleA ? roleB : roleA;
+      const otherTaken = others.some(([, r]) => r && r[key] === otherRole);
+      roomRef.child('roles').child(myPresenceId).child(key).set(otherTaken ? null : otherRole);
+    };
+    fix('xox', 'X', 'O');
+    fix('rps', 'P1', 'P2');
   }
 
   function copyRoomCode(){
@@ -1968,6 +2013,42 @@
       label.textContent = 'Kopyalandı!';
       setTimeout(() => { label.textContent = old; }, 1200);
     }).catch(() => {});
+  }
+
+  // ---------- Davet Et ----------
+  // Oda koduyla birlikte tıklanabilir bir link üretir (?room=KOD), partner linke
+  // tıklayınca oda kodu otomatik dolar (bkz. prefillRoomFromInviteLink). Mobilde
+  // yerel paylaşım menüsü (Web Share API) açılır; masaüstünde link panoya kopyalanır.
+  function getInviteLink(){
+    return window.location.origin + window.location.pathname + '?room=' + encodeURIComponent(ROOM);
+  }
+
+  function inviteFriend(){
+    if(!ROOM) return;
+    const url = getInviteLink();
+    const shareData = {
+      title: 'Lover — Birlikte Vakit Geçirin',
+      text: (USER_NAME || 'Partnerin') + ' seni "' + ROOM + '" odasına davet ediyor 💞',
+      url: url
+    };
+    if(navigator.share){
+      navigator.share(shareData).catch(() => {});
+      return;
+    }
+    navigator.clipboard.writeText(url).then(() => {
+      showInviteToast('🔗 Davet linki kopyalandı — partnerine gönder!');
+    }).catch(() => {
+      window.prompt('Bu linki partnerine gönder:', url);
+    });
+  }
+
+  function showInviteToast(msg){
+    const el = document.getElementById('navSyncToast');
+    if(!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2400);
   }
 
   // ---------- Room badge: 1 click = copy, 3 clicks = participant list ----------
