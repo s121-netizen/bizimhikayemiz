@@ -402,6 +402,98 @@
   }
   .reset-btn.ghost:hover{ filter:none; background: var(--panel-hover); color:#fff; }
 
+  /* Soru Cevap (QA) */
+  .qa-wrap{ display:flex; flex-direction:column; gap:22px; align-items:stretch; }
+  .qa-section{ display:flex; flex-direction:column; gap:10px; }
+  .qa-section-title{ font-size:14px; font-weight:800; color:#fff; }
+  .qa-list{ display:flex; flex-direction:column; gap:12px; }
+  .qa-empty{ font-size:12.5px; color: var(--ink-faint); }
+
+  .qa-card{
+    background: var(--bg-soft);
+    border: 1px solid var(--stroke);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .qa-card-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .qa-card-text{ font-size:14px; font-weight:700; color:#fff; flex:1; word-break:break-word; }
+  .qa-card-del{
+    background:none; border:none; color: var(--ink-faint); cursor:pointer;
+    font-size:16px; line-height:1; flex-shrink:0; padding:2px 4px;
+  }
+  .qa-card-del:hover{ color:#f38b8b; }
+  .qa-badge{
+    font-size:10.5px; font-weight:800; letter-spacing:.02em;
+    padding:3px 9px; border-radius:999px; align-self:flex-start;
+    white-space:nowrap;
+  }
+  .qa-badge.pending{ background: rgba(248,196,113,.15); color: var(--amber); }
+  .qa-badge.correct{ background: rgba(74,222,128,.15); color:#4ade80; }
+  .qa-badge.wrong{ background: rgba(243,139,139,.15); color:#f38b8b; }
+
+  .qa-opts{ display:flex; flex-direction:column; gap:7px; }
+  .qa-opt-row{
+    display:flex; align-items:center; gap:9px;
+    font-size:13px; color: var(--ink-dim);
+    padding:8px 11px; border-radius:10px;
+    border:1px solid var(--stroke);
+    min-height:22px;
+  }
+  .qa-opt-row .qa-opt-letter{
+    font-weight:800; color: var(--ink-faint); width:16px; flex-shrink:0;
+  }
+  .qa-opt-row.is-correct{ border-color: rgba(74,222,128,.5); }
+  .qa-opt-row.is-correct .qa-opt-letter{ color:#4ade80; }
+  .qa-opt-row.is-picked-wrong{ border-color: rgba(243,139,139,.5); }
+  .qa-opt-row.is-picked-wrong .qa-opt-letter{ color:#f38b8b; }
+
+  /* Cevaplanacak soru — şıklar tıklanabilir buton */
+  .qa-answer-opt{
+    display:flex; align-items:center; gap:9px;
+    width:100%; text-align:left;
+    font-size:13.5px; font-weight:600; color:#fff;
+    background: var(--panel); border:1px solid var(--stroke);
+    padding:11px 13px; border-radius:10px;
+    cursor:pointer; font-family:'Manrope',sans-serif;
+    transition: background .15s ease, border-color .15s ease;
+    min-height:44px;
+  }
+  .qa-answer-opt .qa-opt-letter{ font-weight:800; color: var(--violet); width:16px; flex-shrink:0; }
+  @media (hover:hover){ .qa-answer-opt:hover{ background: var(--panel-hover); border-color: var(--violet); } }
+  .qa-answer-opt:active{ transform: scale(.98); }
+
+  /* Yeni soru formu */
+  .qa-form{ display:flex; flex-direction:column; gap:10px; }
+  .qa-text-input{
+    width:100%; background: var(--bg-soft); border:1px solid var(--stroke);
+    border-radius:10px; padding:12px 14px; color:#fff; font-size:14px;
+    font-family:'Manrope',sans-serif; outline:none;
+  }
+  .qa-text-input:focus{ border-color: var(--violet); }
+  .qa-options-wrap{ display:flex; flex-direction:column; gap:8px; }
+  .qa-option-input-row{
+    display:flex; align-items:center; gap:8px;
+  }
+  .qa-option-input-row input[type="radio"]{
+    width:18px; height:18px; accent-color: var(--violet); flex-shrink:0; cursor:pointer;
+  }
+  .qa-option-input-row input[type="text"]{
+    flex:1; min-width:0;
+    background: var(--bg-soft); border:1px solid var(--stroke);
+    border-radius:10px; padding:10px 12px; color:#fff; font-size:13.5px;
+    font-family:'Manrope',sans-serif; outline:none;
+  }
+  .qa-option-input-row input[type="text"]:focus{ border-color: var(--violet); }
+  .qa-option-input-row .qa-opt-letter{ width:16px; flex-shrink:0; text-align:center; color: var(--ink-faint); font-weight:800; font-size:13px; }
+  .qa-form-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  .qa-hint{ font-size:11.5px; color: var(--ink-faint); }
+
+  @media (max-width: 540px){
+    .qa-card-text{ font-size:13.5px; }
+    .qa-opt-row, .qa-answer-opt{ font-size:12.5px; }
+  }
+
   /* Truth or dare */
   .tod-card{
     max-width: 480px;
@@ -913,6 +1005,58 @@
   .mobile-topbar .room-badge{ margin-bottom:0; padding:7px 10px; flex-shrink:0; }
   .mobile-topbar .room-badge span:first-child{ font-size:11.5px; }
 
+  /* ---------- Presence (odada aktif olanlar) ---------- */
+  .presence-bar{
+    display:flex; flex-direction:column; gap:7px;
+    margin-top:14px; padding-top:14px;
+    border-top:1px solid var(--stroke);
+  }
+  .presence-item{
+    display:flex; align-items:center; gap:8px;
+    font-size:12.5px; color: var(--ink-dim); font-weight:600;
+  }
+  .presence-item .p-avatar{
+    width:22px; height:22px; border-radius:50%; flex-shrink:0;
+    background: linear-gradient(135deg, var(--violet), var(--rose));
+    display:flex; align-items:center; justify-content:center;
+    font-size:10.5px; font-weight:800; color:#fff;
+  }
+  .presence-item .p-dot{
+    width:7px; height:7px; border-radius:50%; background: var(--ink-faint); flex-shrink:0;
+  }
+  .presence-item.online .p-dot{ background:#4ade80; box-shadow:0 0 6px rgba(74,222,128,.7); }
+  .presence-empty{ font-size:11px; color: var(--ink-faint); }
+
+  .mt-presence{ display:flex; align-items:center; flex-shrink:0; }
+  .mt-presence .p-avatar-sm{
+    position:relative;
+    width:23px; height:23px; border-radius:50%;
+    background: linear-gradient(135deg, var(--violet), var(--rose));
+    border:2px solid var(--bg-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:800; color:#fff;
+    margin-left:-7px;
+  }
+  .mt-presence .p-avatar-sm:first-child{ margin-left:0; }
+  .mt-presence .p-avatar-sm.online::after{
+    content:''; position:absolute; bottom:-1px; right:-1px;
+    width:7px; height:7px; border-radius:50%;
+    background:#4ade80; border:1.5px solid var(--bg-soft);
+  }
+
+  /* ---------- Navigation sync toast ---------- */
+  .nav-sync-toast{
+    position:fixed; top:14px; left:50%; transform:translateX(-50%) translateY(-14px);
+    z-index:80; background: var(--panel); border:1px solid var(--stroke);
+    color:#fff; font-size:12.5px; font-weight:700;
+    padding:9px 16px; border-radius:999px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    opacity:0; pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .nav-sync-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  @media (max-width: 880px){ .nav-sync-toast{ top:56px; } }
+
   /* ---------- Floating chat (global, all views) ---------- */
   .chat-fab{
     position:fixed; right:16px; bottom:16px; z-index:45;
@@ -1130,11 +1274,14 @@
   </div>
 </div>
 
+<div class="nav-sync-toast" id="navSyncToast"></div>
+
 <div class="mobile-topbar" id="mobileTopbar">
   <div class="mt-left">
     <div class="brand-mark">💞</div>
     <span class="mt-name" id="mobileUserName">İsimsiz</span>
   </div>
+  <div class="mt-presence" id="mtPresence"></div>
   <div class="room-badge" id="roomBadgeMobile" onclick="handleRoomBadgeClick()" title="Kopyalamak için tıkla, katılanları görmek için 3 kez tıkla">
     <span><span class="partner-dot" id="partnerDotMobile"></span>Oda: <b id="roomCodeLabelMobile">—</b></span>
     <span>📋</span>
@@ -1205,7 +1352,10 @@
       <div class="nav-item" data-view="emoji"><span class="ic">🧠</span>Emoji Tahmin Et</div>
       <div class="nav-item" data-view="rps"><span class="ic">✂️</span>Taş Kağıt Makas</div>
       <div class="nav-item" data-view="hangman"><span class="ic">🪢</span>Adam Asmaca</div>
+      <div class="nav-item" data-view="qa"><span class="ic">❓</span>Soru Cevap</div>
     </nav>
+
+    <div class="presence-bar" id="presenceBar"></div>
 
     <div class="sidebar-bottom">
       <div class="nav-item" onclick="toggleTheme()"><span class="ic">🎨</span>Tema Değiştir</div>
@@ -1222,7 +1372,7 @@
         <p>Partnerinizle birlikte bir aktivite başlatın!</p>
       </div>
 
-      <div class="section-title">Aktiviteler <span class="count">11 aktivite</span></div>
+      <div class="section-title">Aktiviteler <span class="count">12 aktivite</span></div>
 
       <div class="grid" id="activityGrid">
         <div class="card" data-view="draw" style="--card-tint: rgba(139,92,246,.2)">
@@ -1275,12 +1425,17 @@
           <h3>Adam Asmaca</h3>
           <p>Kelimeyi harf harf tahmin edin</p>
         </div>
+        <div class="card" data-view="qa" style="--card-tint: rgba(248,196,113,.2)">
+          <div class="emoji">❓</div>
+          <h3>Soru Cevap</h3>
+          <p>Birbirinize çoktan seçmeli sorular sorun</p>
+        </div>
       </div>
     </section>
 
     <!-- XOX VIEW -->
     <section class="view" id="view-xox">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">❌</div>
         <div><h2>XOX</h2><br><span>Klasik tic-tac-toe oyununu partnerinizle oynayın</span></div>
@@ -1308,7 +1463,7 @@
 
     <!-- TRUTH OR DARE VIEW -->
     <section class="view" id="view-tod">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">🎭</div>
         <div><h2>Truth or Dare</h2><br><span>Doğru mu? Cesaret mi?</span></div>
@@ -1324,7 +1479,7 @@
 
     <!-- CHAT CARDS VIEW -->
     <section class="view" id="view-chat">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">💬</div>
         <div><h2>Sohbet Kartları</h2><br><span>Birbirinizi daha iyi tanıyın</span></div>
@@ -1338,7 +1493,7 @@
 
     <!-- SONG VIEW -->
     <section class="view" id="view-song">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">🎵</div>
         <div><h2>Şarkıyı Tahmin Et</h2><br><span>YouTube şarkılarını birlikte tahmin edin</span></div>
@@ -1390,7 +1545,7 @@
 
     <!-- PUZZLE VIEW -->
     <section class="view" id="view-puzzle">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">🧩</div>
         <div><h2>Puzzle</h2><br><span>Birlikte puzzle yapın</span></div>
@@ -1405,7 +1560,7 @@
 
     <!-- DRAW VIEW -->
     <section class="view" id="view-draw">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">🎨</div>
         <div><h2>Ortak Çizim</h2><br><span>Birlikte tuval üzerinde resim yapın</span></div>
@@ -1429,7 +1584,7 @@
 
     <!-- VIDEO VIEW -->
     <section class="view" id="view-video">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">🎬</div>
         <div><h2>Beraber Video İzle</h2><br><span>YouTube veya özel video senkronize izleyin</span></div>
@@ -1465,7 +1620,7 @@
 
     <!-- EMOJI GUESS VIEW -->
     <section class="view" id="view-emoji">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">🧠</div>
         <div><h2>Emoji Tahmin Et</h2><br><span>Emojilerden kelimeyi, filmi ya da diziyi bulmaya çalışın</span></div>
@@ -1504,7 +1659,7 @@
 
     <!-- ROCK PAPER SCISSORS VIEW -->
     <section class="view" id="view-rps">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">✂️</div>
         <div><h2>Taş Kağıt Makas</h2><br><span>Aynı anda seçin, kazananı görün</span></div>
@@ -1536,7 +1691,7 @@
 
     <!-- HANGMAN (ADAM ASMACA) VIEW -->
     <section class="view" id="view-hangman">
-      <div class="back-row"><button class="back-btn" onclick="showView('home')">← Ana Sayfa</button></div>
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
         <div class="emoji-lg">🪢</div>
         <div><h2>Adam Asmaca</h2><br><span>Biriniz kelimeyi gizlice girsin, ikiniz de harf harf tahmin edin</span></div>
@@ -1574,6 +1729,56 @@
               <button class="reset-btn" onclick="resetHangmanGame()">🔁 Yeni Kelime</button>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SORU CEVAP (QA) VIEW -->
+    <section class="view" id="view-qa">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">❓</div>
+        <div><h2>Soru Cevap</h2><br><span>Birbirinize çoktan seçmeli sorular sorun, istediğiniz kadar soru ekleyin</span></div>
+      </div>
+
+      <div class="panel-box qa-wrap">
+        <div class="xox-role" id="qaRole">Rolün belirleniyor…</div>
+
+        <div class="xox-score">
+          <div class="xox-score-item"><span class="xox-score-label">X doğru</span><span class="xox-score-val" id="qaScoreX">0</span></div>
+          <div class="xox-score-div">—</div>
+          <div class="xox-score-item"><span class="xox-score-label">O doğru</span><span class="xox-score-val" id="qaScoreO">0</span></div>
+        </div>
+
+        <!-- Cevaplaman gereken sorular -->
+        <div class="qa-section">
+          <div class="qa-section-title">🎯 Sana Sorulanlar</div>
+          <div id="qaPendingList" class="qa-list"></div>
+        </div>
+
+        <!-- Kendi sorduğun sorular -->
+        <div class="qa-section">
+          <div class="qa-section-title">📋 Sorduğun Sorular</div>
+          <div id="qaMineList" class="qa-list"></div>
+        </div>
+
+        <!-- Yeni soru ekleme formu -->
+        <div class="qa-section">
+          <div class="qa-section-title">✍️ Yeni Soru Ekle</div>
+          <div class="qa-form">
+            <input type="text" id="qaQuestionInput" class="qa-text-input" placeholder="Soruyu yaz... (Örn. En sevdiğim renk nedir?)" maxlength="200">
+            <div id="qaOptionsWrap" class="qa-options-wrap"></div>
+            <div class="qa-form-actions">
+              <button class="reset-btn ghost" type="button" onclick="qaAddOption()">➕ Şık Ekle</button>
+              <button class="reset-btn ghost" type="button" onclick="qaRemoveOption()">➖ Şık Çıkar</button>
+            </div>
+            <p class="qa-hint">Doğru cevabı işaretlemeyi unutma — partnerin seçtiğinde otomatik kontrol edilecek.</p>
+            <button class="reset-btn" type="button" onclick="qaSubmitQuestion()">✅ Soruyu Ekle</button>
+          </div>
+        </div>
+
+        <div class="xox-actions">
+          <button class="reset-btn ghost" onclick="resetQa()">♻️ Hepsini Sıfırla</button>
         </div>
       </div>
     </section>
@@ -1703,6 +1908,7 @@
       document.getElementById('partnerDot').classList.toggle('online', count > 1);
       const mobileDot = document.getElementById('partnerDotMobile');
       if(mobileDot) mobileDot.classList.toggle('online', count > 1);
+      renderPresenceLists(val);
     });
 
     // XOX / RPS rolleri: her cihaz odaya ilk katıldığında BİR KEZ kalıcı olarak atanır ve
@@ -1713,6 +1919,7 @@
       const all = snap.val() || {};
       const mine = all[myPresenceId] || {};
       myXoxRole = mine.xox || null;
+      updateQaRoleLabel();
       myRpsRole = mine.rps || null;
       updateXoxRoleLabel();
       updateRpsRoleLabel();
@@ -1731,6 +1938,8 @@
     initEmojiGuessSync();
     initRpsSync();
     initHangmanSync();
+    initNavSync();
+    initQaSync();
   }
 
   // Odaya katılan her cihaz için X/O ve P1/P2 rollerini KALICI ve ÇAKIŞMASIZ şekilde atar.
@@ -1790,10 +1999,56 @@
     document.getElementById('participantsModal').style.display = 'none';
   }
 
-  // ---------- View switching ----------
+  // ---------- Presence: o an odada aktif olanların listesi ----------
+  // presence düğümü zaten her cihazın "çevrimiçi" işaretlendiği yer (onDisconnect ile
+  // bağlantı kesilince otomatik silinir). Burada bu veriyi hem sidebar'da (isim + yeşil nokta
+  // listesi) hem de mobilde (küçük üst üste binen avatarlar) canlı olarak gösteriyoruz.
+  function initialsOf(name){
+    return ((name || '?').trim().charAt(0) || '?').toUpperCase();
+  }
+
+  function renderPresenceLists(presenceVal){
+    const entries = Object.values(presenceVal || {});
+    // Sidebar (masaüstü): isim + çevrimiçi noktası
+    const bar = document.getElementById('presenceBar');
+    if(bar){
+      bar.innerHTML = entries.length
+        ? entries.map(p => (
+            '<div class="presence-item online">' +
+              '<span class="p-avatar">' + initialsOf(p && p.name) + '</span>' +
+              '<span class="p-dot"></span>' +
+              '<span>' + (p && p.name ? p.name : 'İsimsiz') + '</span>' +
+            '</div>'
+          )).join('')
+        : '<div class="presence-empty">Odada kimse yok</div>';
+    }
+    // Mobil üst bar: küçük üst üste binen avatarlar
+    const mt = document.getElementById('mtPresence');
+    if(mt){
+      mt.innerHTML = entries.map(p =>
+        '<span class="p-avatar-sm online" title="' + (p && p.name ? p.name : 'İsimsiz') + '">' +
+          initialsOf(p && p.name) +
+        '</span>'
+      ).join('');
+    }
+  }
+
+  // ---------- View switching + eşleştirilmiş (senkron) gezinme ----------
+  // navigateTo(): benim tıklamamla tetiklenir — hem ekranı yerelde değiştirir hem de
+  // hangi görünümde olduğumu Firebase'e yazar. Partnerimin cihazı bunu dinleyip
+  // OTOMATİK olarak aynı görünüme geçer — yani biri bir moda girince diğeri de girer.
+  // showView(): sadece yerel ekran değişimini yapar, Firebase'e yazmaz — hem navigateTo
+  // içeriden hem de partnerden gelen uzak güncellemeler tarafından çağrılır. Böylece
+  // partnerden gelen bir geçiş tekrar Firebase'e yazılıp sonsuz döngüye girmez.
+  let currentView = 'home';
+  let suppressNavToast = true; // ilk katılımda sessizce senkronlan, toast gösterme
+
   function showView(name){
+    const section = document.getElementById('view-' + name);
+    if(!section) return;
+    currentView = name;
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + name).classList.add('active');
+    section.classList.add('active');
     document.querySelectorAll('.nav-item[data-view]').forEach(n => n.classList.remove('active'));
     const navItem = document.querySelector('.nav-item[data-view="' + name + '"]');
     if(navItem) navItem.classList.add('active');
@@ -1803,8 +2058,43 @@
     }
   }
 
+  function showNavSyncToast(viewName, byName){
+    const el = document.getElementById('navSyncToast');
+    if(!el) return;
+    const labels = {
+      home:'Ana Sayfa', draw:'Ortak Çizim', xox:'XOX', tod:'Truth or Dare',
+      chat:'Sohbet Kartları', song:'Şarkıyı Tahmin Et', puzzle:'Puzzle', video:'Video İzle',
+      emoji:'Emoji Tahmin Et', rps:'Taş Kağıt Makas', hangman:'Adam Asmaca', qa:'Soru Cevap'
+    };
+    el.textContent = '💞 ' + (byName || 'Partnerin') + ' → ' + (labels[viewName] || viewName);
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  // Ben tıkladığımda çağrılır: yerelde geçiş yap + partnerin de gelmesi için Firebase'e yaz.
+  function navigateTo(name){
+    showView(name);
+    if(roomRef) roomRef.child('nav').set({ view: name, by: USER_NAME || null, byId: myPresenceId, ts: Date.now() });
+  }
+
+  // Partnerin gezinme değişikliklerini dinle — kendi yaptığım geçişte de bu tetiklenir
+  // (Firebase kendi yazdığımı da geri gönderir) ama showView zaten idempotent olduğu için
+  // sorun çıkarmaz, sadece tekrar aynı görünümü uygular.
+  function initNavSync(){
+    if(!roomRef) return;
+    roomRef.child('nav').on('value', snap => {
+      const s = snap.val();
+      if(!s || !s.view) return;
+      const cameFromOther = s.byId && s.byId !== myPresenceId;
+      if(s.view !== currentView) showView(s.view);
+      if(cameFromOther && !suppressNavToast) showNavSyncToast(s.view, s.by);
+      suppressNavToast = false;
+    });
+  }
+
   document.querySelectorAll('[data-view]').forEach(el => {
-    el.addEventListener('click', () => showView(el.dataset.view));
+    el.addEventListener('click', () => navigateTo(el.dataset.view));
   });
 
   // ---------- XOX (Tic Tac Toe) — Firebase senkron (0'dan sağlam yeniden yazıldı) ----------
@@ -2002,6 +2292,205 @@
   renderXox();
   renderXoxWinLine();
   updateXoxScoreLabel();
+
+  // ---------- Soru Cevap (QA) — Firebase senkron ----------
+  // Veri modeli: roomRef/qa/questions/<pushId> = {
+  //   author: 'X'|'O', text, options:[...], correctIndex, answerIndex (null = henüz cevaplanmadı), ts
+  // }
+  // Kimlik olarak XOX rolü (myXoxRole) yeniden kullanılıyor — odaya her giren cihaza zaten
+  // kalıcı ve çakışmasız şekilde X/O ataması yapılıyor (claimRoles), bu yüzden ayrı bir rol
+  // sistemi kurmaya gerek yok. Skor, soruları tarayarak canlı hesaplanır: bir rolün skoru,
+  // KARŞI tarafın yazdığı ve doğru cevapladığı soru sayısıdır.
+  let qaQuestions = {}; // { id: {...} }
+  let qaOptionCount = 2; // form'daki mevcut şık sayısı (min 2, max 6)
+
+  function updateQaRoleLabel(){
+    const el = document.getElementById('qaRole');
+    if(!el) return;
+    el.innerHTML = myXoxRole
+      ? ('Sen: <b>' + myXoxRole + '</b>')
+      : 'İzleyicisin — iki oyuncu zaten dolu.';
+    renderQa();
+  }
+
+  function qaLetter(i){ return String.fromCharCode(65 + i); } // 0->A, 1->B, ...
+
+  // Yeni soru formundaki şık input satırlarını (mevcut sayıya göre) yeniden çizer.
+  function renderQaOptionInputs(){
+    const wrap = document.getElementById('qaOptionsWrap');
+    if(!wrap) return;
+    // Mevcut yazılmış metinleri ve seçili doğru cevabı koru (yeniden çizerken kaybolmasın)
+    const prevTexts = [];
+    let prevCorrect = 0;
+    wrap.querySelectorAll('.qa-option-input-row').forEach((row, idx) => {
+      const t = row.querySelector('input[type="text"]');
+      const r = row.querySelector('input[type="radio"]');
+      prevTexts[idx] = t ? t.value : '';
+      if(r && r.checked) prevCorrect = idx;
+    });
+    wrap.innerHTML = '';
+    for(let i = 0; i < qaOptionCount; i++){
+      const row = document.createElement('div');
+      row.className = 'qa-option-input-row';
+      row.innerHTML =
+        '<input type="radio" name="qaCorrectOpt" ' + (i === prevCorrect ? 'checked' : '') + ' title="Doğru cevap bu mu?">' +
+        '<span class="qa-opt-letter">' + qaLetter(i) + ')</span>' +
+        '<input type="text" maxlength="80" placeholder="' + qaLetter(i) + ' şıkkı" value="' + (prevTexts[i] ? prevTexts[i].replace(/"/g,'&quot;') : '') + '">';
+      wrap.appendChild(row);
+    }
+  }
+
+  function qaAddOption(){
+    if(qaOptionCount >= 6) return;
+    qaOptionCount++;
+    renderQaOptionInputs();
+  }
+  function qaRemoveOption(){
+    if(qaOptionCount <= 2) return;
+    qaOptionCount--;
+    renderQaOptionInputs();
+  }
+
+  function qaSubmitQuestion(){
+    if(!roomRef || !myXoxRole) return;
+    const textEl = document.getElementById('qaQuestionInput');
+    const text = (textEl.value || '').trim();
+    if(!text){ textEl.focus(); return; }
+    const wrap = document.getElementById('qaOptionsWrap');
+    const rows = Array.from(wrap.querySelectorAll('.qa-option-input-row'));
+    const options = rows.map(r => (r.querySelector('input[type="text"]').value || '').trim());
+    if(options.some(o => !o)){ return; } // boş şık bırakılmasın
+    let correctIndex = 0;
+    rows.forEach((r, idx) => { if(r.querySelector('input[type="radio"]').checked) correctIndex = idx; });
+
+    roomRef.child('qa/questions').push({
+      author: myXoxRole,
+      text: text,
+      options: options,
+      correctIndex: correctIndex,
+      answerIndex: null,
+      ts: Date.now()
+    });
+
+    // Formu sıfırla
+    textEl.value = '';
+    qaOptionCount = 2;
+    renderQaOptionInputs();
+  }
+
+  function qaDeleteQuestion(id){
+    if(!roomRef) return;
+    const q = qaQuestions[id];
+    if(!q || q.answerIndex !== null && q.answerIndex !== undefined) return; // cevaplanmış soru silinemez
+    roomRef.child('qa/questions/' + id).remove();
+  }
+
+  // Hamle: cevap verme — transaction ile, aynı soruya iki kez cevap yazılmasını engeller.
+  function qaAnswer(id, idx){
+    if(!roomRef || !myXoxRole) return;
+    roomRef.child('qa/questions/' + id).transaction(cur => {
+      if(!cur) return cur;
+      if(cur.author === myXoxRole) return; // kendi soruna cevap veremezsin
+      if(cur.answerIndex !== null && cur.answerIndex !== undefined) return; // zaten cevaplanmış
+      cur.answerIndex = idx;
+      return cur;
+    });
+  }
+
+  function resetQa(){
+    if(!roomRef) return;
+    if(!confirm('Tüm sorular ve cevaplar silinecek — emin misin?')) return;
+    roomRef.child('qa').remove();
+  }
+
+  function initQaSync(){
+    if(!roomRef) return;
+    renderQaOptionInputs();
+    roomRef.child('qa/questions').on('value', snap => {
+      qaQuestions = snap.val() || {};
+      renderQa();
+    });
+  }
+
+  function qaOptionRowHtml(q, idx, opts){
+    // opts: { showCorrect, wrongPickIdx }
+    const isCorrect = opts.showCorrect && idx === q.correctIndex;
+    const isWrongPick = opts.wrongPickIdx !== null && opts.wrongPickIdx !== undefined && idx === opts.wrongPickIdx && idx !== q.correctIndex;
+    let cls = 'qa-opt-row';
+    if(isCorrect) cls += ' is-correct';
+    if(isWrongPick) cls += ' is-picked-wrong';
+    return '<div class="' + cls + '"><span class="qa-opt-letter">' + qaLetter(idx) + ')</span><span>' + q.options[idx] + '</span></div>';
+  }
+
+  function renderQa(){
+    const pendingWrap = document.getElementById('qaPendingList');
+    const mineWrap = document.getElementById('qaMineList');
+    if(!pendingWrap || !mineWrap) return;
+
+    const list = Object.keys(qaQuestions).map(id => Object.assign({ id: id }, qaQuestions[id]));
+    list.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+
+    // ---- Sana Sorulanlar: partnerin yazdığı tüm sorular (cevaplanmış/cevaplanmamış) ----
+    const theirs = myXoxRole ? list.filter(q => q.author !== myXoxRole) : [];
+    if(!theirs.length){
+      pendingWrap.innerHTML = '<div class="qa-empty">Henüz partnerin senin için bir soru yazmadı.</div>';
+    } else {
+      pendingWrap.innerHTML = theirs.map(q => {
+        const answered = q.answerIndex !== null && q.answerIndex !== undefined;
+        let badge = '<span class="qa-badge pending">Cevaplanmadı</span>';
+        let body;
+        if(!answered){
+          body = '<div class="qa-opts">' + q.options.map((opt, idx) =>
+            '<button type="button" class="qa-answer-opt" onclick="qaAnswer(\'' + q.id + '\',' + idx + ')">' +
+              '<span class="qa-opt-letter">' + qaLetter(idx) + ')</span><span>' + opt + '</span>' +
+            '</button>'
+          ).join('') + '</div>';
+        } else {
+          const isRight = q.answerIndex === q.correctIndex;
+          badge = isRight ? '<span class="qa-badge correct">✅ Doğru bildin</span>' : '<span class="qa-badge wrong">❌ Yanlış</span>';
+          body = '<div class="qa-opts">' + q.options.map((opt, idx) =>
+            qaOptionRowHtml(q, idx, { showCorrect:true, wrongPickIdx: q.answerIndex })
+          ).join('') + '</div>';
+        }
+        return '<div class="qa-card"><div class="qa-card-top"><div class="qa-card-text">' + q.text + '</div>' + badge + '</div>' + body + '</div>';
+      }).join('');
+    }
+
+    // ---- Sorduğun Sorular: kendi yazdığın sorular ----
+    const mine = myXoxRole ? list.filter(q => q.author === myXoxRole) : [];
+    if(!mine.length){
+      mineWrap.innerHTML = '<div class="qa-empty">Henüz bir soru yazmadın.</div>';
+    } else {
+      mineWrap.innerHTML = mine.map(q => {
+        const answered = q.answerIndex !== null && q.answerIndex !== undefined;
+        let badge = '<span class="qa-badge pending">Partner henüz cevaplamadı</span>';
+        let delBtn = '<button type="button" class="qa-card-del" title="Sil" onclick="qaDeleteQuestion(\'' + q.id + '\')">✕</button>';
+        if(answered){
+          const isRight = q.answerIndex === q.correctIndex;
+          badge = isRight ? '<span class="qa-badge correct">✅ Partner doğru bildi</span>' : '<span class="qa-badge wrong">❌ Partner bilemedi</span>';
+          delBtn = ''; // cevaplanmış soru artık silinemez/düzenlenemez
+        }
+        const body = '<div class="qa-opts">' + q.options.map((opt, idx) =>
+          qaOptionRowHtml(q, idx, { showCorrect:true, wrongPickIdx: answered ? q.answerIndex : null })
+        ).join('') + '</div>';
+        return '<div class="qa-card"><div class="qa-card-top"><div class="qa-card-text">' + q.text + '</div>' + delBtn + '</div>' + badge + body + '</div>';
+      }).join('');
+    }
+
+    // ---- Skor: bir rolün skoru, KARŞI tarafın sorduğu ve doğru cevapladığı soru sayısı ----
+    let scoreX = 0, scoreO = 0;
+    list.forEach(q => {
+      if(q.answerIndex === null || q.answerIndex === undefined) return;
+      const isRight = q.answerIndex === q.correctIndex;
+      if(!isRight) return;
+      if(q.author === 'O') scoreX++; // X, O'nun sorusunu doğru bildi
+      if(q.author === 'X') scoreO++; // O, X'in sorusunu doğru bildi
+    });
+    const xEl = document.getElementById('qaScoreX');
+    const oEl = document.getElementById('qaScoreO');
+    if(xEl) xEl.textContent = scoreX;
+    if(oEl) oEl.textContent = scoreO;
+  }
 
   // ---------- Truth or Dare — Firebase senkron ----------
   const truths = [
