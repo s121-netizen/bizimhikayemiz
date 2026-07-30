@@ -518,6 +518,31 @@
   .tod-choice:hover{ border-color: var(--violet); color:#fff; }
   .tod-choice.picked-t{ background: rgba(139,92,246,.18); border-color: var(--violet); color:#fff; }
   .tod-choice.picked-d{ background: rgba(244,114,182,.18); border-color: var(--rose); color:#fff; }
+
+  /* ---------- Tap race progress bars ---------- */
+  .tr-row{ display:flex; flex-direction:column; gap:6px; margin-bottom:16px; text-align:left; }
+  .tr-row-head{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-dim); font-weight:700; }
+  .tr-bar-outer{ width:100%; height:18px; border-radius:9px; background:var(--bg-soft); border:1px solid var(--stroke); overflow:hidden; }
+  .tr-bar-inner{ height:100%; width:0%; border-radius:9px; transition: width .15s ease; }
+  .tr-bar-inner.mine{ background: linear-gradient(90deg, var(--violet-soft), var(--violet)); }
+  .tr-bar-inner.theirs{ background: linear-gradient(90deg, var(--rose), var(--amber)); }
+  .tap-btn{
+    width:150px; height:150px; border-radius:50%;
+    background: linear-gradient(135deg, var(--violet), var(--rose));
+    border:none; color:#fff; font-family:'Fraunces',serif; font-weight:700; font-size:19px;
+    cursor:pointer; user-select:none; box-shadow: 0 10px 30px rgba(139,92,246,.35);
+  }
+  .tap-btn:active{ transform: scale(.94); }
+  .tap-btn:disabled{ opacity:.45; cursor:default; box-shadow:none; }
+
+  /* ---------- Reaction duel zone ---------- */
+  .rx-zone{
+    width:100%; max-width:340px; height:180px; margin:0 auto;
+    border-radius:18px; border:1px solid var(--stroke); background:var(--bg-soft);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    font-family:'Fraunces',serif; font-weight:700; font-size:19px; color:#fff;
+    cursor:pointer; user-select:none; padding:14px; transition: background .1s ease, border-color .1s ease;
+  }
   .tod-prompt{
     min-height: 90px;
     display:flex; align-items:center; justify-content:center;
@@ -1365,6 +1390,13 @@
       <div class="nav-item" data-view="rps"><span class="ic">✂️</span>Taş Kağıt Makas</div>
       <div class="nav-item" data-view="hangman"><span class="ic">🪢</span>Adam Asmaca</div>
       <div class="nav-item" data-view="qa"><span class="ic">❓</span>Soru Cevap</div>
+      <div class="nav-item" data-view="sameword"><span class="ic">🔤</span>Aynı Kelime</div>
+      <div class="nav-item" data-view="numguess"><span class="ic">🔢</span>Sayı Tahmin</div>
+      <div class="nav-item" data-view="twotruths"><span class="ic">🤥</span>İki Doğru Bir Yalan</div>
+      <div class="nav-item" data-view="dice"><span class="ic">🎲</span>Zar Düellosu</div>
+      <div class="nav-item" data-view="flappy"><span class="ic">🐦</span>Flappy Bird Düellosu</div>
+      <div class="nav-item" data-view="reaction"><span class="ic">⚡</span>Reaksiyon Düellosu</div>
+      <div class="nav-item" data-view="taprace"><span class="ic">🖱️</span>Tıklama Yarışı</div>
     </nav>
 
     <div class="presence-bar" id="presenceBar"></div>
@@ -1384,7 +1416,7 @@
         <p>Partnerinizle birlikte bir aktivite başlatın!</p>
       </div>
 
-      <div class="section-title">Aktiviteler <span class="count">12 aktivite</span></div>
+      <div class="section-title">Aktiviteler <span class="count">19 aktivite</span></div>
 
       <div class="grid" id="activityGrid">
         <div class="card" data-view="draw" style="--card-tint: rgba(139,92,246,.2)">
@@ -1441,6 +1473,41 @@
           <div class="emoji">❓</div>
           <h3>Soru Cevap</h3>
           <p>Birbirinize çoktan seçmeli sorular sorun</p>
+        </div>
+        <div class="card" data-view="sameword" style="--card-tint: rgba(244,114,182,.2)">
+          <div class="emoji">🔤</div>
+          <h3>Aynı Kelime</h3>
+          <p>Aynı anda aynı kelimeyi düşünebiliyor musunuz?</p>
+        </div>
+        <div class="card" data-view="numguess" style="--card-tint: rgba(139,92,246,.2)">
+          <div class="emoji">🔢</div>
+          <h3>Sayı Tahmin</h3>
+          <p>1-100 arası gizli sayıyı ipuçlarıyla bul</p>
+        </div>
+        <div class="card" data-view="twotruths" style="--card-tint: rgba(248,196,113,.2)">
+          <div class="emoji">🤥</div>
+          <h3>İki Doğru Bir Yalan</h3>
+          <p>Üç cümle yaz, partnerin yalanı bulmaya çalışsın</p>
+        </div>
+        <div class="card" data-view="dice" style="--card-tint: rgba(139,92,246,.2)">
+          <div class="emoji">🎲</div>
+          <h3>Zar Düellosu</h3>
+          <p>Zar atın, yüksek gelen turu kazansın</p>
+        </div>
+        <div class="card" data-view="flappy" style="--card-tint: rgba(244,114,182,.2)">
+          <div class="emoji">🐦</div>
+          <h3>Flappy Bird Düellosu</h3>
+          <p>İkiniz de aynı anda uçurun — en yüksek skor kazanır</p>
+        </div>
+        <div class="card" data-view="reaction" style="--card-tint: rgba(248,196,113,.2)">
+          <div class="emoji">⚡</div>
+          <h3>Reaksiyon Düellosu</h3>
+          <p>Yeşili görünce tıkla — en hızlı reaksiyon kazanır</p>
+        </div>
+        <div class="card" data-view="taprace" style="--card-tint: rgba(139,92,246,.2)">
+          <div class="emoji">🖱️</div>
+          <h3>Tıklama Yarışı</h3>
+          <p>Aynı anda tıklayın — 30'a önce ulaşan kazanır</p>
         </div>
       </div>
     </section>
@@ -1822,6 +1889,237 @@
       </div>
     </section>
 
+    <!-- AYNI KELİME VIEW -->
+    <section class="view" id="view-sameword">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🔤</div>
+        <div><h2>Aynı Kelime</h2><br><span>Konuyu okuyun, kimseye söylemeden aklınıza gelen kelimeyi yazın</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div style="display:flex;justify-content:center;gap:18px;margin-bottom:18px;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:56px;">
+            <span style="font-size:11px;color:var(--ink-faint);font-weight:800;letter-spacing:.04em;">SERİ</span>
+            <span id="swStreak" style="font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:#fff;">0</span>
+          </div>
+          <div style="color:var(--ink-faint);font-size:13px;align-self:center;">—</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:56px;">
+            <span style="font-size:11px;color:var(--ink-faint);font-weight:800;letter-spacing:.04em;">TUR</span>
+            <span id="swRound" style="font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:#fff;">0</span>
+          </div>
+        </div>
+
+        <div style="background:rgba(139,92,246,.14);border:1px solid var(--stroke);border-radius:16px;padding:22px;margin-bottom:18px;">
+          <div style="font-size:11px;color:var(--ink-faint);letter-spacing:.06em;margin-bottom:6px;">KONU</div>
+          <div id="swTopicText" style="font-family:'Fraunces',serif;font-size:19px;color:#fff;">başlamak için "yeni tur" başlat 💜</div>
+        </div>
+
+        <div class="song-row" style="justify-content:center;">
+          <input type="text" id="swWordInput" placeholder="aklına gelen kelimeyi yaz..." maxlength="24">
+          <button onclick="swSubmitWord()">Gönder</button>
+        </div>
+        <div id="swStatus" style="font-size:13px;color:var(--ink-dim);margin:10px 0 4px;min-height:18px;">önce "yeni tur" başlat</div>
+
+        <div id="swReveal" style="display:none;gap:12px;margin:16px 0;">
+          <div id="swRevealBox" style="flex:1;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;"></div>
+        </div>
+        <div id="swResultBanner" style="display:none;font-weight:700;font-size:15px;padding:12px;border-radius:12px;margin-bottom:14px;"></div>
+
+        <div class="xox-actions" style="justify-content:center;">
+          <button class="reset-btn" onclick="swNewRound()">🔀 Yeni Tur</button>
+          <button class="reset-btn ghost" onclick="swResetStreak()">Seriyi Sıfırla</button>
+        </div>
+
+        <div style="margin-top:22px;text-align:left;">
+          <div style="font-size:11px;color:var(--ink-faint);letter-spacing:.06em;margin-bottom:8px;">SON TURLAR</div>
+          <div id="swHistory" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAYI TAHMİN VIEW -->
+    <section class="view" id="view-numguess">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🔢</div>
+        <div><h2>Sayı Tahmin</h2><br><span>Biriniz 1-100 arası gizli bir sayı seçsin, diğeri ipuçlarıyla bulsun</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div id="ngSetup">
+          <label class="field-label">Gizli sayı (1-100)</label>
+          <div class="song-row" style="justify-content:center;">
+            <input type="number" id="ngSecretInput" min="1" max="100" placeholder="Örn. 42">
+            <button onclick="ngStartGame()">Başlat</button>
+          </div>
+          <p class="qa-hint">Sayıyı sen belirlersin — partnerin tahmin edecek.</p>
+        </div>
+
+        <div id="ngPlay" style="display:none;">
+          <div id="ngRoleLabel" class="xox-role">Rolün belirleniyor…</div>
+          <div style="font-size:13px;color:var(--ink-dim);margin-bottom:14px;">kalan hak yok, dilediğin kadar tahmin et — sadece "yüksek/düşük" ipucu alırsın</div>
+
+          <div id="ngGuesserBox">
+            <div class="song-row" style="justify-content:center;">
+              <input type="number" id="ngGuessInput" min="1" max="100" placeholder="Tahminin">
+              <button onclick="ngSubmitGuess()">Tahmin Et</button>
+            </div>
+          </div>
+
+          <div id="ngHintBox" style="font-size:16px;font-weight:700;color:#fff;margin:14px 0;min-height:24px;"></div>
+
+          <div style="max-height:180px;overflow:auto;display:flex;flex-direction:column-reverse;gap:6px;margin-top:10px;" id="ngHistory"></div>
+
+          <div class="xox-actions" style="justify-content:center;margin-top:16px;">
+            <button class="reset-btn ghost" onclick="ngResetGame()">🔁 Yeni Sayı</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- İKİ DOĞRU BİR YALAN VIEW -->
+    <section class="view" id="view-twotruths">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🤥</div>
+        <div><h2>İki Doğru Bir Yalan</h2><br><span>Kendinle ilgili 3 cümle yaz, biri yalan olsun — partnerin bulmaya çalışsın</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div id="ttSetup">
+          <label class="field-label">1. cümle</label>
+          <div class="song-row" style="justify-content:center;"><input type="text" id="ttInput1" maxlength="120" placeholder="Örn. Hiç yurt dışına çıkmadım"></div>
+          <label class="field-label">2. cümle</label>
+          <div class="song-row" style="justify-content:center;"><input type="text" id="ttInput2" maxlength="120" placeholder="Örn. En sevdiğim renk mavi"></div>
+          <label class="field-label">3. cümle</label>
+          <div class="song-row" style="justify-content:center;"><input type="text" id="ttInput3" maxlength="120" placeholder="Örn. Bir kere kaybolmuştum"></div>
+          <label class="field-label">Hangisi yalan?</label>
+          <div id="ttLiePicker" style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;">
+            <button class="tod-choice" data-i="0" onclick="ttPickLie(0)">1</button>
+            <button class="tod-choice" data-i="1" onclick="ttPickLie(1)">2</button>
+            <button class="tod-choice" data-i="2" onclick="ttPickLie(2)">3</button>
+          </div>
+          <button class="reset-btn" type="button" onclick="ttSubmitRound()" style="width:100%;">✅ Gönder</button>
+        </div>
+
+        <div id="ttPlay" style="display:none;">
+          <div id="ttAuthorLabel" style="font-size:13px;color:var(--ink-dim);margin-bottom:14px;"></div>
+          <div id="ttStatements" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;"></div>
+          <div id="ttResultBanner" style="display:none;font-weight:700;font-size:15px;padding:12px;border-radius:12px;margin-bottom:14px;"></div>
+          <div class="xox-actions" style="justify-content:center;">
+            <button class="reset-btn ghost" onclick="ttNewRound()">🔁 Yeni Tur</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ZAR DÜELLOSU VIEW -->
+    <section class="view" id="view-dice">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🎲</div>
+        <div><h2>Zar Düellosu</h2><br><span>İkiniz de zar atın — yüksek gelen turu kazanır</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="xox-score" style="justify-content:center;margin-bottom:18px;">
+          <div class="xox-score-item"><span class="xox-score-label" id="dcNameA">Sen</span><span class="xox-score-val" id="dcScoreA">0</span></div>
+          <div class="xox-score-div">—</div>
+          <div class="xox-score-item"><span class="xox-score-label" id="dcNameB">Partner</span><span class="xox-score-val" id="dcScoreB">0</span></div>
+        </div>
+
+        <div style="display:flex;justify-content:center;gap:26px;margin:20px 0;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div id="dcDieA" style="width:64px;height:64px;border-radius:14px;background:var(--bg-soft);border:1px solid var(--stroke);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;font-family:'Fraunces',serif;">?</div>
+            <span id="dcLabelA" style="font-size:11px;color:var(--ink-faint);">Sen</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <div id="dcDieB" style="width:64px;height:64px;border-radius:14px;background:var(--bg-soft);border:1px solid var(--stroke);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;font-family:'Fraunces',serif;">?</div>
+            <span id="dcLabelB" style="font-size:11px;color:var(--ink-faint);">Partner</span>
+          </div>
+        </div>
+
+        <div id="dcStatus" style="font-size:14px;color:var(--ink-dim);margin-bottom:16px;min-height:18px;">zarını atmak için butona bas</div>
+
+        <div class="xox-actions" style="justify-content:center;">
+          <button class="reset-btn" id="dcRollBtn" onclick="dcRoll()">🎲 Zar At</button>
+          <button class="reset-btn ghost" onclick="dcResetScore()">Skoru Sıfırla</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLAPPY BIRD DÜELLOSU -->
+    <section class="view" id="view-flappy">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🐦</div>
+        <div><h2>Flappy Bird Düellosu</h2><br><span>İkiniz de aynı anda oynayın — en yüksek skor kazanır</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="xox-score" style="justify-content:center;margin-bottom:14px;">
+          <div class="xox-score-item"><span class="xox-score-label" id="fbNameA">Sen</span><span class="xox-score-val" id="fbScoreA">0</span></div>
+          <div class="xox-score-div">—</div>
+          <div class="xox-score-item"><span class="xox-score-label" id="fbNameB">Partner</span><span class="xox-score-val" id="fbScoreB">0</span></div>
+        </div>
+        <div id="fbStatus" style="font-size:13px;color:var(--ink-dim);margin-bottom:12px;min-height:18px;">Partnerin katılmasını bekle</div>
+        <div style="display:flex;justify-content:center;">
+          <canvas id="fbCanvas" width="300" height="420" style="background:linear-gradient(180deg,#2a2050,#171225);border-radius:16px;border:1px solid var(--stroke);max-width:100%;touch-action:manipulation;cursor:pointer;"></canvas>
+        </div>
+        <div class="xox-actions" style="justify-content:center;margin-top:16px;">
+          <button class="reset-btn" id="fbStartBtn" onclick="fbStart()">▶️ Başla</button>
+          <button class="reset-btn ghost" onclick="fbResetMatch()">Skoru Sıfırla</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--ink-faint);margin-top:10px;">Zıplamak için tuvale tıkla veya boşluk tuşuna bas</div>
+      </div>
+    </section>
+
+    <!-- REAKSİYON DÜELLOSU -->
+    <section class="view" id="view-reaction">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">⚡</div>
+        <div><h2>Reaksiyon Düellosu</h2><br><span>Yeşili görünce tıkla — en düşük süre kazanır</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="xox-score" style="justify-content:center;margin-bottom:14px;">
+          <div class="xox-score-item"><span class="xox-score-label" id="rxNameA">Sen</span><span class="xox-score-val" id="rxScoreA">—</span></div>
+          <div class="xox-score-div">—</div>
+          <div class="xox-score-item"><span class="xox-score-label" id="rxNameB">Partner</span><span class="xox-score-val" id="rxScoreB">—</span></div>
+        </div>
+        <div id="rxStatus" style="font-size:13px;color:var(--ink-dim);margin-bottom:14px;min-height:18px;">En düşük reaksiyon süresi kazanır</div>
+        <div class="rx-zone" id="rxZone" onclick="rxTap()">Başlamak için butona bas</div>
+        <div class="xox-actions" style="justify-content:center;margin-top:16px;">
+          <button class="reset-btn" id="rxStartBtn" onclick="rxStart()">⚡ Turu Başlat</button>
+          <button class="reset-btn ghost" onclick="rxResetMatch()">Skoru Sıfırla</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--ink-faint);margin-top:10px;">Erken tıklarsan tur iptal olur — yeşili bekle!</div>
+      </div>
+    </section>
+
+    <!-- TIKLAMA YARIŞI -->
+    <section class="view" id="view-taprace">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🖱️</div>
+        <div><h2>Tıklama Yarışı</h2><br><span>Aynı anda tıklayın — hedefe önce ulaşan kazanır</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="tr-row">
+          <div class="tr-row-head"><span id="trNameA">Sen</span><span id="trCountA">0 / 30</span></div>
+          <div class="tr-bar-outer"><div class="tr-bar-inner mine" id="trBarA"></div></div>
+        </div>
+        <div class="tr-row">
+          <div class="tr-row-head"><span id="trNameB">Partner</span><span id="trCountB">0 / 30</span></div>
+          <div class="tr-bar-outer"><div class="tr-bar-inner theirs" id="trBarB"></div></div>
+        </div>
+        <div id="trStatus" style="font-size:13px;color:var(--ink-dim);margin:16px 0;min-height:18px;">Yarışı başlatmak için butona bas</div>
+        <div style="display:flex;justify-content:center;margin-bottom:18px;">
+          <button class="tap-btn" id="trTapBtn" onclick="trTap()" disabled>TIKLA!</button>
+        </div>
+        <div class="xox-actions" style="justify-content:center;">
+          <button class="reset-btn" id="trStartBtn" onclick="trStartRound()">🚀 Yarışı Başlat</button>
+          <button class="reset-btn ghost" onclick="trResetScore()">Sıfırla</button>
+        </div>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -1995,6 +2293,13 @@
     initHangmanSync();
     initNavSync();
     initQaSync();
+    initSameWordSync();
+    initNumGuessSync();
+    initTwoTruthsSync();
+    initDiceSync();
+    initFlappySync();
+    initReactionSync();
+    initTapRaceSync();
   }
 
   // Odaya katılan her cihaz için X/O ve P1/P2 rollerini KALICI ve ÇAKIŞMASIZ şekilde atar.
@@ -2159,7 +2464,10 @@
   function showView(name){
     const section = document.getElementById('view-' + name);
     if(!section) return;
+    const prevView = currentView;
     currentView = name;
+    if(prevView === 'flappy' && name !== 'flappy' && typeof fbStop === 'function') fbStop();
+    if(prevView === 'reaction' && name !== 'reaction' && typeof rxCancel === 'function') rxCancel();
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     section.classList.add('active');
     document.querySelectorAll('.nav-item[data-view]').forEach(n => n.classList.remove('active'));
@@ -2177,7 +2485,9 @@
     const labels = {
       home:'Ana Sayfa', draw:'Ortak Çizim', xox:'XOX', tod:'Truth or Dare',
       chat:'Sohbet Kartları', song:'Şarkıyı Tahmin Et', puzzle:'Puzzle', video:'Video İzle',
-      emoji:'Emoji Tahmin Et', rps:'Taş Kağıt Makas', hangman:'Adam Asmaca', qa:'Soru Cevap'
+      emoji:'Emoji Tahmin Et', rps:'Taş Kağıt Makas', hangman:'Adam Asmaca', qa:'Soru Cevap',
+      sameword:'Aynı Kelime', numguess:'Sayı Tahmin', twotruths:'İki Doğru Bir Yalan', dice:'Zar Düellosu',
+      flappy:'Flappy Bird Düellosu', reaction:'Reaksiyon Düellosu', taprace:'Tıklama Yarışı'
     };
     el.textContent = '💞 ' + (byName || 'Partnerin') + ' → ' + (labels[viewName] || viewName);
     el.classList.add('show');
@@ -3976,6 +4286,739 @@
 
   function resetHangmanGame(){
     if(roomRef) roomRef.child('hangman').remove();
+  }
+
+  // ---------- Ortak yardımcı: kelime karşılaştırma için normalize ----------
+  function normWord(w){
+    return (w || '').trim().toLocaleLowerCase('tr-TR');
+  }
+
+  // ==================================================================
+  // AYNI KELİMEYİ TAHMİN ETMECE
+  // Mantık: biri "yeni tur" ile rastgele bir konu seçer, ikiniz de kimseye
+  // söylemeden kendi kelimenizi gönderirsiniz (subs, presenceId ile anahtarlanır).
+  // İki kişi de gönderince kelimeler açığa çıkar ve karşılaştırılır — tutarsa
+  // seri (streak) artar, tutmazsa sıfırlanır. Yazma işlemi transaction ile
+  // yapılır ki iki taraf da aynı anda gönderse bile çakışma olmasın.
+  // ==================================================================
+  const SW_TOPICS = [
+    'aklına gelen bir hayvan 🐾', 'aklına gelen bir renk 🎨', 'aklına gelen bir meyve 🍉',
+    'aklına gelen bir ülke 🌍', 'aklına gelen bir şehir 🏙️', 'aklına gelen bir çiçek 🌸',
+    'aklına gelen bir tatlı 🍰', 'aklına gelen bir mevsim 🍂', 'aklına gelen bir spor ⚽',
+    'aklına gelen bir gezegen 🪐', 'aklına gelen bir yemek 🍜', 'aklına gelen bir hayvan sesi 🔊',
+    '1-10 arası aklına gelen bir sayı 🔢', 'beni tanımlayan bir kelime 💭', 'aşkı tanımlayan bir kelime 💜',
+    'aklına gelen bir müzik türü 🎵', 'aklına gelen bir içecek 🥤', 'aklına gelen bir çizgi film karakteri 🦸',
+    'aklına gelen bir tatil yeri ✈️', 'aklına gelen bir İngilizce kelime 🔤', 'aklına gelen bir eşya 📦',
+    'ilişkimizi anlatan bir kelime 💞', 'aklına gelen bir masal karakteri 🧚', 'aklına gelen bir koku 🌿',
+    'aklına gelen bir hediye 🎁', 'şu anki ruh halini bir kelimeyle anlat 😊', 'aklına gelen bir mutfak eşyası 🍳',
+    'aklına gelen bir müzik aleti 🎸', 'aklına gelen bir uzay ile ilgili kelime 🌌'
+  ];
+
+  function swNewRound(){
+    if(!roomRef) return;
+    roomRef.child('sameword').transaction(cur => {
+      cur = cur || { round: 0, streak: 0, history: [] };
+      return {
+        round: (cur.round || 0) + 1,
+        topic: SW_TOPICS[Math.floor(Math.random() * SW_TOPICS.length)],
+        topicId: Date.now(),
+        subs: {},
+        streak: cur.streak || 0,
+        history: cur.history || []
+      };
+    });
+  }
+
+  function swSubmitWord(){
+    if(!roomRef || !myPresenceId) return;
+    const input = document.getElementById('swWordInput');
+    const word = (input.value || '').trim().slice(0, 24);
+    if(!word){ alert('Önce bir kelime yaz 🥺'); return; }
+    input.value = '';
+    roomRef.child('sameword').transaction(cur => {
+      if(!cur || !cur.topic) return cur; // tur başlamamış — dokunma
+      cur.subs = cur.subs || {};
+      cur.subs[myPresenceId] = { name: USER_NAME, word: word, ts: Date.now() };
+      const entries = Object.values(cur.subs);
+      if(entries.length >= 2 && cur.resolvedTopicId !== cur.topicId){
+        const words = entries.map(e => normWord(e.word));
+        const allMatch = words.every(w => w === words[0]) && words[0] !== '';
+        cur.streak = allMatch ? (cur.streak || 0) + 1 : 0;
+        const hist = cur.history || [];
+        hist.unshift({ topic: cur.topic, words: entries.map(e => ({ name: e.name, word: e.word })), match: allMatch });
+        cur.history = hist.slice(0, 8);
+        cur.resolvedTopicId = cur.topicId;
+      }
+      return cur;
+    });
+  }
+
+  function swResetStreak(){
+    if(roomRef) roomRef.child('sameword').child('streak').set(0);
+  }
+
+  function initSameWordSync(){
+    if(!roomRef) return;
+    roomRef.child('sameword').on('value', snap => {
+      const s = snap.val() || {};
+      document.getElementById('swRound').textContent = s.round || 0;
+      document.getElementById('swStreak').textContent = s.streak || 0;
+      document.getElementById('swTopicText').textContent = s.topic || 'başlamak için "yeni tur" başlat 💜';
+
+      const subs = s.subs || {};
+      const entries = Object.values(subs);
+      const mine = myPresenceId ? subs[myPresenceId] : null;
+      const revealWrap = document.getElementById('swReveal');
+      const revealBox = document.getElementById('swRevealBox');
+      const banner = document.getElementById('swResultBanner');
+      const statusEl = document.getElementById('swStatus');
+
+      if(entries.length >= 2){
+        revealWrap.style.display = 'flex';
+        revealBox.innerHTML = entries.map(e =>
+          '<div style="min-width:130px;background:var(--bg-soft);border:1px solid var(--stroke);border-radius:12px;padding:12px 16px;">' +
+            '<div style="font-size:11px;color:var(--ink-faint);margin-bottom:4px;">' + (e.name || 'İsimsiz') + '</div>' +
+            '<div style="font-weight:700;font-size:16px;color:#fff;">' + e.word + '</div>' +
+          '</div>'
+        ).join('');
+        const words = entries.map(e => normWord(e.word));
+        const allMatch = words.every(w => w === words[0]) && words[0] !== '';
+        banner.style.display = 'block';
+        if(allMatch){
+          banner.textContent = '✨ Aynı kelimeyi yazdınız! ✨';
+          banner.style.background = 'rgba(139,92,246,.22)';
+          banner.style.color = '#e7defe';
+          banner.style.border = '1px solid var(--violet)';
+        } else {
+          banner.textContent = 'Bu sefer farklı düşündünüz 💭';
+          banner.style.background = 'var(--bg-soft)';
+          banner.style.color = 'var(--ink-dim)';
+          banner.style.border = '1px solid var(--stroke)';
+        }
+        statusEl.textContent = 'ikiniz de yazdınız, sonuç yukarıda 👆';
+      } else {
+        revealWrap.style.display = 'none';
+        banner.style.display = 'none';
+        if(!s.topic) statusEl.textContent = 'başlamak için "yeni tur" başlat';
+        else if(mine) statusEl.textContent = 'kelimen kaydedildi, partnerin bekleniyor... ⏳';
+        else if(entries.length === 1) statusEl.textContent = 'partnerin yazdı, sıra sende! ✍️';
+        else statusEl.textContent = 'kelimeni yaz ve gönder 💭';
+      }
+
+      const histWrap = document.getElementById('swHistory');
+      histWrap.innerHTML = (s.history || []).slice(0, 6).map(h =>
+        '<div style="display:flex;justify-content:space-between;gap:10px;background:var(--bg-soft);border:1px solid var(--stroke);border-radius:10px;padding:7px 12px;font-size:12px;">' +
+          '<span style="color:var(--ink-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (h.topic || '') + '</span>' +
+          '<span style="color:#fff;white-space:nowrap;">' + h.words.map(w => w.word).join(' / ') + ' ' + (h.match ? '✅' : '❌') + '</span>' +
+        '</div>'
+      ).join('') || '<div class="qa-empty">henüz tur oynanmadı</div>';
+    });
+  }
+
+  // ==================================================================
+  // SAYI TAHMİN
+  // Biri gizli bir sayı (1-100) belirler, diğeri tahmin eder ve her tahminde
+  // "yüksek/düşük/doğru" ipucu alır. Setter kimliği presenceId ile sabitlenir,
+  // böylece kim sayıyı belirlediyse o taraf tahmin kutusunu görmez.
+  // ==================================================================
+  function ngStartGame(){
+    if(!roomRef || !myPresenceId) return;
+    const raw = parseInt(document.getElementById('ngSecretInput').value, 10);
+    if(!raw || raw < 1 || raw > 100){ alert('1 ile 100 arasında bir sayı gir.'); return; }
+    document.getElementById('ngSecretInput').value = '';
+    roomRef.child('numguess').set({
+      secret: raw, setterId: myPresenceId, setterName: USER_NAME,
+      guesses: [], over: false, ts: Date.now()
+    });
+  }
+
+  function ngSubmitGuess(){
+    if(!roomRef || !myPresenceId) return;
+    const input = document.getElementById('ngGuessInput');
+    const val = parseInt(input.value, 10);
+    if(!val || val < 1 || val > 100){ alert('1 ile 100 arasında bir sayı gir.'); return; }
+    input.value = '';
+    roomRef.child('numguess').transaction(cur => {
+      if(!cur || cur.over || cur.setterId === myPresenceId) return cur;
+      const hint = val === cur.secret ? 'doğru' : (val < cur.secret ? 'yüksek' : 'düşük');
+      const guesses = cur.guesses || [];
+      guesses.push({ by: myPresenceId, name: USER_NAME, value: val, hint: hint, ts: Date.now() });
+      cur.guesses = guesses;
+      if(hint === 'doğru') cur.over = true;
+      return cur;
+    });
+  }
+
+  function ngResetGame(){
+    if(roomRef) roomRef.child('numguess').remove();
+  }
+
+  function initNumGuessSync(){
+    if(!roomRef) return;
+    roomRef.child('numguess').on('value', snap => {
+      const s = snap.val();
+      const setup = document.getElementById('ngSetup');
+      const play = document.getElementById('ngPlay');
+      if(!s || !s.secret){
+        setup.style.display = 'block';
+        play.style.display = 'none';
+        return;
+      }
+      setup.style.display = 'none';
+      play.style.display = 'block';
+
+      const iAmSetter = s.setterId === myPresenceId;
+      const roleLabel = document.getElementById('ngRoleLabel');
+      const guesserBox = document.getElementById('ngGuesserBox');
+      const hintBox = document.getElementById('ngHintBox');
+
+      if(s.over){
+        const winnerGuess = (s.guesses || []).find(g => g.hint === 'doğru');
+        hintBox.textContent = '🎉 ' + (winnerGuess ? winnerGuess.name : 'Birisi') + ' doğru bildi! Sayı: ' + s.secret;
+        hintBox.style.color = '#4ade80';
+        guesserBox.style.display = 'none';
+        roleLabel.textContent = iAmSetter ? 'Partnerin sayıyı buldu! 🎉' : 'Tebrikler, doğru bildin! 🎉';
+      } else if(iAmSetter){
+        roleLabel.textContent = '🤫 Sayıyı sen belirledin — partnerin tahmin ediyor';
+        guesserBox.style.display = 'none';
+        hintBox.textContent = '';
+      } else {
+        roleLabel.textContent = '🎯 Tahmin sırası sende!';
+        guesserBox.style.display = 'block';
+        const last = (s.guesses || [])[s.guesses.length - 1];
+        if(last && last.hint !== 'doğru'){
+          hintBox.textContent = last.value + ' → sayı daha ' + last.hint;
+          hintBox.style.color = '#fff';
+        } else {
+          hintBox.textContent = '';
+        }
+      }
+
+      const histWrap = document.getElementById('ngHistory');
+      histWrap.innerHTML = (s.guesses || []).map(g =>
+        '<div style="display:flex;justify-content:space-between;gap:10px;background:var(--bg-soft);border:1px solid var(--stroke);border-radius:10px;padding:7px 12px;font-size:12px;">' +
+          '<span style="color:var(--ink-dim);">' + g.name + '</span>' +
+          '<span style="color:#fff;">' + g.value + (g.hint === 'doğru' ? ' ✅' : (g.hint === 'yüksek' ? ' ↑ daha yüksek' : ' ↓ daha düşük')) + '</span>' +
+        '</div>'
+      ).join('') || '';
+    });
+  }
+
+  // ==================================================================
+  // İKİ DOĞRU BİR YALAN
+  // Yazan taraf 3 cümle girip hangisinin yalan olduğunu (sadece kendi
+  // cihazında tutulan ttSelectedLie ile) işaretler ve gönderir — yalan index'i
+  // Firebase'e yazılır ama arayüzde partnere gösterilmeden saklanır. Partner
+  // 3 cümleden birini seçer, transaction ile kilitlenir, sonra sonuç açığa çıkar.
+  // ==================================================================
+  let ttSelectedLie = null;
+
+  function ttPickLie(i){
+    ttSelectedLie = i;
+    document.querySelectorAll('#ttLiePicker .tod-choice').forEach(b => {
+      b.classList.toggle('picked-t', parseInt(b.dataset.i, 10) === i);
+    });
+  }
+
+  function ttSubmitRound(){
+    if(!roomRef || !myPresenceId) return;
+    const s1 = document.getElementById('ttInput1').value.trim();
+    const s2 = document.getElementById('ttInput2').value.trim();
+    const s3 = document.getElementById('ttInput3').value.trim();
+    if(!s1 || !s2 || !s3){ alert('Lütfen 3 cümleyi de yaz.'); return; }
+    if(ttSelectedLie === null){ alert('Hangisinin yalan olduğunu işaretle.'); return; }
+    roomRef.child('twotruths').set({
+      authorId: myPresenceId, authorName: USER_NAME,
+      statements: [s1, s2, s3], lieIndex: ttSelectedLie,
+      guesserId: null, guesserName: null, guess: null, ts: Date.now()
+    });
+    document.getElementById('ttInput1').value = '';
+    document.getElementById('ttInput2').value = '';
+    document.getElementById('ttInput3').value = '';
+    ttSelectedLie = null;
+    document.querySelectorAll('#ttLiePicker .tod-choice').forEach(b => b.classList.remove('picked-t'));
+  }
+
+  function ttPickGuess(i){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('twotruths').transaction(cur => {
+      if(!cur || !cur.statements) return cur;
+      if(cur.authorId === myPresenceId) return cur; // yazan kendi yalanını seçemez
+      if(cur.guess !== null && cur.guess !== undefined) return cur; // zaten tahmin edilmiş
+      cur.guess = i;
+      cur.guesserId = myPresenceId;
+      cur.guesserName = USER_NAME;
+      return cur;
+    });
+  }
+
+  function ttNewRound(){
+    if(roomRef) roomRef.child('twotruths').remove();
+  }
+
+  function initTwoTruthsSync(){
+    if(!roomRef) return;
+    roomRef.child('twotruths').on('value', snap => {
+      const s = snap.val();
+      const setup = document.getElementById('ttSetup');
+      const play = document.getElementById('ttPlay');
+      if(!s || !s.statements){
+        setup.style.display = 'block';
+        play.style.display = 'none';
+        return;
+      }
+      setup.style.display = 'none';
+      play.style.display = 'block';
+
+      const iAmAuthor = s.authorId === myPresenceId;
+      const guessed = s.guess !== null && s.guess !== undefined;
+      document.getElementById('ttAuthorLabel').textContent = iAmAuthor
+        ? (guessed ? 'Partnerin tahmin etti, sonuç aşağıda 👇' : 'Partnerin yalanını bulmaya çalışıyor 🤔')
+        : (guessed ? 'Tahminin gönderildi, sonuç aşağıda 👇' : (s.authorName || 'Partnerin') + ' seni test ediyor — hangisi yalan?');
+
+      const wrap = document.getElementById('ttStatements');
+      wrap.innerHTML = '';
+      s.statements.forEach((txt, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'tod-choice';
+        btn.style.cssText = 'width:100%;text-align:left;white-space:normal;';
+        btn.textContent = (i + 1) + '. ' + txt;
+        if(guessed){
+          if(i === s.lieIndex) btn.style.cssText += 'border-color:#f38b8b;background:rgba(243,139,139,.16);color:#fff;';
+          if(i === s.guess && s.guess !== s.lieIndex) btn.style.cssText += 'border-color:var(--amber);background:rgba(248,196,113,.16);color:#fff;';
+          if(i === s.guess && s.guess === s.lieIndex) btn.style.cssText += 'border-color:#4ade80;background:rgba(74,222,128,.16);color:#fff;';
+        } else if(!iAmAuthor){
+          btn.onclick = () => ttPickGuess(i);
+        } else {
+          btn.disabled = true;
+          btn.style.opacity = '0.6';
+        }
+        wrap.appendChild(btn);
+      });
+
+      const banner = document.getElementById('ttResultBanner');
+      if(guessed){
+        const correct = s.guess === s.lieIndex;
+        banner.style.display = 'block';
+        banner.textContent = correct
+          ? '🎉 ' + (s.guesserName || 'Partner') + ' yalanı buldu!'
+          : '😄 ' + (s.guesserName || 'Partner') + ' yanılmış — gerçek yalan ' + (s.lieIndex + 1) + '. cümleydi.';
+        banner.style.background = correct ? 'rgba(74,222,128,.14)' : 'rgba(139,92,246,.16)';
+        banner.style.color = '#fff';
+        banner.style.border = '1px solid ' + (correct ? '#4ade80' : 'var(--violet)');
+      } else {
+        banner.style.display = 'none';
+      }
+    });
+  }
+
+  // ==================================================================
+  // ZAR DÜELLOSU
+  // Her cihaz kendi zarını "rolls" altına presenceId ile yazar (transaction
+  // ile — çakışma olmaz). İki farklı presenceId rolls'a girince tur otomatik
+  // sonuçlanır ("resolved"), skor tablosu güncellenir. Bir sonraki "zar at"
+  // tıklamasında yeni tur başlar (rolls sıfırlanır).
+  // ==================================================================
+  function dcRoll(){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('dice').transaction(cur => {
+      cur = cur || { rolls: {}, scores: {}, names: {}, resolved: false };
+      cur.names = cur.names || {};
+      cur.names[myPresenceId] = USER_NAME;
+      cur.rolls = cur.rolls || {};
+      if(cur.resolved){ cur.rolls = {}; cur.resolved = false; }
+      if(cur.rolls[myPresenceId] !== undefined) return cur; // bu turda zaten attın
+      cur.rolls[myPresenceId] = 1 + Math.floor(Math.random() * 6);
+      const ids = Object.keys(cur.rolls);
+      if(ids.length >= 2){
+        let max = -1, winners = [];
+        ids.forEach(id => {
+          if(cur.rolls[id] > max){ max = cur.rolls[id]; winners = [id]; }
+          else if(cur.rolls[id] === max) winners.push(id);
+        });
+        if(winners.length === 1){
+          cur.scores = cur.scores || {};
+          cur.scores[winners[0]] = (cur.scores[winners[0]] || 0) + 1;
+        }
+        cur.resolved = true;
+      }
+      return cur;
+    });
+  }
+
+  function dcResetScore(){
+    if(roomRef) roomRef.child('dice').set({ rolls: {}, scores: {}, names: {}, resolved: false });
+  }
+
+  function initDiceSync(){
+    if(!roomRef) return;
+    roomRef.child('dice').on('value', snap => {
+      const s = snap.val() || { rolls: {}, scores: {}, names: {}, resolved: false };
+      const rolls = s.rolls || {};
+      const scores = s.scores || {};
+      const names = s.names || {};
+      const otherId = Object.keys(names).find(id => id !== myPresenceId) ||
+                       Object.keys(rolls).find(id => id !== myPresenceId);
+
+      document.getElementById('dcNameA').textContent = 'Sen';
+      document.getElementById('dcLabelA').textContent = USER_NAME || 'Sen';
+      document.getElementById('dcNameB').textContent = otherId && names[otherId] ? names[otherId] : 'Partner';
+      document.getElementById('dcLabelB').textContent = otherId && names[otherId] ? names[otherId] : 'Partner';
+      document.getElementById('dcScoreA').textContent = (myPresenceId && scores[myPresenceId]) || 0;
+      document.getElementById('dcScoreB').textContent = (otherId && scores[otherId]) || 0;
+
+      document.getElementById('dcDieA').textContent = (myPresenceId && rolls[myPresenceId] !== undefined) ? rolls[myPresenceId] : '?';
+      document.getElementById('dcDieB').textContent = (otherId && rolls[otherId] !== undefined) ? rolls[otherId] : '?';
+
+      const statusEl = document.getElementById('dcStatus');
+      const iRolled = myPresenceId && rolls[myPresenceId] !== undefined;
+      const otherRolled = otherId && rolls[otherId] !== undefined;
+      if(s.resolved){
+        const myVal = myPresenceId ? rolls[myPresenceId] : undefined;
+        const otherVal = otherId ? rolls[otherId] : undefined;
+        if(myVal !== undefined && otherVal !== undefined){
+          if(myVal === otherVal) statusEl.textContent = 'Berabere! Tekrar zar at 🎲';
+          else if(myVal > otherVal) statusEl.textContent = 'Bu turu sen kazandın! 🎉';
+          else statusEl.textContent = 'Bu turu ' + (names[otherId] || 'partnerin') + ' kazandı 😅';
+        }
+      } else if(iRolled && !otherRolled){
+        statusEl.textContent = 'Zarın atıldı, partnerin bekleniyor... ⏳';
+      } else {
+        statusEl.textContent = 'zarını atmak için butona bas';
+      }
+    });
+  }
+
+  // ==================================================================
+  // FLAPPY BIRD DÜELLOSU
+  // Her cihaz kendi kuşunu yerel olarak (canvas + requestAnimationFrame)
+  // oynatır — çarpışma tespiti ve fizik tamamen istemci tarafındadır, ağ
+  // gecikmesinden etkilenmez. Sadece skor (anlık + en yüksek) Firebase'e
+  // yazılır ki partner canlı olarak nasıl gittiğini görebilsin. "Aynı anda"
+  // oynanabilir olması için iki taraf da kendi ekranında bağımsız oynar,
+  // en yüksek skoru karşılaştırırlar.
+  // ==================================================================
+  let fbCtx = null, fbAnim = null, fbBird = null, fbPipes = [], fbScore = 0, fbBest = 0, fbRunning = false, fbFrame = 0;
+  const FB_W = 300, FB_H = 420, FB_GRAV = 0.11, FB_JUMP = -3.6, FB_GAP = 165, FB_PIPE_W = 48, FB_SPEED = 1.3, FB_SPAWN = 140, FB_MAX_VY = 4.2;
+
+  function fbInitCanvas(){
+    const canvas = document.getElementById('fbCanvas');
+    if(!canvas) return;
+    fbCtx = canvas.getContext('2d');
+    if(!canvas.dataset.bound){
+      canvas.addEventListener('click', fbJump);
+      canvas.dataset.bound = '1';
+    }
+    if(!window.__fbKeyBound){
+      document.addEventListener('keydown', e => {
+        if(e.code === 'Space' && currentView === 'flappy'){
+          e.preventDefault();
+          fbJump();
+        }
+      });
+      window.__fbKeyBound = true;
+    }
+  }
+
+  function fbJump(){
+    if(!fbRunning || !fbBird) return;
+    fbBird.vy = FB_JUMP;
+  }
+
+  function fbStart(){
+    fbInitCanvas();
+    if(!fbCtx) return;
+    fbBird = { x: 70, y: FB_H / 2, vy: 0, r: 11 };
+    fbPipes = [];
+    fbScore = 0;
+    fbFrame = 0;
+    fbRunning = true;
+    const btn = document.getElementById('fbStartBtn');
+    btn.textContent = '⏸ Oynanıyor...';
+    btn.disabled = true;
+    fbWriteState(true);
+    if(fbAnim) cancelAnimationFrame(fbAnim);
+    fbLoop();
+  }
+
+  function fbStop(){
+    fbRunning = false;
+    if(fbAnim) cancelAnimationFrame(fbAnim);
+  }
+
+  function fbLoop(){
+    if(!fbRunning) return;
+    fbFrame++;
+    fbBird.vy += FB_GRAV;
+    if(fbBird.vy > FB_MAX_VY) fbBird.vy = FB_MAX_VY;
+    fbBird.y += fbBird.vy;
+
+    if(fbFrame % FB_SPAWN === 0){
+      const gapY = 50 + Math.random() * (FB_H - 140 - FB_GAP);
+      fbPipes.push({ x: FB_W, gapY, scored: false });
+    }
+    fbPipes.forEach(p => p.x -= FB_SPEED);
+    fbPipes = fbPipes.filter(p => p.x > -FB_PIPE_W);
+
+    let dead = fbBird.y - fbBird.r < 0 || fbBird.y + fbBird.r > FB_H - 24;
+    fbPipes.forEach(p => {
+      if(!dead && fbBird.x + fbBird.r > p.x && fbBird.x - fbBird.r < p.x + FB_PIPE_W){
+        if(fbBird.y - fbBird.r < p.gapY || fbBird.y + fbBird.r > p.gapY + FB_GAP) dead = true;
+      }
+      if(!p.scored && p.x + FB_PIPE_W < fbBird.x){
+        p.scored = true;
+        fbScore++;
+        fbWriteState(true);
+      }
+    });
+
+    fbDraw();
+
+    if(dead){
+      fbRunning = false;
+      fbBest = Math.max(fbBest, fbScore);
+      fbWriteState(false);
+      const btn = document.getElementById('fbStartBtn');
+      btn.textContent = '🔁 Tekrar Oyna';
+      btn.disabled = false;
+      return;
+    }
+    fbAnim = requestAnimationFrame(fbLoop);
+  }
+
+  function fbDraw(){
+    if(!fbCtx) return;
+    const ctx = fbCtx;
+    ctx.clearRect(0, 0, FB_W, FB_H);
+    ctx.fillStyle = '#8b5cf6';
+    fbPipes.forEach(p => {
+      ctx.fillRect(p.x, 0, FB_PIPE_W, p.gapY);
+      ctx.fillRect(p.x, p.gapY + FB_GAP, FB_PIPE_W, FB_H - (p.gapY + FB_GAP));
+    });
+    ctx.fillStyle = '#241a3d';
+    ctx.fillRect(0, FB_H - 24, FB_W, 24);
+    ctx.beginPath();
+    ctx.fillStyle = '#f8c471';
+    ctx.arc(fbBird.x, fbBird.y, fbBird.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = "700 20px Manrope, sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText(fbScore, FB_W / 2, 36);
+  }
+
+  function fbWriteState(alive){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('flappy').child(myPresenceId).set({
+      name: USER_NAME, score: fbScore, best: fbBest, alive, ts: Date.now()
+    });
+  }
+
+  function fbResetMatch(){
+    if(roomRef) roomRef.child('flappy').remove();
+    fbBest = 0;
+  }
+
+  function initFlappySync(){
+    if(!roomRef) return;
+    roomRef.child('flappy').on('value', snap => {
+      const all = snap.val() || {};
+      const mine = (myPresenceId && all[myPresenceId]) || {};
+      const otherId = Object.keys(all).find(id => id !== myPresenceId);
+      const other = otherId ? all[otherId] : null;
+      document.getElementById('fbScoreA').textContent = mine.best || 0;
+      document.getElementById('fbNameB').textContent = other && other.name ? other.name : 'Partner';
+      document.getElementById('fbScoreB').textContent = other ? (other.best || 0) : 0;
+      const statusEl = document.getElementById('fbStatus');
+      if(other && other.alive){
+        statusEl.textContent = (other.name || 'Partnerin') + ' şu an oynuyor — anlık skor: ' + (other.score || 0);
+      } else if(other){
+        statusEl.textContent = (other.name || 'Partnerin') + ' son skoru: ' + (other.score || 0);
+      } else {
+        statusEl.textContent = 'Partnerin katılmasını bekle';
+      }
+    });
+  }
+
+  // ==================================================================
+  // REAKSİYON DÜELLOSU
+  // Her cihaz kendi reaksiyon testini yerel zamanlayıcıyla çalıştırır
+  // (bekleme süresi rastgele, ekran yeşile dönünce performance.now() ile
+  // tepki süresi ölçülür). En iyi (en düşük) süre Firebase'e yazılır,
+  // partnerle canlı karşılaştırılır — kim daha hızlı, anında görülür.
+  // ==================================================================
+  let rxState = 'idle'; // idle | waiting | ready
+  let rxTimer = null;
+  let rxGreenAt = 0;
+  let rxBest = null;
+
+  function rxStart(){
+    const zone = document.getElementById('rxZone');
+    rxState = 'waiting';
+    zone.textContent = 'Bekle...';
+    zone.style.background = 'rgba(243,139,139,.18)';
+    zone.style.borderColor = '#f38b8b';
+    document.getElementById('rxStartBtn').disabled = true;
+    clearTimeout(rxTimer);
+    const delay = 1200 + Math.random() * 2800;
+    rxTimer = setTimeout(() => {
+      rxState = 'ready';
+      rxGreenAt = performance.now();
+      zone.textContent = 'TIKLA! 👆';
+      zone.style.background = 'rgba(74,222,128,.22)';
+      zone.style.borderColor = '#4ade80';
+    }, delay);
+  }
+
+  function rxCancel(){
+    clearTimeout(rxTimer);
+    rxState = 'idle';
+    const zone = document.getElementById('rxZone');
+    if(zone){
+      zone.textContent = 'Başlamak için butona bas';
+      zone.style.background = '';
+      zone.style.borderColor = '';
+    }
+    const btn = document.getElementById('rxStartBtn');
+    if(btn) btn.disabled = false;
+  }
+
+  function rxTap(){
+    const zone = document.getElementById('rxZone');
+    if(rxState === 'idle') return;
+    if(rxState === 'waiting'){
+      clearTimeout(rxTimer);
+      rxState = 'idle';
+      zone.textContent = 'Çok erken! Tekrar dene 😅';
+      zone.style.background = '';
+      zone.style.borderColor = '';
+      document.getElementById('rxStartBtn').disabled = false;
+      return;
+    }
+    if(rxState === 'ready'){
+      const ms = Math.round(performance.now() - rxGreenAt);
+      rxState = 'idle';
+      zone.textContent = ms + ' ms 🎯';
+      zone.style.background = '';
+      zone.style.borderColor = '';
+      document.getElementById('rxStartBtn').disabled = false;
+      if(rxBest === null || ms < rxBest) rxBest = ms;
+      rxWriteState(ms);
+    }
+  }
+
+  function rxWriteState(lastMs){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('reaction').child(myPresenceId).set({
+      name: USER_NAME, best: rxBest, last: lastMs, ts: Date.now()
+    });
+  }
+
+  function rxResetMatch(){
+    if(roomRef) roomRef.child('reaction').remove();
+    rxBest = null;
+  }
+
+  function initReactionSync(){
+    if(!roomRef) return;
+    roomRef.child('reaction').on('value', snap => {
+      const all = snap.val() || {};
+      const mine = (myPresenceId && all[myPresenceId]) || {};
+      const otherId = Object.keys(all).find(id => id !== myPresenceId);
+      const other = otherId ? all[otherId] : null;
+      document.getElementById('rxScoreA').textContent = mine.best ? mine.best + ' ms' : '—';
+      document.getElementById('rxNameB').textContent = other && other.name ? other.name : 'Partner';
+      document.getElementById('rxScoreB').textContent = other && other.best ? other.best + ' ms' : '—';
+      const statusEl = document.getElementById('rxStatus');
+      if(mine.best && other && other.best){
+        if(mine.best < other.best) statusEl.textContent = '🏆 Şu an öndesin!';
+        else if(mine.best > other.best) statusEl.textContent = (other.name || 'Partnerin') + ' şu an önde 😅';
+        else statusEl.textContent = 'Berabere!';
+      } else {
+        statusEl.textContent = 'En düşük reaksiyon süresi kazanır';
+      }
+    });
+  }
+
+  // ==================================================================
+  // TIKLAMA YARIŞI
+  // Gerçek zamanlı ortak yarış: biri "Yarışı Başlat"a basınca roomRef
+  // altında ortak bir tur oluşur (hedef: 30 tık). Her tıklama transaction
+  // ile kendi presenceId'sinin sayacını artırır — iki taraf da aynı anda
+  // hızlıca tıklasa bile çakışma olmaz. Hedefe ilk ulaşan turu kazanır ve
+  // tur otomatik kilitlenir.
+  // ==================================================================
+  function trStartRound(){
+    if(!roomRef) return;
+    roomRef.child('taprace').set({
+      target: 30, counts: {}, names: {}, winnerId: null, winnerName: null, finished: false, ts: Date.now()
+    });
+  }
+
+  function trTap(){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('taprace').transaction(cur => {
+      if(!cur || cur.finished) return cur;
+      cur.counts = cur.counts || {};
+      cur.names = cur.names || {};
+      cur.names[myPresenceId] = USER_NAME;
+      cur.counts[myPresenceId] = (cur.counts[myPresenceId] || 0) + 1;
+      if(cur.counts[myPresenceId] >= cur.target){
+        cur.finished = true;
+        cur.winnerId = myPresenceId;
+        cur.winnerName = USER_NAME;
+      }
+      return cur;
+    });
+  }
+
+  function trResetScore(){
+    if(roomRef) roomRef.child('taprace').remove();
+  }
+
+  function initTapRaceSync(){
+    if(!roomRef) return;
+    roomRef.child('taprace').on('value', snap => {
+      const s = snap.val();
+      const tapBtn = document.getElementById('trTapBtn');
+      const startBtn = document.getElementById('trStartBtn');
+      const statusEl = document.getElementById('trStatus');
+      if(!s){
+        document.getElementById('trCountA').textContent = '0 / 30';
+        document.getElementById('trCountB').textContent = '0 / 30';
+        document.getElementById('trBarA').style.width = '0%';
+        document.getElementById('trBarB').style.width = '0%';
+        tapBtn.disabled = true;
+        startBtn.disabled = false;
+        statusEl.textContent = 'Yarışı başlatmak için butona bas';
+        return;
+      }
+      const target = s.target || 30;
+      const counts = s.counts || {};
+      const names = s.names || {};
+      const otherId = Object.keys(names).find(id => id !== myPresenceId) ||
+                       Object.keys(counts).find(id => id !== myPresenceId);
+      const myCount = (myPresenceId && counts[myPresenceId]) || 0;
+      const otherCount = (otherId && counts[otherId]) || 0;
+
+      document.getElementById('trNameA').textContent = 'Sen';
+      document.getElementById('trNameB').textContent = otherId && names[otherId] ? names[otherId] : 'Partner';
+      document.getElementById('trCountA').textContent = myCount + ' / ' + target;
+      document.getElementById('trCountB').textContent = otherCount + ' / ' + target;
+      document.getElementById('trBarA').style.width = Math.min(100, (myCount / target) * 100) + '%';
+      document.getElementById('trBarB').style.width = Math.min(100, (otherCount / target) * 100) + '%';
+
+      startBtn.disabled = false;
+      if(s.finished){
+        tapBtn.disabled = true;
+        const iWon = s.winnerId === myPresenceId;
+        statusEl.textContent = iWon ? '🏆 Yarışı kazandın!' : ('🏆 ' + (s.winnerName || 'Partnerin') + ' kazandı!');
+      } else {
+        tapBtn.disabled = false;
+        statusEl.textContent = 'Hedefe önce ulaşan kazanır — tıklamaya başla!';
+      }
+    });
   }
 </script>
 
