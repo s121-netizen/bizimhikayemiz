@@ -2980,7 +2980,27 @@
   let unreadChatCount = 0;
   let liveChatListenerAttached = false;
 
-  function toggleChatDrawer(){
+  // PC hızlı chat kısayolu: C tuşu ile aç/kapat.
+  document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() !== 'c') return;
+    const tag = document.activeElement?.tagName?.toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || document.activeElement?.isContentEditable) return;
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+    e.preventDefault();
+    toggleChatDrawer();
+  });
+
+  
+  // ESC: açık olan chat'i her yerden kapat
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && chatDrawerOpen) {
+      chatDrawerOpen = false;
+      const drawer = document.getElementById('chatDrawer');
+      if (drawer) drawer.classList.remove('open');
+    }
+  });
+
+function toggleChatDrawer(){
     chatDrawerOpen = !chatDrawerOpen;
     const drawer = document.getElementById('chatDrawer');
     drawer.classList.toggle('open', chatDrawerOpen);
