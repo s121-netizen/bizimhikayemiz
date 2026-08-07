@@ -450,6 +450,33 @@
   .xox-score-val{ font-family:'Fraunces',serif; font-size:22px; font-weight:800; color:#fff; }
   .xox-score-div{ color: var(--ink-faint); font-size:13px; }
   .xox-actions{ display:flex; gap:10px; }
+
+  /* Connect 4 */
+  .c4-board-wrap{ display:flex; justify-content:center; }
+  .c4-board{
+    display:grid; grid-template-columns: repeat(7, 42px); grid-template-rows: repeat(6, 42px);
+    gap:6px; padding:10px; border-radius:16px;
+    background: linear-gradient(160deg, #3355d8, #2440a8);
+    box-shadow: 0 10px 26px rgba(0,0,0,.35);
+  }
+  .c4-cell{
+    width:42px; height:42px; border-radius:50%;
+    background: rgba(0,0,0,.28);
+    cursor: pointer;
+    transition: transform .1s;
+  }
+  .c4-cell:not(.disabled):hover{ filter: brightness(1.15); }
+  .c4-cell.disabled{ cursor:not-allowed; }
+  .c4-cell.r{ background: var(--rose); }
+  .c4-cell.y{ background: #f4c430; }
+  .c4-cell.new{ animation: c4Drop .32s cubic-bezier(.4,0,.2,1); }
+  @keyframes c4Drop{ from{ transform: translateY(-160%); } to{ transform: translateY(0); } }
+  .c4-cell.win{ box-shadow: 0 0 0 3px #fff, 0 0 14px rgba(255,255,255,.8); animation: xoxPop .3s ease; }
+  @media (max-width:480px){
+    .c4-board{ grid-template-columns: repeat(7, 34px); grid-template-rows: repeat(6, 34px); gap:5px; padding:8px; }
+    .c4-cell{ width:34px; height:34px; }
+  }
+
   .reset-btn{
     background: linear-gradient(90deg, var(--violet), var(--rose));
     border:none;
@@ -470,6 +497,71 @@
     color: var(--ink-dim);
   }
   .reset-btn.ghost:hover{ filter:none; background: var(--panel-hover); color:#fff; }
+
+  /* 2048 */
+  .g2048-wrap{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .g2048-board{
+    display:grid;
+    grid-template-columns: repeat(4, 68px);
+    grid-template-rows: repeat(4, 68px);
+    gap: 8px;
+    background: var(--bg-soft);
+    border: 1px solid var(--stroke);
+    border-radius: 14px;
+    padding: 8px;
+  }
+  .g2048-tile{
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif;
+    font-weight:800;
+    font-size: 20px;
+    background: rgba(255,255,255,.04);
+    color: var(--ink-faint);
+    transition: background .1s ease, color .1s ease;
+  }
+  .g2048-tile.filled{ animation: xoxPop .18s ease; }
+  .g2048-controls{ display:grid; grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(2, 44px); gap:6px; justify-content:center; }
+  .g2048-controls .g2048-btn:nth-child(1){ grid-column:2; grid-row:1; }
+  .g2048-controls .g2048-btn:nth-child(2){ grid-column:1; grid-row:2; }
+  .g2048-controls .g2048-btn:nth-child(3){ grid-column:2; grid-row:2; }
+  .g2048-controls .g2048-btn:nth-child(4){ grid-column:3; grid-row:2; }
+  .g2048-btn{
+    background: var(--panel); border:1px solid var(--stroke); color: var(--ink);
+    border-radius: 10px; font-size:16px; cursor:pointer; font-family:'Manrope',sans-serif;
+    transition: all .12s ease;
+  }
+  .g2048-btn:hover{ background: var(--panel-hover); border-color: var(--violet); }
+  .g2048-btn:active{ transform: scale(.94); }
+  .g2048-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  @media (max-width: 540px){
+    .g2048-board{ grid-template-columns: repeat(4, 58px); grid-template-rows: repeat(4, 58px); }
+  }
+
+  /* Labirent */
+  .maze-wrap{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .maze-players-info{ display:flex; gap:18px; align-items:center; font-size:12.5px; color:var(--ink-dim); flex-wrap:wrap; justify-content:center; }
+  .maze-player-tag{ display:flex; align-items:center; gap:6px; font-weight:700; }
+  .maze-dot{ width:11px; height:11px; border-radius:50%; display:inline-block; }
+  .maze-wrap-inner{ position:relative; background: var(--bg-soft); border:1px solid var(--stroke); border-radius:12px; padding:6px; }
+  .maze-grid{ display:grid; position:relative; }
+  .maze-cell{ box-sizing:border-box; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .maze-token{
+    position:absolute;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:800; color:#fff;
+    transition: left .12s ease, top .12s ease;
+    box-shadow: 0 0 0 2px rgba(0,0,0,.35);
+    z-index:2;
+  }
+  .maze-controls{ display:grid; grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(2, 44px); gap:6px; justify-content:center; }
+  .maze-controls .g2048-btn:nth-child(1){ grid-column:2; grid-row:1; }
+  .maze-controls .g2048-btn:nth-child(2){ grid-column:1; grid-row:2; }
+  .maze-controls .g2048-btn:nth-child(3){ grid-column:2; grid-row:2; }
+  .maze-controls .g2048-btn:nth-child(4){ grid-column:3; grid-row:2; }
+  .maze-status{ font-size:15px; color: var(--ink-dim); font-weight:600; text-align:center; }
+  .maze-status b{ color:#fff; }
 
   /* Soru Cevap (QA) */
   .qa-wrap{ display:flex; flex-direction:column; gap:22px; align-items:stretch; }
@@ -1162,6 +1254,29 @@
   }
   .song-guess-item b{ color:#fff; }
 
+  /* Şarkı arama sonuçları */
+  .song-search-results{
+    max-width:460px; margin: 0 auto; text-align:left;
+    max-height: 320px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;
+  }
+  .song-search-item{
+    display:flex; align-items:center; gap:10px;
+    background: var(--bg-soft); border:1px solid var(--stroke);
+    border-radius:10px; padding:8px; cursor:pointer;
+    transition: border-color .15s, background .15s;
+    text-align:left;
+  }
+  .song-search-item:hover{ border-color: var(--violet); background: var(--panel-hover); }
+  .song-search-item img{
+    width:64px; height:48px; object-fit:cover; border-radius:6px; flex-shrink:0;
+  }
+  .song-search-item-text{ min-width:0; }
+  .song-search-item-title{
+    font-size:13px; color:#fff; font-weight:600;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .song-search-item-channel{ font-size:11.5px; color: var(--ink-dim); margin-top:2px; }
+
   .mobile-fab{
     display:none;
     position:fixed; right:16px; bottom:16px; z-index:45;
@@ -1574,6 +1689,9 @@
       <div class="nav-item" data-view="drawguess"><span class="ic">🎨</span>Çiz ve Tahmin Et</div>
       <div class="nav-item" data-view="whoami"><span class="ic">🕵️</span>Kimim Ben?</div>
       <div class="nav-item" data-view="uno"><span class="ic">🃏</span>UNO</div>
+      <div class="nav-item" data-view="g2048"><span class="ic">🔢</span>2048</div>
+      <div class="nav-item" data-view="maze"><span class="ic">🧭</span>Labirent</div>
+      <div class="nav-item" data-view="c4"><span class="ic">🔴</span>Connect 4</div>
     </nav>
 
     <div class="presence-bar" id="presenceBar"></div>
@@ -1677,15 +1795,8 @@
           </div>
 
           <div id="songSearchPreview" style="display:none; margin: 4px 0 18px;">
-            <div class="song-video-box" style="max-width:320px; margin:0 auto 10px;">
-              <div id="songSearchFrame"></div>
-            </div>
-            <div id="songSearchTitle" style="font-size:12.5px; color:var(--ink-dim); margin-bottom:12px;"></div>
-            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-              <button type="button" class="reset-btn" onclick="songSearchPrev()">⬅️ Önceki</button>
-              <button type="button" class="reset-btn" onclick="songSearchNext()">Sonraki ➡️</button>
-              <button type="button" class="reset-btn" onclick="pickSongSearchResult()">✅ Bu Şarkıyı Seç</button>
-            </div>
+            <div id="songSearchStatus" style="font-size:12.5px; color:var(--ink-dim); margin-bottom:10px;"></div>
+            <div id="songSearchResults" class="song-search-results"></div>
           </div>
 
           <div class="gate-divider">veya linki yapıştır</div>
@@ -2386,6 +2497,85 @@
       </div>
     </section>
 
+    <!-- 2048 -->
+    <section class="view" id="view-g2048">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🔢</div>
+        <div><h2>2048</h2><br><span>Aynı tahtada sırayla oynayın, birlikte en yüksek sayıya ulaşın</span></div>
+      </div>
+      <div class="panel-box g2048-wrap">
+        <div class="xox-role" id="g2048Role">Rolün belirleniyor…</div>
+        <div class="xox-score">
+          <div class="xox-score-item"><span class="xox-score-label">Skor</span><span class="xox-score-val" id="g2048Score">0</span></div>
+        </div>
+        <div class="xox-status" id="g2048Status">Başlamak için butona bas (partnerin odada olmalı)</div>
+        <div class="g2048-board" id="g2048Board"></div>
+        <div class="g2048-controls">
+          <button class="g2048-btn" onclick="g2048Move('up')">▲</button>
+          <button class="g2048-btn" onclick="g2048Move('left')">◀</button>
+          <button class="g2048-btn" onclick="g2048Move('down')">▼</button>
+          <button class="g2048-btn" onclick="g2048Move('right')">▶</button>
+        </div>
+        <div class="xox-actions">
+          <button class="reset-btn" onclick="g2048NewGame()">🔁 Yeni Oyun</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--ink-faint);text-align:center;">Sırayla hamle yapın — okları veya klavyeyi kullanabilirsiniz</div>
+      </div>
+    </section>
+
+    <!-- LABİRENT -->
+    <section class="view" id="view-maze">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🧭</div>
+        <div><h2>Labirent</h2><br><span>Aynı labirentte yarışın, çıkışa (🏁) önce ulaşan kazanır</span></div>
+      </div>
+      <div class="panel-box maze-wrap">
+        <div class="maze-players-info" id="mazePlayersInfo"></div>
+        <div class="maze-status" id="mazeStatus">Başlamak için butona bas (partnerin odada olmalı)</div>
+        <div class="maze-wrap-inner">
+          <div class="maze-grid" id="mazeGrid"></div>
+        </div>
+        <div class="maze-controls">
+          <button class="g2048-btn" onclick="mazeMove('up')">▲</button>
+          <button class="g2048-btn" onclick="mazeMove('left')">◀</button>
+          <button class="g2048-btn" onclick="mazeMove('down')">▼</button>
+          <button class="g2048-btn" onclick="mazeMove('right')">▶</button>
+        </div>
+        <div class="xox-actions">
+          <button class="reset-btn" onclick="mazeNewGame()">🔁 Yeni Labirent</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--ink-faint);text-align:center;">🚩 başlangıç, 🏁 çıkış — okları veya klavyeyi kullanabilirsiniz</div>
+      </div>
+    </section>
+
+    <!-- CONNECT 4 (Dört Taş) -->
+    <section class="view" id="view-c4">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🔴</div>
+        <div><h2>Connect 4 (Dört Taş)</h2><br><span>Dört taşınızı yan yana, üst üste veya çapraz getiren kazanır</span></div>
+      </div>
+      <div class="panel-box xox-wrap">
+        <div class="xox-role" id="c4Role">Rolün belirleniyor…</div>
+        <div class="xox-score">
+          <div class="xox-score-item"><span class="xox-score-label">🔴</span><span class="xox-score-val" id="c4ScoreR">0</span></div>
+          <div class="xox-score-div">—</div>
+          <div class="xox-score-item"><span class="xox-score-label">🟡</span><span class="xox-score-val" id="c4ScoreY">0</span></div>
+        </div>
+        <div class="xox-status" id="c4Status">Sıra: <b>🔴</b></div>
+        <div class="c4-board-wrap">
+          <div class="c4-board" id="c4Board"></div>
+        </div>
+        <div class="xox-actions">
+          <button class="reset-btn" onclick="newC4Round()">🔁 Yeni Oyun</button>
+          <button class="reset-btn ghost" onclick="resetC4Score()">♻️ Skoru Sıfırla</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--ink-faint);text-align:center;margin-top:4px;">Bir sütuna tıklayınca taşınız oraya düşer</div>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -2656,6 +2846,8 @@
       myRpsRole = mine.rps || null;
       updateXoxRoleLabel();
       updateRpsRoleLabel();
+      myC4Role = mine.c4 || null;
+      updateC4RoleLabel();
     });
 
     initXoxSync();
@@ -2686,9 +2878,12 @@
     initDrawGuessSync();
     initWhoAmISync();
     initUnoSync();
+    initG2048Sync();
+    initMazeSync();
+    initC4Sync();
   }
 
-  // Odaya katılan her cihaz için X/O ve P1/P2 rollerini KALICI ve ÇAKIŞMASIZ şekilde atar.
+  // Odaya katılan her cihaz için X/O, P1/P2 ve R/Y rollerini KALICI ve ÇAKIŞMASIZ şekilde atar.
   // Transaction kullanılır çünkü iki taraf da aynı anda katılabilir — bu, ikisinin de
   // aynı rolü almasını (ör. ikisinin de X olmasını) engeller. Rol bir kez atandıktan sonra
   // hiç değişmez; presence sırası değişse (yenileme, kısa kopma vb.) bile sabit kalır.
@@ -2699,16 +2894,18 @@
       if(current[myPresenceId]) return current; // bu cihaz zaten bir rol almış, dokunma
       const usedXox = new Set(Object.values(current).map(r => r && r.xox).filter(Boolean));
       const usedRps = new Set(Object.values(current).map(r => r && r.rps).filter(Boolean));
+      const usedC4 = new Set(Object.values(current).map(r => r && r.c4).filter(Boolean));
       const xoxRole = !usedXox.has('X') ? 'X' : (!usedXox.has('O') ? 'O' : null);
       const rpsRole = !usedRps.has('P1') ? 'P1' : (!usedRps.has('P2') ? 'P2' : null);
-      current[myPresenceId] = { xox: xoxRole, rps: rpsRole, ts: Date.now() };
+      const c4Role = !usedC4.has('R') ? 'R' : (!usedC4.has('Y') ? 'Y' : null);
+      current[myPresenceId] = { xox: xoxRole, rps: rpsRole, c4: c4Role, ts: Date.now() };
       return current;
     });
   }
 
   // Kendi kendini onaran çakışma düzeltmesi: normalde transaction() aynı role iki
   // cihazın birden atanmasını zaten engeller, ama eski/yarım kalmış oda verisi ya da
-  // ağ kesintisi yüzünden nadiren iki cihaz da "X" (ya da "P1") olarak kaydedilmiş
+  // ağ kesintisi yüzünden nadiren iki cihaz da "X" (ya da "P1"/"R") olarak kaydedilmiş
   // olabilir. Her cihaz SADECE KENDİ satırına dokunur (çakışma yok): odaya SONRADAN
   // katılan taraf (ts'i büyük olan) otomatik olarak boş kalan diğer role geçer.
   function reconcileRoleConflicts(all){
@@ -2726,6 +2923,7 @@
     };
     fix('xox', 'X', 'O');
     fix('rps', 'P1', 'P2');
+    fix('c4', 'R', 'Y');
   }
 
   // Atılan/banlanan kullanıcıyı temizce gate ekranına döndürür.
@@ -2926,7 +3124,8 @@
       emoji:'Emoji Tahmin Et', rps:'Taş Kağıt Makas', hangman:'Adam Asmaca', qa:'Soru Cevap',
       sameword:'Aynı Kelime', numguess:'Sayı Tahmin', twotruths:'İki Doğru Bir Yalan', dice:'Zar Düellosu',
       flappy:'Flappy Bird Düellosu', reaction:'Reaksiyon Düellosu', taprace:'Tıklama Yarışı',
-      memory:'Hafıza Kartları', drawguess:'Çiz ve Tahmin Et', whoami:'Kimim Ben?', uno:'UNO'
+      memory:'Hafıza Kartları', drawguess:'Çiz ve Tahmin Et', whoami:'Kimim Ben?', uno:'UNO',
+      g2048:'2048', maze:'Labirent'
     };
     el.textContent = '💞 ' + (byName || 'Partnerin') + ' → ' + (labels[viewName] || viewName);
     el.classList.add('show');
@@ -2974,6 +3173,9 @@
     { view:'cointoss', emoji:'🪙', name:'Yazı Tura Düellosu', desc:'Yazı mı tura mı gelecek tahmin edin, doğru bilen kazanır', cat:'rekabet' },
     { view:'nearest', emoji:'🔢', name:'En Yakın Sayı', desc:'Gizli sayıya en yakın tahmini yapan turu kazanır', cat:'rekabet' },
     { view:'uno', emoji:'🃏', name:'UNO', desc:"Klasik UNO'yu iki kişilik hızlı versiyonla oynayın", cat:'rekabet' },
+    { view:'g2048', emoji:'🔢', name:'2048', desc:'Aynı tahtada sırayla oynayın, en yüksek sayıya birlikte ulaşın', cat:'rekabet' },
+    { view:'maze', emoji:'🧭', name:'Labirent', desc:'Aynı labirentte yarışın, çıkışa önce ulaşan kazanır', cat:'rekabet' },
+    { view:'c4', emoji:'🔴', name:'Connect 4', desc:'Dört taşınızı yan yana getiren kazanır', cat:'rekabet' },
     { view:'song', emoji:'🎵', name:'Şarkıyı Tahmin Et', desc:'YouTube şarkılarını birlikte tahmin edin', cat:'tahmin' },
     { view:'emoji', emoji:'🧠', name:'Emoji Tahmin Et', desc:'Emojilerden kelimeyi/filmi bulmaya çalışın', cat:'tahmin' },
     { view:'hangman', emoji:'🪢', name:'Adam Asmaca', desc:'Kelimeyi harf harf tahmin edin', cat:'tahmin' },
@@ -3260,6 +3462,188 @@
   renderXox();
   renderXoxWinLine();
   updateXoxScoreLabel();
+
+  // ---------- Connect 4 (Dört Taş) — Firebase senkron ----------
+  // XOX ile aynı desen: her hamle roomRef.child('c4').transaction(...) ile atomik uygulanır,
+  // böylece iki taraf da aynı anda tıklasa bile çakışma/çift hamle oluşmaz. Tahta 6 satır x 7
+  // sütun = 42 hücrelik düz bir dizi olarak tutulur (index = satır*7 + sütun, satır 0 = ÜST).
+  // Boş hücreler XOX'taki null-silme sorununu tekrar yaşamamak için '' (boş string) ile tutulur.
+  const C4_ROWS = 6, C4_COLS = 7;
+  let c4Board = Array(C4_ROWS * C4_COLS).fill('');
+  let c4PrevBoard = null;
+  let c4Turn = 'R';
+  let c4Over = false;
+  let c4Winner = null;
+  let c4Line = null;
+  let c4Score = { R: 0, Y: 0 };
+  let myC4Role = null;
+
+  function c4Idx(r, c){ return r * C4_COLS + c; }
+
+  function normalizeC4Board(raw){
+    const out = Array(C4_ROWS * C4_COLS).fill('');
+    if(raw){
+      for(let i = 0; i < out.length; i++){
+        const v = raw[i];
+        if(v === 'R' || v === 'Y') out[i] = v;
+      }
+    }
+    return out;
+  }
+
+  function updateC4RoleLabel(){
+    const el = document.getElementById('c4Role');
+    if(!el) return;
+    el.innerHTML = myC4Role
+      ? ('Sen: <b>' + (myC4Role === 'R' ? '🔴 Kırmızı' : '🟡 Sarı') + '</b>')
+      : 'İzleyicisin — iki oyuncu zaten dolu.';
+    renderC4();
+  }
+
+  function initC4Sync(){
+    roomRef.child('c4').on('value', snap => {
+      const s = snap.val();
+      const statusEl = document.getElementById('c4Status');
+      if(!s){
+        c4PrevBoard = null;
+        c4Board = Array(C4_ROWS * C4_COLS).fill('');
+        c4Turn = 'R'; c4Over = false; c4Winner = null; c4Line = null;
+        c4Score = { R: 0, Y: 0 };
+        renderC4();
+        updateC4ScoreLabel();
+        if(statusEl) statusEl.innerHTML = 'Sıra: <b>🔴</b>';
+        return;
+      }
+      c4PrevBoard = c4Board;
+      c4Board = normalizeC4Board(s.board);
+      c4Turn = s.turn || 'R';
+      c4Over = !!s.over;
+      c4Winner = s.winner || null;
+      c4Line = s.line || null;
+      c4Score = s.score || { R: 0, Y: 0 };
+      renderC4();
+      updateC4ScoreLabel();
+      if(!statusEl) return;
+      if(c4Over){
+        statusEl.innerHTML = c4Winner
+          ? ('🎉 Kazanan: <b>' + (c4Winner === 'R' ? '🔴 Kırmızı' : '🟡 Sarı') + '</b>')
+          : '<b>Berabere!</b>';
+      } else if(myC4Role){
+        statusEl.innerHTML = (c4Turn === myC4Role)
+          ? ('Sıra <b>sende</b> (' + (myC4Role === 'R' ? '🔴' : '🟡') + ')')
+          : ('Sırada <b>rakibin</b> (' + (c4Turn === 'R' ? '🔴' : '🟡') + ')');
+      } else {
+        statusEl.innerHTML = 'Sıra: <b>' + (c4Turn === 'R' ? '🔴' : '🟡') + '</b>';
+      }
+    });
+  }
+
+  function renderC4(){
+    const boardEl = document.getElementById('c4Board');
+    if(!boardEl) return;
+    boardEl.innerHTML = '';
+    const canPlay = !!myC4Role && !c4Over && c4Turn === myC4Role;
+    c4Board.forEach((val, i) => {
+      const cell = document.createElement('div');
+      let cls = 'c4-cell' + (val === 'R' ? ' r' : val === 'Y' ? ' y' : '');
+      if(!canPlay) cls += ' disabled';
+      if(val && c4PrevBoard && c4PrevBoard[i] !== val) cls += ' new';
+      if(c4Line && c4Line.includes(i)) cls += ' win';
+      cell.className = cls;
+      const col = i % C4_COLS;
+      cell.addEventListener('click', () => c4Move(col));
+      boardEl.appendChild(cell);
+    });
+  }
+
+  function updateC4ScoreLabel(){
+    const rEl = document.getElementById('c4ScoreR');
+    const yEl = document.getElementById('c4ScoreY');
+    if(rEl) rEl.textContent = (c4Score && c4Score.R) || 0;
+    if(yEl) yEl.textContent = (c4Score && c4Score.Y) || 0;
+  }
+
+  // Yatay, dikey ve iki çapraz yön için 4 taşlık dizilim arar.
+  function checkC4Win(b){
+    for(let r = 0; r < C4_ROWS; r++){
+      for(let c = 0; c <= C4_COLS - 4; c++){
+        const line = [c4Idx(r,c), c4Idx(r,c+1), c4Idx(r,c+2), c4Idx(r,c+3)];
+        if(b[line[0]] && line.every(i => b[i] === b[line[0]])) return { winner: b[line[0]], line };
+      }
+    }
+    for(let c = 0; c < C4_COLS; c++){
+      for(let r = 0; r <= C4_ROWS - 4; r++){
+        const line = [c4Idx(r,c), c4Idx(r+1,c), c4Idx(r+2,c), c4Idx(r+3,c)];
+        if(b[line[0]] && line.every(i => b[i] === b[line[0]])) return { winner: b[line[0]], line };
+      }
+    }
+    for(let r = 0; r <= C4_ROWS - 4; r++){
+      for(let c = 0; c <= C4_COLS - 4; c++){
+        const line = [c4Idx(r,c), c4Idx(r+1,c+1), c4Idx(r+2,c+2), c4Idx(r+3,c+3)];
+        if(b[line[0]] && line.every(i => b[i] === b[line[0]])) return { winner: b[line[0]], line };
+      }
+    }
+    for(let r = 3; r < C4_ROWS; r++){
+      for(let c = 0; c <= C4_COLS - 4; c++){
+        const line = [c4Idx(r,c), c4Idx(r-1,c+1), c4Idx(r-2,c+2), c4Idx(r-3,c+3)];
+        if(b[line[0]] && line.every(i => b[i] === b[line[0]])) return { winner: b[line[0]], line };
+      }
+    }
+    return null;
+  }
+
+  // Hamle: transaction ile atomik uygulanır — sunucudaki GÜNCEL tahtaya göre sıra/doluluk/bitiş
+  // kontrolü tekrar yapılır, böylece bayat local state yüzünden geçersiz hamle asla kabul edilmez.
+  function c4Move(col){
+    if(!roomRef || !myC4Role) return;
+    if(c4Over) return;
+    roomRef.child('c4').transaction(cur => {
+      if(!cur){
+        cur = { board: Array(C4_ROWS * C4_COLS).fill(''), turn: 'R', over: false, winner: null, line: null, score: { R: 0, Y: 0 } };
+      }
+      if(cur.over) return; // oyun bitmiş — iptal
+      if(cur.turn !== myC4Role) return; // sıra sende değil — iptal
+      const board = normalizeC4Board(cur.board);
+      let row = -1;
+      for(let r = C4_ROWS - 1; r >= 0; r--){
+        if(!board[c4Idx(r, col)]){ row = r; break; }
+      }
+      if(row === -1) return; // sütun dolu — iptal
+      board[c4Idx(row, col)] = myC4Role;
+      const win = checkC4Win(board);
+      const isDraw = !win && board.every(v => v);
+      const score = Object.assign({ R: 0, Y: 0 }, cur.score);
+      if(win) score[win.winner] = (score[win.winner] || 0) + 1;
+      return {
+        board: board,
+        turn: myC4Role === 'R' ? 'Y' : 'R',
+        over: !!win || isDraw,
+        winner: win ? win.winner : null,
+        line: win ? win.line : null,
+        score: score
+      };
+    });
+  }
+
+  // Yeni oyun: tahtayı sıfırlar, skoru KORUR.
+  function newC4Round(){
+    if(!roomRef) return;
+    roomRef.child('c4').transaction(cur => {
+      cur = cur || {};
+      return { board: Array(C4_ROWS * C4_COLS).fill(''), turn: 'R', over: false, winner: null, line: null, score: cur.score || { R: 0, Y: 0 } };
+    });
+  }
+
+  // Skoru sıfırla: tahtayı da sıfırlar, skoru 0'a çeker.
+  function resetC4Score(){
+    if(!roomRef) return;
+    roomRef.child('c4').transaction(() => ({
+      board: Array(C4_ROWS * C4_COLS).fill(''), turn: 'R', over: false, winner: null, line: null, score: { R: 0, Y: 0 }
+    }));
+  }
+
+  renderC4();
+  updateC4ScoreLabel();
 
   // ---------- Soru Cevap (QA) — Firebase senkron ----------
   // Veri modeli: roomRef/qa/questions/<pushId> = {
@@ -4210,84 +4594,75 @@ function toggleChatDrawer(){
     }
   }
 
-  // ---------- Şarkı arama (API key gerekmez) ----------
-  // YouTube IFrame API'nin "listType: search" özelliğini kullanır — bir video/playlist ID'si
-  // yerine arama sorgusu vererek küçük bir önizleme oynatıcısı açar. Sonuçlar arasında
-  // "Sonraki/Önceki" ile gezip beğendiğinizde "Bu Şarkıyı Seç" ile o videonun linkini
-  // otomatik olarak YouTube Linki alanına doldurur.
-  let songSearchPlayer = null;
+  // ---------- Şarkı arama (YouTube Data API v3) ----------
+  // Not: YouTube, IFrame Player API'deki "listType: search" özelliğini 15 Kasım 2020'de
+  // kaldırdı (artık 404/410 hatası dönüp "video kullanılamıyor" gösteriyordu). Bu yüzden
+  // gerçek arama sonuçlarını YouTube Data API v3'ün search.list uç noktasından çekip
+  // küçük resim + başlık listesi olarak gösteriyoruz; seçilen video normal şekilde
+  // #songUrl alanına yazılıyor.
+  const YT_DATA_API_KEY = 'AIzaSyCDaUAAaFftt51e2Tne3IWoWJ2r_wPboRk';
 
-  function searchSongOnYoutube(){
+  async function searchSongOnYoutube(){
     const q = (document.getElementById('songSearchInput').value || '').trim();
     if(!q) return;
-    document.getElementById('songSearchPreview').style.display = 'block';
 
-    const build = () => {
-      if(songSearchPlayer && songSearchPlayer.loadPlaylist){
-        try{
-          songSearchPlayer.loadPlaylist({ listType:'search', list:q });
-          songSearchPlayer.mute();
-        }catch(e){}
+    const previewBox = document.getElementById('songSearchPreview');
+    const statusEl = document.getElementById('songSearchStatus');
+    const resultsEl = document.getElementById('songSearchResults');
+    previewBox.style.display = 'block';
+    resultsEl.innerHTML = '';
+    statusEl.textContent = '🔎 Aranıyor...';
+
+    try{
+      const url = 'https://www.googleapis.com/youtube/v3/search'
+        + '?part=snippet&type=video&maxResults=8&q=' + encodeURIComponent(q)
+        + '&key=' + YT_DATA_API_KEY;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if(!res.ok){
+        const msg = (data && data.error && data.error.message) || 'Bilinmeyen hata';
+        statusEl.textContent = '⚠️ Arama başarısız: ' + msg;
         return;
       }
-      resetContainer('songSearchFrame');
-      songSearchPlayer = new YT.Player('songSearchFrame', {
-        height:'180', width:'100%',
-        playerVars: { autoplay:1, rel:0, playsinline:1, mute:1, listType:'search', list:q },
-        events: {
-          onReady: function(ev){
-            try{ ev.target.mute(); }catch(e){}
-            setTimeout(updateSongSearchTitle, 400);
-          },
-          onStateChange: function(){ setTimeout(updateSongSearchTitle, 300); }
-        }
+
+      const items = (data.items || []).filter(it => it.id && it.id.videoId);
+      if(items.length === 0){
+        statusEl.textContent = 'Sonuç bulunamadı, başka bir şey deneyin.';
+        return;
+      }
+
+      statusEl.textContent = 'Bir sonuca tıklayarak seçin:';
+      items.forEach(it => {
+        const videoId = it.id.videoId;
+        const title = it.snippet.title;
+        const channel = it.snippet.channelTitle;
+        const thumb = (it.snippet.thumbnails && (it.snippet.thumbnails.default || it.snippet.thumbnails.medium)) || {};
+
+        const row = document.createElement('div');
+        row.className = 'song-search-item';
+        row.innerHTML =
+          '<img src="' + (thumb.url || '') + '" alt="">' +
+          '<div class="song-search-item-text">' +
+            '<div class="song-search-item-title"></div>' +
+            '<div class="song-search-item-channel"></div>' +
+          '</div>';
+        row.querySelector('.song-search-item-title').textContent = title;
+        row.querySelector('.song-search-item-channel').textContent = channel;
+        row.onclick = () => pickSongSearchResult(videoId, title);
+        resultsEl.appendChild(row);
       });
-    };
-
-    if(ytApiReady && window.YT && window.YT.Player){
-      build();
-    } else {
-      const check = setInterval(() => {
-        if(window.YT && window.YT.Player){
-          clearInterval(check);
-          ytApiReady = true;
-          build();
-        }
-      }, 200);
+    }catch(e){
+      statusEl.textContent = '⚠️ Arama sırasında bir hata oluştu. Bağlantınızı kontrol edin.';
     }
   }
 
-  function updateSongSearchTitle(){
-    const el = document.getElementById('songSearchTitle');
-    if(!el || !songSearchPlayer || !songSearchPlayer.getVideoData) return;
-    try{
-      const d = songSearchPlayer.getVideoData();
-      el.textContent = (d && d.title) ? ('🎧 ' + d.title) : '';
-    }catch(e){}
-  }
-
-  function songSearchNext(){
-    if(!songSearchPlayer || !songSearchPlayer.nextVideo) return;
-    try{ songSearchPlayer.nextVideo(); }catch(e){}
-    setTimeout(updateSongSearchTitle, 500);
-  }
-  function songSearchPrev(){
-    if(!songSearchPlayer || !songSearchPlayer.previousVideo) return;
-    try{ songSearchPlayer.previousVideo(); }catch(e){}
-    setTimeout(updateSongSearchTitle, 500);
-  }
-
-  function pickSongSearchResult(){
-    if(!songSearchPlayer || !songSearchPlayer.getVideoData) return;
-    let d;
-    try{ d = songSearchPlayer.getVideoData(); }catch(e){ return; }
-    if(!d || !d.video_id) return;
-    document.getElementById('songUrl').value = 'https://www.youtube.com/watch?v=' + d.video_id;
+  function pickSongSearchResult(videoId, title){
+    document.getElementById('songUrl').value = 'https://www.youtube.com/watch?v=' + videoId;
     const answerEl = document.getElementById('songAnswer');
-    if(answerEl && !answerEl.value.trim() && d.title){
-      answerEl.value = d.title; // otomatik dolduruyoruz, istersen gizlemek için değiştirebilirsin
+    if(answerEl && !answerEl.value.trim() && title){
+      answerEl.value = title; // otomatik dolduruyoruz, istersen gizlemek için değiştirebilirsin
     }
-    try{ songSearchPlayer.stopVideo(); }catch(e){}
     document.getElementById('songSearchPreview').style.display = 'none';
   }
   let puzzleTiles = [1,2,3,4,5,6,7,8,0];
@@ -4424,7 +4799,6 @@ function toggleChatDrawer(){
     const id = extractYouTubeId(url);
     if(!id){ alert('Geçerli bir YouTube linki girin ya da yukarıdan arama yapıp bir şarkı seçin.'); return; }
     if(!answer){ alert('Şarkı adını (cevabı) girin.'); return; }
-    if(songSearchPlayer && songSearchPlayer.stopVideo){ try{ songSearchPlayer.stopVideo(); }catch(e){} }
     const previewBox = document.getElementById('songSearchPreview');
     if(previewBox) previewBox.style.display = 'none';
     const searchInput = document.getElementById('songSearchInput');
@@ -6323,6 +6697,362 @@ function toggleChatDrawer(){
 
       deckPile.style.opacity = canAct ? '1' : '.5';
       deckPile.style.pointerEvents = canAct ? 'auto' : 'none';
+    });
+  }
+
+  // ==================================================================
+  // 2048 — iki kişilik ORTAK tahta, sırayla oynanır. Kim başlatırsa o
+  // anki presence'taki iki kişi oyuncu olur (UNO ile aynı desen).
+  // Hamleler transaction ile atomik uygulanır: hamle geçerli değilse
+  // (tahta değişmiyorsa) sıra değişmez ve rastgele kare eklenmez.
+  // ==================================================================
+  function g2048EmptyIndices(board){
+    const out = [];
+    for(let i = 0; i < 16; i++){ if(!board[i]) out.push(i); }
+    return out;
+  }
+  function g2048AddRandomTile(board){
+    const empty = g2048EmptyIndices(board);
+    if(empty.length === 0) return board;
+    const idx = empty[Math.floor(Math.random() * empty.length)];
+    board[idx] = Math.random() < 0.9 ? 2 : 4;
+    return board;
+  }
+  function g2048SlideLine(line){
+    let nums = line.filter(v => v !== 0);
+    let gain = 0;
+    for(let i = 0; i < nums.length - 1; i++){
+      if(nums[i] === nums[i + 1]){
+        nums[i] *= 2;
+        gain += nums[i];
+        nums.splice(i + 1, 1);
+      }
+    }
+    while(nums.length < 4) nums.push(0);
+    return { line: nums, gain: gain };
+  }
+  function g2048ToRows(board){
+    return [board.slice(0,4), board.slice(4,8), board.slice(8,12), board.slice(12,16)];
+  }
+  function g2048FromRows(rows){
+    return [].concat(rows[0], rows[1], rows[2], rows[3]);
+  }
+  function g2048Transpose(rows){
+    const out = [[],[],[],[]];
+    for(let r = 0; r < 4; r++) for(let c = 0; c < 4; c++) out[c][r] = rows[r][c];
+    return out;
+  }
+  function g2048ApplyMove(board, dir){
+    let rows = g2048ToRows(board);
+    let totalGain = 0;
+    if(dir === 'left'){
+      rows = rows.map(row => { const res = g2048SlideLine(row); totalGain += res.gain; return res.line; });
+    } else if(dir === 'right'){
+      rows = rows.map(row => { const res = g2048SlideLine(row.slice().reverse()); totalGain += res.gain; return res.line.reverse(); });
+    } else if(dir === 'up'){
+      rows = g2048Transpose(rows).map(row => { const res = g2048SlideLine(row); totalGain += res.gain; return res.line; });
+      rows = g2048Transpose(rows);
+    } else if(dir === 'down'){
+      rows = g2048Transpose(rows).map(row => { const res = g2048SlideLine(row.slice().reverse()); totalGain += res.gain; return res.line.reverse(); });
+      rows = g2048Transpose(rows);
+    }
+    return { board: g2048FromRows(rows), gain: totalGain };
+  }
+  function g2048CanMoveAny(board){
+    if(g2048EmptyIndices(board).length > 0) return true;
+    for(let r = 0; r < 4; r++){
+      for(let c = 0; c < 4; c++){
+        const v = board[r*4+c];
+        if(c < 3 && board[r*4+c+1] === v) return true;
+        if(r < 3 && board[(r+1)*4+c] === v) return true;
+      }
+    }
+    return false;
+  }
+  function g2048BoardsEqual(a, b){
+    for(let i = 0; i < 16; i++){ if(a[i] !== b[i]) return false; }
+    return true;
+  }
+
+  let myG2048Role = null; // bu cihazın oyuncu id'si (myPresenceId ile aynı) - sadece oyuncu mu izleyici mi ayrımı için
+
+  function g2048NewGame(){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('presence').once('value').then(snap => {
+      const presenceVal = snap.val() || {};
+      const ids = Object.keys(presenceVal);
+      if(ids.length < 2){
+        showInviteToast('2048 için partnerinin de odada olması gerekiyor.');
+        return;
+      }
+      const names = {};
+      ids.forEach(id => { names[id] = (presenceVal[id] && presenceVal[id].name) || 'Oyuncu'; });
+      let board = Array(16).fill(0);
+      board = g2048AddRandomTile(board);
+      board = g2048AddRandomTile(board);
+      roomRef.child('g2048').set({
+        board: board, score: 0, turn: ids[0], players: names, over: false
+      });
+    });
+  }
+
+  function g2048Move(dir){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('g2048').transaction(cur => {
+      if(!cur || !cur.board || cur.over) return cur;
+      if(cur.turn !== myPresenceId) return cur;
+      const board = cur.board.slice();
+      for(let i = 0; i < 16; i++){ board[i] = board[i] || 0; }
+      const result = g2048ApplyMove(board, dir);
+      if(g2048BoardsEqual(board, result.board)) return cur; // geçersiz hamle — hiçbir şey değişmedi
+      const newBoard = g2048AddRandomTile(result.board);
+      const otherId = Object.keys(cur.players || {}).find(id => id !== myPresenceId);
+      cur.board = newBoard;
+      cur.score = (cur.score || 0) + result.gain;
+      cur.over = !g2048CanMoveAny(newBoard);
+      cur.turn = cur.over ? cur.turn : (otherId || myPresenceId);
+      return cur;
+    });
+  }
+
+  function g2048TileClass(v){
+    if(!v) return '';
+    return v >= 2048 ? ' t-max' : '';
+  }
+  const G2048_COLORS = {
+    2:'#eee4da', 4:'#ede0c8', 8:'#f2b179', 16:'#f59563', 32:'#f67c5f', 64:'#f65e3b',
+    128:'#edcf72', 256:'#edcc61', 512:'#edc850', 1024:'#edc53f', 2048:'#edc22e'
+  };
+
+  function renderG2048(s){
+    const board = document.getElementById('g2048Board');
+    if(!board) return;
+    if(!s || !s.board){
+      board.innerHTML = Array(16).fill('<div class="g2048-tile"></div>').join('');
+      return;
+    }
+    board.innerHTML = s.board.map(v => {
+      if(!v) return '<div class="g2048-tile"></div>';
+      const bg = G2048_COLORS[v] || '#3b2f63';
+      const dark = v <= 4;
+      return '<div class="g2048-tile filled" style="background:' + bg + ';color:' + (dark ? '#3a3247' : '#fff') + '">' + v + '</div>';
+    }).join('');
+  }
+
+  function initG2048Sync(){
+    if(!roomRef) return;
+    roomRef.child('g2048').on('value', snap => {
+      const s = snap.val();
+      const roleEl = document.getElementById('g2048Role');
+      const statusEl = document.getElementById('g2048Status');
+      const scoreEl = document.getElementById('g2048Score');
+      if(!s || !s.board){
+        myG2048Role = null;
+        if(roleEl) roleEl.textContent = 'Başlamak için "Yeni Oyun" butonuna bas';
+        if(statusEl) statusEl.textContent = 'Başlamak için butona bas (partnerin odada olmalı)';
+        if(scoreEl) scoreEl.textContent = '0';
+        renderG2048(null);
+        return;
+      }
+      const players = s.players || {};
+      myG2048Role = players[myPresenceId] ? myPresenceId : null;
+      const otherId = Object.keys(players).find(id => id !== myPresenceId);
+      if(roleEl){
+        roleEl.textContent = myG2048Role ? 'Oyuncusun' : 'İzleyicisin — iki oyuncu zaten dolu.';
+      }
+      if(scoreEl) scoreEl.textContent = s.score || 0;
+      renderG2048(s);
+      const canAct = myG2048Role && !s.over && s.turn === myPresenceId;
+      document.querySelectorAll('.g2048-controls .g2048-btn').forEach(b => b.disabled = !canAct);
+      if(statusEl){
+        if(s.over){
+          statusEl.innerHTML = '🎉 Oyun bitti! Skor: <b>' + (s.score || 0) + '</b>';
+        } else if(!myG2048Role){
+          statusEl.innerHTML = (players[s.turn] ? players[s.turn] : 'Oyuncu') + ' oynuyor…';
+        } else if(canAct){
+          statusEl.innerHTML = 'Sıra <b>sende</b>';
+        } else {
+          statusEl.innerHTML = (players[s.turn] || 'Partnerin') + ' oynuyor…';
+        }
+      }
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if(currentView === 'g2048'){
+      const map = { ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right' };
+      if(map[e.key]){ e.preventDefault(); g2048Move(map[e.key]); }
+    } else if(currentView === 'maze'){
+      const map = { ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right' };
+      if(map[e.key]){ e.preventDefault(); mazeMove(map[e.key]); }
+    }
+  });
+
+  // ==================================================================
+  // LABİRENT — iki kişilik yarış. Aynı labirent (DFS backtracker ile
+  // üretilir) her iki oyuncuya da gösterilir, ikisi de başlangıçtan
+  // (sol üst) aynı anda hareket eder, çıkışa (sağ alt) önce ulaşan
+  // kazanır. Duvarlar her hücre için bitmask olarak saklanır:
+  // N=1, S=2, E=4, W=8 (o yönde duvar VARSA bit set edilir).
+  // ==================================================================
+  const MAZE_COLS = 9, MAZE_ROWS = 9, MAZE_CELL = 28;
+  const MAZE_PLAYER_COLORS = ['#8b5cf6', '#f472b6'];
+  let mazeState = null;
+
+  function mazeGenerateWalls(cols, rows){
+    const cell = () => ({ N:true, S:true, E:true, W:true, v:false });
+    const grid = [];
+    for(let r = 0; r < rows; r++){ const row = []; for(let c = 0; c < cols; c++) row.push(cell()); grid.push(row); }
+    const stack = [[0,0]];
+    grid[0][0].v = true;
+    const opp = { N:'S', S:'N', E:'W', W:'E' };
+    while(stack.length){
+      const [r,c] = stack[stack.length - 1];
+      const nbrs = [];
+      if(r > 0 && !grid[r-1][c].v) nbrs.push(['N', r-1, c]);
+      if(r < rows-1 && !grid[r+1][c].v) nbrs.push(['S', r+1, c]);
+      if(c > 0 && !grid[r][c-1].v) nbrs.push(['W', r, c-1]);
+      if(c < cols-1 && !grid[r][c+1].v) nbrs.push(['E', r, c+1]);
+      if(nbrs.length === 0){ stack.pop(); continue; }
+      const [dir, nr, nc] = nbrs[Math.floor(Math.random() * nbrs.length)];
+      grid[r][c][dir] = false;
+      grid[nr][nc][opp[dir]] = false;
+      grid[nr][nc].v = true;
+      stack.push([nr, nc]);
+    }
+    const walls = [];
+    for(let r = 0; r < rows; r++){
+      for(let c = 0; c < cols; c++){
+        const cl = grid[r][c];
+        walls.push((cl.N?1:0) | (cl.S?2:0) | (cl.E?4:0) | (cl.W?8:0));
+      }
+    }
+    return walls;
+  }
+
+  function mazeNewGame(){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('presence').once('value').then(snap => {
+      const presenceVal = snap.val() || {};
+      const ids = Object.keys(presenceVal);
+      if(ids.length < 2){
+        showInviteToast('Labirent için partnerinin de odada olması gerekiyor.');
+        return;
+      }
+      const players = {};
+      ids.forEach(id => { players[id] = { x: 0, y: 0, name: (presenceVal[id] && presenceVal[id].name) || 'Oyuncu' }; });
+      roomRef.child('maze').set({
+        cols: MAZE_COLS, rows: MAZE_ROWS,
+        walls: mazeGenerateWalls(MAZE_COLS, MAZE_ROWS),
+        players: players, winner: null
+      });
+    });
+  }
+
+  function mazeMove(dir){
+    if(!roomRef || !myPresenceId || !mazeState || !mazeState.players) return;
+    const me = mazeState.players[myPresenceId];
+    if(!me || mazeState.winner) return;
+    const cols = mazeState.cols, rows = mazeState.rows;
+    const mask = (mazeState.walls && mazeState.walls[me.y * cols + me.x]) || 0;
+    let nx = me.x, ny = me.y;
+    if(dir === 'up' && !(mask & 1)) ny -= 1;
+    else if(dir === 'down' && !(mask & 2)) ny += 1;
+    else if(dir === 'right' && !(mask & 4)) nx += 1;
+    else if(dir === 'left' && !(mask & 8)) nx -= 1;
+    if(nx === me.x && ny === me.y) return;
+    if(nx < 0 || ny < 0 || nx >= cols || ny >= rows) return;
+    roomRef.child('maze').transaction(cur => {
+      if(!cur || !cur.players || cur.winner) return cur;
+      const p = cur.players[myPresenceId];
+      if(!p) return cur;
+      p.x = nx; p.y = ny;
+      if(nx === cur.cols - 1 && ny === cur.rows - 1) cur.winner = myPresenceId;
+      return cur;
+    });
+  }
+
+  function renderMazeGrid(s){
+    const grid = document.getElementById('mazeGrid');
+    if(!grid) return;
+    const cols = s.cols, rows = s.rows;
+    grid.style.gridTemplateColumns = 'repeat(' + cols + ', ' + MAZE_CELL + 'px)';
+    grid.style.gridTemplateRows = 'repeat(' + rows + ', ' + MAZE_CELL + 'px)';
+    grid.style.width = (cols * MAZE_CELL) + 'px';
+    grid.style.height = (rows * MAZE_CELL) + 'px';
+    let cellsHtml = '';
+    for(let r = 0; r < rows; r++){
+      for(let c = 0; c < cols; c++){
+        const mask = (s.walls && s.walls[r*cols+c]) || 0;
+        const bT = (mask & 1) ? '2px solid var(--stroke)' : '2px solid transparent';
+        const bB = (mask & 2) ? '2px solid var(--stroke)' : '2px solid transparent';
+        const bR = (mask & 4) ? '2px solid var(--stroke)' : '2px solid transparent';
+        const bL = (mask & 8) ? '2px solid var(--stroke)' : '2px solid transparent';
+        let mark = '';
+        if(r === 0 && c === 0) mark = '🚩';
+        else if(r === rows-1 && c === cols-1) mark = '🏁';
+        cellsHtml += '<div class="maze-cell" style="border-top:' + bT + ';border-bottom:' + bB + ';border-right:' + bR + ';border-left:' + bL + '">' + mark + '</div>';
+      }
+    }
+    grid.innerHTML = cellsHtml;
+    // oyuncu token'larını ayrı, mutlak konumlu katman olarak ekle
+    const players = s.players || {};
+    const ids = Object.keys(players);
+    ids.forEach((id, i) => {
+      const p = players[id];
+      const tok = document.createElement('div');
+      tok.className = 'maze-token';
+      const color = MAZE_PLAYER_COLORS[i % 2];
+      const size = MAZE_CELL - 8;
+      tok.style.width = size + 'px';
+      tok.style.height = size + 'px';
+      tok.style.background = color;
+      tok.style.left = (p.x * MAZE_CELL + (MAZE_CELL - size) / 2) + 'px';
+      tok.style.top = (p.y * MAZE_CELL + (MAZE_CELL - size) / 2) + 'px';
+      tok.textContent = id === myPresenceId ? 'S' : 'P';
+      grid.appendChild(tok);
+    });
+  }
+
+  function initMazeSync(){
+    if(!roomRef) return;
+    roomRef.child('maze').on('value', snap => {
+      const s = snap.val();
+      mazeState = s;
+      const statusEl = document.getElementById('mazeStatus');
+      const infoEl = document.getElementById('mazePlayersInfo');
+      const grid = document.getElementById('mazeGrid');
+      if(!s || !s.players){
+        if(statusEl) statusEl.textContent = 'Başlamak için butona bas (partnerin odada olmalı)';
+        if(infoEl) infoEl.innerHTML = '';
+        if(grid) grid.innerHTML = '';
+        document.querySelectorAll('.maze-controls .g2048-btn').forEach(b => b.disabled = true);
+        return;
+      }
+      const players = s.players || {};
+      const ids = Object.keys(players);
+      if(infoEl){
+        infoEl.innerHTML = ids.map((id, i) => {
+          const color = MAZE_PLAYER_COLORS[i % 2];
+          const name = players[id].name || 'Oyuncu';
+          return '<span class="maze-player-tag"><span class="maze-dot" style="background:' + color + '"></span>' + name + (id === myPresenceId ? ' (sen)' : '') + '</span>';
+        }).join('');
+      }
+      renderMazeGrid(s);
+      const amPlayer = !!players[myPresenceId];
+      const canAct = amPlayer && !s.winner;
+      document.querySelectorAll('.maze-controls .g2048-btn').forEach(b => b.disabled = !canAct);
+      if(statusEl){
+        if(s.winner){
+          statusEl.innerHTML = s.winner === myPresenceId
+            ? '🎉 Çıkışa ilk sen ulaştın!'
+            : '🏁 ' + (players[s.winner] ? players[s.winner].name : 'Partnerin') + ' kazandı!';
+        } else if(!amPlayer){
+          statusEl.textContent = 'İzleyicisin — iki oyuncu zaten dolu.';
+        } else {
+          statusEl.innerHTML = 'Çıkışa (🏁) ulaşmak için <b>okları</b> kullan';
+        }
+      }
     });
   }
 </script>
