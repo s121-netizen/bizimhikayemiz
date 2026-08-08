@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>oleiste — Birlikte Vakit Geçirin</title>
+<title>Lover — Birlikte Vakit Geçirin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -495,6 +495,7 @@
   .bs-cell.disabled{ cursor:not-allowed; }
   .bs-cell.ship{ background: linear-gradient(135deg, #4a6fd4, #2d4ba0); }
   .bs-cell.hit{ background: var(--rose); animation: xoxPop .25s ease; }
+  .bs-cell.hit-success{ background: linear-gradient(135deg, #34d399, #16a34a); animation: xoxPop .25s ease; box-shadow: 0 0 10px rgba(52,211,153,.55); }
   .bs-cell.miss{ background: rgba(255,255,255,.14); }
   @media (max-width:480px){
     .bs-grid{ grid-template-columns: repeat(8, 27px); grid-template-rows: repeat(8, 27px); gap:2px; padding:6px; }
@@ -873,6 +874,7 @@
   }
   .song-setup{ max-width:460px; margin: 0 auto 22px; }
   .song-video-box{
+    position:relative;
     max-width: 560px;
     margin: 0 auto 20px;
     border-radius: 14px;
@@ -881,6 +883,19 @@
     background:#000;
   }
   .song-video-box iframe{ width:100%; height: 315px; display:block; border:0; }
+  .song-video-cover{
+    position:absolute; inset:0; z-index:3;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    background: radial-gradient(circle at 50% 38%, rgba(139,92,246,.32), rgba(6,6,10,.94));
+  }
+  .svc-icon{ font-size:38px; animation: svcPulse 1.8s ease-in-out infinite; }
+  @keyframes svcPulse{ 0%,100%{ transform: scale(1); opacity:.88; } 50%{ transform: scale(1.14); opacity:1; } }
+  .svc-text{ font-size:12.5px; color: var(--ink-dim); font-weight:700; letter-spacing:.02em; }
+  .svc-playpause{
+    border:none; border-radius:999px; padding:9px 22px; font-size:13px; font-weight:700;
+    background: linear-gradient(90deg, var(--violet), var(--rose)); color:#fff; cursor:pointer;
+    font-family:'Manrope',sans-serif;
+  }
   .song-answer-box{
     max-width: 460px;
     margin: 0 auto;
@@ -1083,6 +1098,63 @@
   .owner-visibility-row select{
     background: var(--panel); border:1px solid var(--stroke); color:#fff; border-radius:8px;
     padding:6px 8px; font-size:12px; font-family:'Manrope',sans-serif;
+  }
+
+  /* ---------- Son Odalarım (hızlı tekrar katıl) ---------- */
+  .recent-rooms-box{
+    text-align:left; margin: 12px 0; padding:12px; border-radius:14px;
+    background: var(--bg-soft); border:1px solid var(--stroke);
+  }
+  .recent-rooms-head{
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:10.5px; font-weight:800; color: var(--ink-faint);
+    text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;
+  }
+  .recent-clear-btn{
+    background:none; border:none; color: var(--ink-faint); font-size:10.5px;
+    cursor:pointer; text-decoration:underline; font-family:'Manrope',sans-serif;
+  }
+  .recent-clear-btn:hover{ color:#fff; }
+  .recent-room-row{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:8px 10px; border-radius:10px; background: var(--panel);
+    border:1px solid var(--stroke); margin-bottom:6px;
+  }
+  .recent-room-row:last-child{ margin-bottom:0; }
+  .rr-info{ min-width:0; text-align:left; }
+  .rr-title{
+    font-size:12.5px; font-weight:700; color:#fff; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis; max-width:190px;
+  }
+  .rr-meta{ font-size:10.5px; color: var(--ink-faint); margin-top:1px; }
+  .rr-join-btn{
+    flex-shrink:0; border:none; border-radius:8px; padding:6px 12px; font-size:11px; font-weight:700;
+    background: linear-gradient(90deg, var(--violet), var(--rose)); color:#fff; cursor:pointer; font-family:'Manrope',sans-serif;
+  }
+
+  /* ---------- Hızlı reaksiyonlar ---------- */
+  .reaction-picker{
+    position:absolute; bottom:calc(100% + 8px); left:0; right:0;
+    display:flex; justify-content:space-between; gap:3px;
+    background: var(--panel); border:1px solid var(--stroke); border-radius:12px;
+    padding:7px; z-index:5; box-shadow:0 10px 26px rgba(0,0,0,.45);
+  }
+  .reaction-picker button{
+    background:none; border:none; font-size:19px; cursor:pointer; padding:4px 5px;
+    border-radius:8px; transition: background .12s ease, transform .12s ease; line-height:1;
+  }
+  .reaction-picker button:hover{ background: var(--panel-hover); transform: scale(1.15); }
+
+  .floating-reactions-layer{ position:fixed; inset:0; pointer-events:none; z-index:400; overflow:hidden; }
+  .floating-reaction{
+    position:absolute; bottom:10px; font-size:36px;
+    animation: floatUpReact 2.6s ease-out forwards;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,.35));
+  }
+  @keyframes floatUpReact{
+    0%{ transform: translateY(0) scale(.5) rotate(0deg); opacity:0; }
+    12%{ opacity:1; transform: translateY(-50px) scale(1.2) rotate(-8deg); }
+    100%{ transform: translateY(-70vh) scale(1) rotate(10deg); opacity:0; }
   }
 
   .room-badge{
@@ -1514,14 +1586,28 @@
     box-shadow: 0 14px 40px rgba(0,0,0,.5);
   }
   .chat-drawer.open{ display:flex; animation: fadeUp .25s ease; }
+  .chat-drawer.maximized{ width:min(480px, calc(100vw - 24px)); height:min(680px, calc(100vh - 100px)); max-height:none; }
+  .chat-drawer.minimized{ height:auto; max-height:none; }
+  .chat-drawer.minimized .chat-drawer-body,
+  .chat-drawer.minimized .chat-reply-bar,
+  .chat-drawer.minimized .chat-drawer-foot{ display:none !important; }
   .chat-drawer-head{
     display:flex; align-items:center; justify-content:space-between;
     padding: 12px 16px;
     background: var(--bg-soft);
     border-bottom: 1px solid var(--stroke);
     flex-shrink:0;
+    cursor: move;
+    user-select: none;
   }
   .chat-drawer-head h3{ font-size:14.5px; color:#fff; display:flex; align-items:center; gap:8px; }
+  .chat-drawer-head-actions{ display:flex; align-items:center; gap:2px; }
+  .chat-drawer-icon-btn{
+    background:none; border:none; color: var(--ink-dim); font-size:13px; cursor:pointer;
+    width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  }
+  .chat-drawer-icon-btn:hover{ background: var(--panel-hover); color:#fff; }
+  .chat-drawer-icon-btn.active{ color: var(--rose); }
   .chat-drawer-close{
     background:none; border:none; color: var(--ink-dim); font-size:18px; cursor:pointer;
     width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center;
@@ -1689,6 +1775,14 @@
       <input type="password" id="joinPasswordInput" data-i18n-ph="phPass" placeholder="Bu oda parola ile korunuyor">
     </div>
 
+    <div class="recent-rooms-box" id="recentRoomsBox" style="display:none;">
+      <div class="recent-rooms-head">
+        <span data-i18n="recentRooms">Son Odaların</span>
+        <button type="button" class="recent-clear-btn" onclick="clearRecentRooms()" data-i18n="clearRecent">Temizle</button>
+      </div>
+      <div id="recentRoomsList"></div>
+    </div>
+
     <button type="button" class="gate-link-btn" onclick="openPublicRoomsBrowser()" data-i18n="btnBrowse">🌍 Herkese Açık Odalara Gözat</button>
 
     <div class="gate-divider" data-i18n="or">veya</div>
@@ -1760,6 +1854,12 @@
     <span class="mt-name" id="mobileUserName">İsimsiz</span>
   </div>
   <div class="mt-presence" id="mtPresence"></div>
+  <div style="position:relative;">
+    <button class="room-badge" id="reactBtnMobile" onclick="toggleReactionPicker('mobile')" title="Reaksiyon gönder">
+      <span>⚡</span>
+    </button>
+    <div class="reaction-picker" id="reactionPickerMobile" style="display:none;"></div>
+  </div>
   <button class="room-badge" id="inviteBtnMobile" onclick="inviteFriend()" title="Partnerini davet et">
     <span>🔗</span>
   </button>
@@ -1780,9 +1880,14 @@
 </button>
 
 <div class="chat-drawer" id="chatDrawer">
-  <div class="chat-drawer-head">
+  <div class="chat-drawer-head" id="chatDrawerHead">
     <h3>💬 Sohbet</h3>
-    <button class="chat-drawer-close" onclick="toggleChatDrawer()">✕</button>
+    <div class="chat-drawer-head-actions">
+      <button type="button" class="chat-drawer-icon-btn" id="chatMuteBtn" onclick="toggleChatMute()" title="Bildirimleri sessize al">🔔</button>
+      <button type="button" class="chat-drawer-icon-btn" onclick="toggleChatMinimize()" title="Küçült / Genişlet">—</button>
+      <button type="button" class="chat-drawer-icon-btn" onclick="toggleChatMaximize()" title="Büyüt / Küçült">⛶</button>
+      <button class="chat-drawer-close" onclick="toggleChatDrawer()">✕</button>
+    </div>
   </div>
   <div class="chat-drawer-body" id="chatDrawerBody">
     <div class="chat-drawer-empty" id="chatDrawerEmpty">Henüz mesaj yok. İlk mesajı sen yaz 👋</div>
@@ -1802,6 +1907,7 @@
 
 <div class="glow glow-1"></div>
 <div class="glow glow-2"></div>
+<div class="floating-reactions-layer" id="floatingReactionsLayer"></div>
 
 <div class="app">
 
@@ -1832,6 +1938,13 @@
       <span data-i18n="inviteBtn">🔗 Partnerini Davet Et</span>
     </button>
 
+    <div style="position:relative;">
+      <button class="room-badge" id="reactBtn" onclick="toggleReactionPicker('desktop')" title="Reaksiyon gönder" style="width:100%; cursor:pointer; font:inherit; margin-top:8px;">
+        <span data-i18n="sendReaction">⚡ Reaksiyon Gönder</span>
+      </button>
+      <div class="reaction-picker" id="reactionPicker" style="display:none;"></div>
+    </div>
+
     <nav class="nav-main" id="navMain">
       <div class="nav-item active" data-view="home"><span class="ic">🏠</span><span data-i18n="nav_home">Ana Sayfa</span></div>
       <div class="nav-item" data-view="draw"><span class="ic">🎨</span><span data-i18n="nav_draw">Ortak Çizim</span></div>
@@ -1852,6 +1965,7 @@
       <div class="nav-item" data-view="dice"><span class="ic">🎲</span><span data-i18n="nav_dice">Zar Düellosu</span></div>
       <div class="nav-item" data-view="cointoss"><span class="ic">🪙</span><span data-i18n="nav_cointoss">Yazı Tura Düellosu</span></div>
       <div class="nav-item" data-view="nearest"><span class="ic">🔢</span><span data-i18n="nav_nearest">En Yakın Sayı</span></div>
+      <div class="nav-item" data-view="anagram"><span class="ic">🔤</span><span data-i18n="nav_anagram">Kelime Bulmaca</span></div>
       <div class="nav-item" data-view="flappy"><span class="ic">🐦</span><span data-i18n="nav_flappy">Flappy Bird Düellosu</span></div>
       <div class="nav-item" data-view="reaction"><span class="ic">⚡</span><span data-i18n="nav_reaction">Reaksiyon Düellosu</span></div>
       <div class="nav-item" data-view="taprace"><span class="ic">🖱️</span><span data-i18n="nav_taprace">Tıklama Yarışı</span></div>
@@ -1992,6 +2106,11 @@
           </p>
           <div class="song-video-box">
             <div id="songFrame"></div>
+            <div class="song-video-cover" id="songVideoCover">
+              <div class="svc-icon">🎧</div>
+              <div class="svc-text">Şarkı gizli — sadece dinle</div>
+              <button type="button" class="svc-playpause" id="songPlayPauseBtn" onclick="toggleSongPlayback()">⏸️ Duraklat</button>
+            </div>
           </div>
           <div class="yt-error" id="songErrorBox"></div>
           <div class="yt-sync-bar" id="songSyncBar">
@@ -2524,7 +2643,34 @@
       </div>
     </section>
 
-    <!-- FLAPPY BIRD DÜELLOSU -->
+    <!-- KELİME BULMACA (ANAGRAM DÜELLOSU) -->
+    <section class="view" id="view-anagram">
+      <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
+      <div class="sub-hero">
+        <div class="emoji-lg">🔤</div>
+        <div><h2>Kelime Bulmaca</h2><br><span>Harfleri karışık kelimeyi ilk çözen turu kazanır</span></div>
+      </div>
+      <div class="panel-box" style="text-align:center;">
+        <div class="xox-score" style="justify-content:center;margin-bottom:18px;">
+          <div class="xox-score-item"><span class="xox-score-label" id="anNameA">Sen</span><span class="xox-score-val" id="anScoreA">0</span></div>
+          <div class="xox-score-div">—</div>
+          <div class="xox-score-item"><span class="xox-score-label" id="anNameB">Partner</span><span class="xox-score-val" id="anScoreB">0</span></div>
+        </div>
+
+        <div id="anScrambled" style="font-family:'Fraunces',serif; font-size:34px; font-weight:700; letter-spacing:.12em; margin-bottom:10px; min-height:44px; color:#fff;">—</div>
+        <div id="anStatus" style="font-size:14px;color:var(--ink-dim);margin-bottom:16px;min-height:18px;">Yeni tur başlatmak için butona bas</div>
+
+        <div id="anGuessBox" style="display:none;justify-content:center;gap:10px;margin-bottom:14px;">
+          <input type="text" id="anGuessInput" maxlength="24" placeholder="Kelimeyi yaz" style="text-transform:lowercase;" onkeydown="if(event.key==='Enter') anSubmitGuess();">
+          <button class="reset-btn" onclick="anSubmitGuess()">Gönder</button>
+        </div>
+
+        <div class="xox-actions" style="justify-content:center;">
+          <button class="reset-btn" onclick="anNewRound()">🔁 Yeni Tur</button>
+          <button class="reset-btn ghost" onclick="anResetScore()">Skoru Sıfırla</button>
+        </div>
+      </div>
+    </section>
     <section class="view" id="view-flappy">
       <div class="back-row"><button class="back-btn" onclick="navigateTo('home')">← Ana Sayfa</button></div>
       <div class="sub-hero">
@@ -2891,9 +3037,7 @@
         <div class="xox-status" id="pgStatus">Başlamak için butona bas</div>
         <div style="display:flex;justify-content:center;">
           <canvas id="pgCanvas" width="260" height="400"
-            style="background:linear-gradient(180deg,#1c1730,#100c1f);border-radius:16px;border:1px solid var(--stroke);max-width:100%;touch-action:none;cursor:pointer;"
-            onpointerdown="pgCanvasPointer(event)"
-            onpointermove="if(event.buttons){ pgCanvasPointer(event); }"
+            style="background:linear-gradient(180deg,#1c1730,#100c1f);border-radius:16px;border:1px solid var(--stroke);width:100%;max-width:260px;height:auto;aspect-ratio:260/400;touch-action:none;cursor:pointer;display:block;"
           ></canvas>
         </div>
         <div class="xox-actions" style="justify-content:center;margin-top:16px;">
@@ -3092,7 +3236,9 @@
       nav_dice:'Zar Düellosu', nav_cointoss:'Yazı Tura Düellosu', nav_nearest:'En Yakın Sayı', nav_flappy:'Flappy Bird Düellosu',
       nav_reaction:'Reaksiyon Düellosu', nav_taprace:'Tıklama Yarışı', nav_memory:'Hafıza Kartları', nav_drawguess:'Çiz ve Tahmin Et',
       nav_whoami:'Kimim Ben?', nav_uno:'UNO', nav_g2048:'2048', nav_maze:'Labirent', nav_c4:'Connect 4',
-      nav_bs:'Battleship', nav_sn:'Snake VS', nav_pong:'Pong'
+      nav_bs:'Battleship', nav_sn:'Snake VS', nav_pong:'Pong', nav_anagram:'Kelime Bulmaca',
+      recentRooms:'Son Odaların', clearRecent:'Temizle', justNow:'az önce', minAgo:' dk önce',
+      hourAgo:' sa önce', dayAgo:' gün önce', sendReaction:'⚡ Reaksiyon Gönder'
     },
     en: {
       gateTitle: 'Enter your room', gateSub: 'Type your name and room code to sync instantly with your friends.',
@@ -3114,7 +3260,9 @@
       peopleBtn: '👥 People', inviteBtn: '🔗 Invite a Friend', themeToggle: 'Switch Theme',
       heroHi: 'Hi,', heroSub: 'Start an activity together!', searchGames: 'Search games',
       roomReady: 'Your Room is Ready! 🎉', roomLabel: 'Room:', copyInvite: '🔗 Copy Invite Link',
-      peopleHere: 'People here', capacity: 'Capacity', visibility: 'Visibility'
+      peopleHere: 'People here', capacity: 'Capacity', visibility: 'Visibility',
+      recentRooms: 'Recent Rooms', clearRecent: 'Clear', justNow: 'just now', minAgo: 'm ago',
+      hourAgo: 'h ago', dayAgo: 'd ago', sendReaction: '⚡ Send Reaction'
     }
   };
   I18N_DICT.en.__nav = {
@@ -3125,7 +3273,7 @@
     nav_dice:'Dice Duel', nav_cointoss:'Coin Toss Duel', nav_nearest:'Closest Number', nav_flappy:'Flappy Bird Duel',
     nav_reaction:'Reaction Duel', nav_taprace:'Tap Race', nav_memory:'Memory Cards', nav_drawguess:'Draw & Guess',
     nav_whoami:'Who Am I?', nav_uno:'UNO', nav_g2048:'2048', nav_maze:'Maze', nav_c4:'Connect 4',
-    nav_bs:'Battleship', nav_sn:'Snake VS', nav_pong:'Pong'
+    nav_bs:'Battleship', nav_sn:'Snake VS', nav_pong:'Pong', nav_anagram:'Word Scramble'
   };
   Object.assign(I18N_DICT.en, I18N_DICT.en.__nav);
 
@@ -3172,6 +3320,10 @@
       saved = localStorage.getItem('lover-lang') || (navigator.language && navigator.language.toLowerCase().startsWith('en') ? 'en' : 'tr');
     }catch(e){}
     setLang(saved);
+  })();
+
+  (function initRecentRoomsBox(){
+    try{ renderRecentRooms(); }catch(e){}
   })();
 
   // Davet linkiyle gelindiyse (?room=KOD), oda kodu otomatik dolsun — kullanıcı
@@ -3274,6 +3426,7 @@
     if(opts.password) meta.password = opts.password;
     ref.child('meta').set(meta).then(() => {
       if(visibility === 'public') syncPublicRoomEntry(code, meta, 1);
+      saveRecentRoom(code, title, name);
       enterRoom(code, name, ref, true);
     }).catch(() => showGateError('Oda oluşturulamadı, tekrar dene.'));
   }
@@ -3296,6 +3449,7 @@
         showGateError('Oda dolu (' + presenceCount + '/' + val.meta.maxParticipants + ').');
         return;
       }
+      saveRecentRoom(code, val.meta.title || code, name);
       enterRoom(code, name, ref, val.meta.owner === myAuthUid);
     }).catch(() => showGateError('Odaya bağlanılamadı, tekrar dene.'));
   }
@@ -3411,6 +3565,252 @@
     });
   }
 
+  // ==================================================================
+  // SON ODALARIN — hızlı tekrar katıl
+  // Tamamen tarayıcı localStorage'ında tutulur (Firebase'e yazılmaz),
+  // her cihazda kendi geçmişini gösterir. En fazla 5 oda saklanır.
+  // ==================================================================
+  const RECENT_ROOMS_KEY = 'lover_recent_rooms';
+
+  function getRecentRooms(){
+    try{ return JSON.parse(localStorage.getItem(RECENT_ROOMS_KEY) || '[]'); }catch(e){ return []; }
+  }
+
+  function saveRecentRoom(code, title, name){
+    try{
+      let list = getRecentRooms().filter(r => r.code !== code);
+      list.unshift({ code: code, title: title || code, name: name || '', ts: Date.now() });
+      localStorage.setItem(RECENT_ROOMS_KEY, JSON.stringify(list.slice(0, 5)));
+    }catch(e){}
+    renderRecentRooms();
+  }
+
+  function updateRecentRoomTitle(code, title){
+    if(!title) return;
+    try{
+      const list = getRecentRooms();
+      const found = list.find(r => r.code === code);
+      if(found && found.title !== title){ found.title = title; localStorage.setItem(RECENT_ROOMS_KEY, JSON.stringify(list)); }
+    }catch(e){}
+  }
+
+  function removeRecentRoom(code){
+    try{
+      const list = getRecentRooms().filter(r => r.code !== code);
+      localStorage.setItem(RECENT_ROOMS_KEY, JSON.stringify(list));
+    }catch(e){}
+    renderRecentRooms();
+  }
+
+  function clearRecentRooms(){
+    try{ localStorage.removeItem(RECENT_ROOMS_KEY); }catch(e){}
+    renderRecentRooms();
+  }
+
+  function relativeTimeLabel(ts){
+    const diffMin = Math.max(0, Math.round((Date.now() - ts) / 60000));
+    if(diffMin < 1) return t('justNow');
+    if(diffMin < 60) return diffMin + t('minAgo');
+    const diffH = Math.round(diffMin / 60);
+    if(diffH < 24) return diffH + t('hourAgo');
+    return Math.round(diffH / 24) + t('dayAgo');
+  }
+
+  function renderRecentRooms(){
+    const box = document.getElementById('recentRoomsBox');
+    const list = document.getElementById('recentRoomsList');
+    if(!box || !list) return;
+    const rooms = getRecentRooms();
+    if(!rooms.length){ box.style.display = 'none'; return; }
+    box.style.display = 'block';
+    list.innerHTML = rooms.map(r => {
+      const safeTitle = String(r.title || r.code).replace(/</g, '&lt;');
+      const safeName = String(r.name || '').replace(/'/g, "\\'").replace(/</g, '&lt;');
+      return '<div class="recent-room-row">' +
+        '<div class="rr-info">' +
+          '<div class="rr-title">' + safeTitle + '</div>' +
+          '<div class="rr-meta">' + r.code + ' · ' + relativeTimeLabel(r.ts) + '</div>' +
+        '</div>' +
+        '<button class="rr-join-btn" onclick="quickRejoin(\'' + r.code + '\', \'' + safeName + '\')">' + t('btnJoin') + '</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function quickRejoin(code, name){
+    const codeInput = document.getElementById('joinCodeInput');
+    const nameInput = document.getElementById('nameInput');
+    if(codeInput) codeInput.value = code;
+    if(nameInput && name && !nameInput.value.trim()) nameInput.value = name;
+    const pwRow = document.getElementById('joinPasswordRow');
+    if(pwRow) pwRow.style.display = 'none';
+    if(nameInput && !nameInput.value.trim()){ nameInput.focus(); return; }
+    joinRoom();
+  }
+
+  // ==================================================================
+  // HIZLI REAKSİYONLAR — anlık, kaybolan emoji patlaması. Oda içindeki
+  // herkesin ekranında yükselip kaybolan bir animasyon olarak belirir;
+  // kalıcı bir mesaj/sohbet değildir. Firebase'e sadece kısa süreliğine
+  // yazılır (gönderen 4sn sonra kendi kaydını temizler; bağlantı koparsa
+  // onDisconnect ile de silinir), böylece oda verisi şişmez.
+  // ==================================================================
+  const REACTION_EMOJIS = ['❤️', '😂', '🔥', '👏', '😮', '💯'];
+
+  function toggleReactionPicker(which){
+    const id = which === 'mobile' ? 'reactionPickerMobile' : 'reactionPicker';
+    const el = document.getElementById(id);
+    if(!el) return;
+    const opening = el.style.display === 'none' || !el.style.display;
+    if(opening && !el.dataset.built){
+      el.innerHTML = REACTION_EMOJIS.map(e => '<button type="button" onclick="sendReaction(\'' + e + '\')">' + e + '</button>').join('');
+      el.dataset.built = '1';
+    }
+    el.style.display = opening ? 'flex' : 'none';
+  }
+
+  function sendReaction(emoji){
+    if(!roomRef || !myPresenceId) return;
+    const ref = roomRef.child('roomReactions').push({ emoji: emoji, name: USER_NAME, ts: Date.now() });
+    ref.onDisconnect().remove();
+    setTimeout(() => { ref.remove().catch(() => {}); }, 4000);
+    const p1 = document.getElementById('reactionPicker'); if(p1) p1.style.display = 'none';
+    const p2 = document.getElementById('reactionPickerMobile'); if(p2) p2.style.display = 'none';
+  }
+
+  function spawnFloatingReaction(emoji){
+    const layer = document.getElementById('floatingReactionsLayer');
+    if(!layer) return;
+    const el = document.createElement('div');
+    el.className = 'floating-reaction';
+    el.textContent = emoji;
+    el.style.left = (8 + Math.random() * 80) + 'vw';
+    layer.appendChild(el);
+    setTimeout(() => el.remove(), 2700);
+  }
+
+  function initRoomReactionsSync(){
+    if(!roomRef) return;
+    roomRef.child('roomReactions').on('child_added', snap => {
+      const v = snap.val();
+      if(v && v.emoji) spawnFloatingReaction(v.emoji);
+    });
+  }
+
+  document.addEventListener('click', e => {
+    [['reactionPicker', 'reactBtn'], ['reactionPickerMobile', 'reactBtnMobile']].forEach(([pickerId, btnId]) => {
+      const picker = document.getElementById(pickerId);
+      const btn = document.getElementById(btnId);
+      if(picker && picker.style.display === 'flex' && !picker.contains(e.target) && e.target !== btn && btn && !btn.contains(e.target)){
+        picker.style.display = 'none';
+      }
+    });
+  });
+
+  // ==================================================================
+  // KELİME BULMACA (ANAGRAM DÜELLOSU)
+  // "Yeni Tur" ile ortak, sabit bir Türkçe kelime listesinden rastgele bir
+  // kelime seçilir ve harfleri karıştırılarak herkese aynı karışık hâliyle
+  // gösterilir. İlk doğru cevabı yazan turu kazanır (Firebase transaction
+  // ile "resolved" bayrağı yarışı önler — nearest/coin oyunlarıyla aynı desen).
+  // ==================================================================
+  const ANAGRAM_WORDS = [
+    'kelebek','sevgi','yıldız','gökkuşağı','deniz','orman','kahve','müzik','gülüş','arkadaş',
+    'macera','rüya','bahar','yolculuk','kitap','gitar','çiçek','bulut','şelale','ışık',
+    'anahtar','pencere','martı','fener','kalem','harita','şemsiye','balon','defter','ayna',
+    'tablo','çanta','saat','yelken','köprü','tren','uçurtma','mumluk','sandal','patika'
+  ];
+
+  function anScrambleWord(word){
+    let letters = word.split('');
+    let scrambled = word;
+    let tries = 0;
+    do{
+      for(let i = letters.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [letters[i], letters[j]] = [letters[j], letters[i]];
+      }
+      scrambled = letters.join('');
+      tries++;
+    }while(scrambled === word && tries < 8);
+    return scrambled;
+  }
+
+  function anNewRound(){
+    if(!roomRef || !myPresenceId) return;
+    roomRef.child('anagram').transaction(cur => {
+      cur = cur || { scores: {}, names: {} };
+      cur.names = cur.names || {};
+      cur.names[myPresenceId] = USER_NAME;
+      cur.scores = cur.scores || {};
+      if(cur.word !== undefined && !cur.resolved) return cur;
+      const word = ANAGRAM_WORDS[Math.floor(Math.random() * ANAGRAM_WORDS.length)];
+      cur.word = word;
+      cur.scrambled = anScrambleWord(word);
+      cur.guesses = {};
+      cur.resolved = false;
+      cur.winner = null;
+      return cur;
+    });
+  }
+
+  function anSubmitGuess(){
+    const input = document.getElementById('anGuessInput');
+    const val = (input.value || '').trim().toLocaleLowerCase('tr');
+    if(!roomRef || !myPresenceId || !val) return;
+    roomRef.child('anagram').transaction(cur => {
+      if(!cur || cur.word === undefined || cur.resolved) return cur;
+      cur.guesses = cur.guesses || {};
+      cur.names = cur.names || {};
+      cur.names[myPresenceId] = USER_NAME;
+      cur.guesses[myPresenceId] = val;
+      if(val === String(cur.word).toLocaleLowerCase('tr')){
+        cur.scores = cur.scores || {};
+        cur.scores[myPresenceId] = (cur.scores[myPresenceId] || 0) + 1;
+        cur.resolved = true;
+        cur.winner = myPresenceId;
+      }
+      return cur;
+    });
+    input.value = '';
+  }
+
+  function anResetScore(){
+    if(roomRef) roomRef.child('anagram').set({ guesses: {}, scores: {}, names: {}, resolved: false });
+  }
+
+  function initAnagramSync(){
+    if(!roomRef) return;
+    roomRef.child('anagram').on('value', snap => {
+      const s = snap.val() || {};
+      const names = s.names || {};
+      const scores = s.scores || {};
+      const guesses = s.guesses || {};
+      const otherId = Object.keys(names).find(id => id !== myPresenceId) ||
+                       Object.keys(guesses).find(id => id !== myPresenceId);
+
+      document.getElementById('anNameA').textContent = 'Sen';
+      document.getElementById('anNameB').textContent = otherId && names[otherId] ? names[otherId] : 'Partner';
+      document.getElementById('anScoreA').textContent = (myPresenceId && scores[myPresenceId]) || 0;
+      document.getElementById('anScoreB').textContent = (otherId && scores[otherId]) || 0;
+      document.getElementById('anScrambled').textContent = s.scrambled ? s.scrambled.toLocaleUpperCase('tr') : '—';
+
+      const statusEl = document.getElementById('anStatus');
+      const guessBox = document.getElementById('anGuessBox');
+
+      if(s.word === undefined){
+        guessBox.style.display = 'none';
+        statusEl.textContent = 'Yeni tur başlatmak için butona bas';
+      } else if(s.resolved){
+        guessBox.style.display = 'none';
+        const won = s.winner === myPresenceId;
+        statusEl.textContent = 'Doğru kelime: ' + s.word + ' — ' + (won ? 'turu sen kazandın! 🎉' : ((names[s.winner] || 'partnerin') + ' kazandı 😅'));
+      } else {
+        guessBox.style.display = 'flex';
+        statusEl.textContent = 'Karışık harflerden doğru kelimeyi bul';
+      }
+    });
+  }
+
   function enterRoom(code, name, ref, isOwner){
     ROOM = code;
     USER_NAME = name;
@@ -3466,6 +3866,7 @@
       IS_OWNER = m.owner === myAuthUid;
       lastMaxParticipants = m.maxParticipants || 2;
       lastVisibility = m.visibility || 'unlisted';
+      if(ROOM) updateRecentRoomTitle(ROOM, m.title);
       updateRoomCapacityLabel(null);
       const capInput = document.getElementById('capacityInput');
       if(capInput && document.activeElement !== capInput) capInput.value = m.maxParticipants;
@@ -3535,6 +3936,9 @@
     initBsSync();
     initSnSync();
     initPgSync();
+    initPgTouch();
+    initRoomReactionsSync();
+    initAnagramSync();
   }
 
   // Odaya katılan her cihaz için X/O, P1/P2, R/Y, A/B (Battleship), A/B (Snake) ve A/B (Pong)
@@ -3849,6 +4253,7 @@
     { view:'dice', emoji:'🎲', name:'Zar Düellosu', desc:'Zar atın, yüksek gelen turu kazansın', cat:'rekabet' },
     { view:'cointoss', emoji:'🪙', name:'Yazı Tura Düellosu', desc:'Yazı mı tura mı gelecek tahmin edin, doğru bilen kazanır', cat:'rekabet' },
     { view:'nearest', emoji:'🔢', name:'En Yakın Sayı', desc:'Gizli sayıya en yakın tahmini yapan turu kazanır', cat:'rekabet' },
+    { view:'anagram', emoji:'🔤', name:'Kelime Bulmaca', desc:'Harfleri karışık kelimeyi ilk çözen turu kazanır', cat:'rekabet' },
     { view:'uno', emoji:'🃏', name:'UNO', desc:"Klasik UNO'yu iki kişilik hızlı versiyonla oynayın", cat:'rekabet' },
     { view:'g2048', emoji:'🔢', name:'2048', desc:'Aynı tahtada sırayla oynayın, en yüksek sayıya birlikte ulaşın', cat:'rekabet' },
     { view:'maze', emoji:'🧭', name:'Labirent', desc:'Aynı labirentte yarışın, çıkışa önce ulaşan kazanır', cat:'rekabet' },
@@ -4583,7 +4988,7 @@
     outgoingShots.forEach((shot, i) => {
       const cell = document.createElement('div');
       let cls = 'bs-cell';
-      if(shot === 'hit') cls += ' hit';
+      if(shot === 'hit') cls += ' hit-success';
       else if(shot === 'miss') cls += ' miss';
       if(!canFire || shot) cls += ' disabled';
       cell.className = cls;
@@ -5097,12 +5502,129 @@ function toggleChatDrawer(){
     roomRef.child('messages').limitToLast(200).on('child_added', snap => {
       const m = snap.val();
       appendChatMessage(m, snap.key);
-      if(!chatDrawerOpen && m && m.name !== USER_NAME){
+      if(!chatDrawerOpen && !chatMuted && m && m.name !== USER_NAME){
         unreadChatCount++;
         updateChatBadge();
       }
     });
   }
+
+  // ---------- Sessize alma ----------
+  let chatMuted = false;
+  (function initChatMute(){
+    try{ chatMuted = localStorage.getItem('lover_chat_muted') === '1'; }catch(e){}
+  })();
+
+  function updateChatMuteBtn(){
+    const btn = document.getElementById('chatMuteBtn');
+    if(!btn) return;
+    btn.textContent = chatMuted ? '🔕' : '🔔';
+    btn.classList.toggle('active', chatMuted);
+    btn.title = chatMuted ? 'Bildirimler sessizde — açmak için tıkla' : 'Bildirimleri sessize al';
+  }
+  updateChatMuteBtn();
+
+  function toggleChatMute(){
+    chatMuted = !chatMuted;
+    try{ localStorage.setItem('lover_chat_muted', chatMuted ? '1' : '0'); }catch(e){}
+    updateChatMuteBtn();
+    if(chatMuted){ unreadChatCount = 0; updateChatBadge(); }
+  }
+
+  // ---------- Küçült / Büyüt ----------
+  function toggleChatMinimize(){
+    const drawer = document.getElementById('chatDrawer');
+    if(!drawer) return;
+    drawer.classList.toggle('minimized');
+    if(drawer.classList.contains('minimized')) drawer.classList.remove('maximized');
+  }
+
+  function toggleChatMaximize(){
+    const drawer = document.getElementById('chatDrawer');
+    if(!drawer) return;
+    drawer.classList.toggle('maximized');
+    if(drawer.classList.contains('maximized')) drawer.classList.remove('minimized');
+  }
+
+  // ---------- Taşınabilir pencere ----------
+  // Başlık çubuğundan sürüklenebilir; son konum localStorage'a yazılır, bir
+  // sonraki açılışta oradan devam eder. Başlıktaki butonlara tıklamak
+  // sürüklemeyi TETİKLEMEZ (aksi halde küçült/büyüt/kapat çalışmazdı).
+  (function initChatDrawerDrag(){
+    const drawer = document.getElementById('chatDrawer');
+    const head = document.getElementById('chatDrawerHead');
+    if(!drawer || !head) return;
+    let dragging = false, startX = 0, startY = 0, startLeft = 0, startTop = 0;
+
+    try{
+      const saved = JSON.parse(localStorage.getItem('lover_chat_pos') || 'null');
+      if(saved && typeof saved.left === 'number' && typeof saved.top === 'number' && window.innerWidth > 880){
+        drawer.style.left = saved.left + 'px';
+        drawer.style.top = saved.top + 'px';
+        drawer.style.right = 'auto';
+        drawer.style.bottom = 'auto';
+      }
+    }catch(e){}
+
+    function clampToViewport(){
+      const maxLeft = Math.max(6, window.innerWidth - drawer.offsetWidth - 6);
+      const maxTop = Math.max(6, window.innerHeight - drawer.offsetHeight - 6);
+      const rect = drawer.getBoundingClientRect();
+      const left = Math.min(Math.max(6, rect.left), maxLeft);
+      const top = Math.min(Math.max(6, rect.top), maxTop);
+      drawer.style.left = left + 'px';
+      drawer.style.top = top + 'px';
+    }
+    window.addEventListener('resize', () => { if(drawer.classList.contains('open')) clampToViewport(); });
+
+    function onDown(e){
+      if(e.target.closest('button')) return;
+      if(window.innerWidth <= 880) return; // mobilde tam ekran sohbet sayfası gibi davranır, sürüklemeye gerek yok
+      dragging = true;
+      const rect = drawer.getBoundingClientRect();
+      const point = e.touches ? e.touches[0] : e;
+      startX = point.clientX; startY = point.clientY;
+      startLeft = rect.left; startTop = rect.top;
+      drawer.style.transition = 'none';
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      document.addEventListener('touchmove', onMove, { passive:false });
+      document.addEventListener('touchend', onUp);
+    }
+
+    function onMove(e){
+      if(!dragging) return;
+      if(e.cancelable) e.preventDefault();
+      const point = e.touches ? e.touches[0] : e;
+      const maxLeft = Math.max(6, window.innerWidth - drawer.offsetWidth - 6);
+      const maxTop = Math.max(6, window.innerHeight - drawer.offsetHeight - 6);
+      let left = startLeft + (point.clientX - startX);
+      let top = startTop + (point.clientY - startY);
+      left = Math.max(6, Math.min(maxLeft, left));
+      top = Math.max(6, Math.min(maxTop, top));
+      drawer.style.left = left + 'px';
+      drawer.style.top = top + 'px';
+      drawer.style.right = 'auto';
+      drawer.style.bottom = 'auto';
+    }
+
+    function onUp(){
+      if(!dragging) return;
+      dragging = false;
+      drawer.style.transition = '';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onUp);
+      try{
+        const rect = drawer.getBoundingClientRect();
+        localStorage.setItem('lover_chat_pos', JSON.stringify({ left: rect.left, top: rect.top }));
+      }catch(e){}
+    }
+
+    head.addEventListener('mousedown', onDown);
+    head.addEventListener('touchstart', onDown, { passive:true });
+  })();
 
   function sendLiveChatMessage(){
     if(!roomRef) return;
@@ -5504,6 +6026,7 @@ function toggleChatDrawer(){
         // Oynatıcı sessiz başlatıldığı için play() burada tarayıcı tarafından ASLA engellenmez.
         if(s.playing && typeof player.playVideo === 'function') player.playVideo();
         else if(!s.playing && typeof player.pauseVideo === 'function') player.pauseVideo();
+        if(kind === 'song') updateSongPlayPauseBtn(!!s.playing);
       }catch(e){
         console.error('YouTube senkronizasyonu uygulanamadı:', e);
       }
@@ -5570,7 +6093,13 @@ function toggleChatDrawer(){
       resetContainer(containerId);
       ytPlayers[kind] = new YT.Player(containerId, {
         videoId: videoId,
-        playerVars: { autoplay: 1, rel: 0, playsinline: 1, mute: 1 },
+        playerVars: kind === 'song'
+          // Şarkı tahmin oyununda YouTube'un kendi başlık/küçük resim/kontrol
+          // çubuğunu tamamen kapatıyoruz (controls:0) — aksi halde video başlığı
+          // tahmin edilecek şarkının adını doğrudan ifşa ediyordu. Oynat/duraklat
+          // artık aşağıdaki özel butonla (toggleSongPlayback) yapılıyor.
+          ? { autoplay: 1, rel: 0, playsinline: 1, mute: 1, controls: 0, modestbranding: 1, disablekb: 1, fs: 0, iv_load_policy: 3 }
+          : { autoplay: 1, rel: 0, playsinline: 1, mute: 1 },
         events: {
           onReady: function(ev){
             // Sessiz başlat — bkz. yukarıdaki açıklama: bu, senkronun HER ZAMAN
@@ -5583,6 +6112,7 @@ function toggleChatDrawer(){
           onStateChange: function(e){
             if(e.data === YT.PlayerState.PLAYING || e.data === YT.PlayerState.PAUSED){
               broadcastYtState(kind);
+              if(kind === 'song') updateSongPlayPauseBtn(e.data === YT.PlayerState.PLAYING);
             }
           },
           onPlaybackRateChange: function(){
@@ -5758,7 +6288,28 @@ function toggleChatDrawer(){
   // şarkı adını "Tahminini yaz" kutusuna yazıp gönderirsiniz — gönderilen
   // tahminler herkese anında görünür. Doğru cevabı görmek isteyen taraf
   // "Cevabı Göster"e basar, o an itibarıyla ikinizde de cevap açığa çıkar.
+  //
+  // ÖNEMLİ: Video her zaman "songVideoCover" ile tamamen örtülü kalır —
+  // YouTube'un kendi başlık/kontrol çubuğu da kapatılmıştır (controls:0).
+  // Böylece şarkıyı SORAN kişi dışında kimse görsel bir ipucu (başlık,
+  // küçük resim) göremez; sadece sesi duyulur. Oynat/duraklat özel bir
+  // butonla yapılır, YouTube'un kendi arayüzüne hiç ihtiyaç duyulmaz.
   let lastSongId = null;
+
+  function updateSongPlayPauseBtn(playing){
+    const btn = document.getElementById('songPlayPauseBtn');
+    if(btn) btn.textContent = playing ? '⏸️ Duraklat' : '▶️ Oynat';
+  }
+
+  function toggleSongPlayback(){
+    const player = ytPlayers.song;
+    if(!player) return;
+    try{
+      const state = typeof player.getPlayerState === 'function' ? player.getPlayerState() : null;
+      if(state === 1){ player.pauseVideo(); updateSongPlayPauseBtn(false); }
+      else { player.playVideo(); updateSongPlayPauseBtn(true); }
+    }catch(e){}
+  }
 
   function initSongSync(){
     roomRef.child('song').on('value', snap => {
@@ -5777,6 +6328,7 @@ function toggleChatDrawer(){
       if(s.id !== lastSongId){
         lastSongId = s.id;
         loadYtPlayer('song', s.id);
+        updateSongPlayPauseBtn(true);
         const list = document.getElementById('songGuessList');
         if(list) list.innerHTML = '';
       }
@@ -8446,19 +8998,29 @@ function toggleChatDrawer(){
 
   // ==================================================================
   // PONG — iki kişilik gerçek zamanlı klasik pong. Snake VS ile aynı
-  // "oda sahibi otorite" desenini kullanır: top fiziği (konum, hız,
-  // sekme, sayı) SADECE roomRef.child('pg') üzerinde IS_OWNER'ın
-  // cihazındaki setInterval döngüsü tarafından hesaplanır ve transaction
-  // ile yazılır. Her oyuncu SADECE kendi raket Y konumunu
-  // roomRef.child('pg/paddleY/<rol>')'e yazar (kendi yolu — çakışma
-  // riski yok); top ve raketler ekranda bu paylaşılan state'ten canvas'a
-  // çizilir.
-  // ==================================================================
+  // "oda sahibi otorite" desenini kullanır.
+  //
+  // ÖNEMLİ MİMARİ NOT: Top/skor/durum ("pg/game") ve raket konumları
+  // ("pg/paddleY") KASITLI OLARAK AYRI Firebase path'lerinde tutulur ve
+  // AYRI 'on value' dinleyicileriyle izlenir. Daha önce ikisi tek bir
+  // "pg" düğümünde birleşikken, bir oyuncu raketini sürükledikçe (yani
+  // pg/paddleY/<rol> her değiştiğinde) üst düğümdeki TEK dinleyici de
+  // tetikleniyor, bu da topun render/interpolasyon mantığını gereksiz
+  // yere yeniden çalıştırıp topun ekranda "ortaya sıçraması" bugına yol
+  // açıyordu. İki path'i ayırmak bu ihtimali kökten ortadan kaldırır:
+  // raket yazıları artık top dinleyicisine hiç dokunmuyor.
   const PONG_W = 260, PONG_H = 400, PONG_PADDLE_H = 64, PONG_PADDLE_W = 10, PONG_BALL_R = 7;
-  const PONG_PADDLE_MARGIN = 10, PONG_WIN_SCORE = 7, PONG_TICK_MS = 40;
+  const PONG_PADDLE_MARGIN = 10, PONG_WIN_SCORE = 7, PONG_TICK_MS = 33;
   let myPgRole = null;
-  let pgState = null;
+  let pgGame = null;      // { status, ball, score, winner } — roomRef.child('pg/game')
+  let pgPaddleY = { A: (PONG_H - PONG_PADDLE_H) / 2, B: (PONG_H - PONG_PADDLE_H) / 2 }; // roomRef.child('pg/paddleY')
   let pgLoopTimer = null;
+  // Ekranda gösterilen top konumu, sunucudan gelen state'i doğrudan değil
+  // requestAnimationFrame ile YUMUŞAK biçimde takip eder (interpolasyon).
+  // Bunsuz top, ağdan her yeni değer geldiğinde (40ms'de bir, değişken
+  // gecikmeyle) sıçrayarak ilerliyordu — asıl "buglu" görünmenin sebebi buydu.
+  let pgDisplayBall = { x: PONG_W / 2, y: PONG_H / 2 };
+  let pgAnimRunning = false;
 
   function pgResetBall(dir){
     const angle = (Math.random() * 0.6 - 0.3);
@@ -8470,14 +9032,17 @@ function toggleChatDrawer(){
     };
   }
 
-  function pgInitialState(prevScore){
+  function pgInitialGame(prevScore){
     return {
       status: 'idle',
       ball: pgResetBall(Math.random() < 0.5 ? 1 : -1),
-      paddleY: { A: (PONG_H - PONG_PADDLE_H) / 2, B: (PONG_H - PONG_PADDLE_H) / 2 },
       score: prevScore || { A: 0, B: 0 },
       winner: null
     };
+  }
+
+  function pgInitialPaddleY(){
+    return { A: (PONG_H - PONG_PADDLE_H) / 2, B: (PONG_H - PONG_PADDLE_H) / 2 };
   }
 
   function updatePgRoleLabel(){
@@ -8489,19 +9054,55 @@ function toggleChatDrawer(){
   }
 
   function initPgSync(){
-    roomRef.child('pg').on('value', snap => {
-      pgState = snap.val();
-      renderPong();
+    // TOP / SKOR / DURUM — sadece bu path değiştiğinde tetiklenir. Raket
+    // sürüklemesi bu path'e hiç yazmadığı için bu dinleyiciyi ASLA tetiklemez.
+    roomRef.child('pg/game').on('value', snap => {
+      pgGame = snap.val();
+      pgStartAnimIfNeeded();
       updatePgScoreLabel();
       updatePgStatus();
-      if(pgState && pgState.status === 'playing') pgMaybeStartLoop();
+      if(pgGame && pgGame.status === 'playing') pgMaybeStartLoop();
     });
+    // RAKETLER — tamamen ayrı path. Sadece raket çizimini günceller, top
+    // animasyonuna/interpolasyonuna hiç dokunmaz.
+    roomRef.child('pg/paddleY').on('value', snap => {
+      pgPaddleY = snap.val() || pgInitialPaddleY();
+      renderPong();
+    });
+  }
+
+  // Görünen topu her animasyon karesinde (60fps) sunucudaki hedefe doğru
+  // hafifçe kaydırır ve tuvali yeniden çizer — 40ms'lik ağ adımları arasında
+  // akıcı bir hareket illüzyonu yaratır (basit lineer interpolasyon).
+  function pgStartAnimIfNeeded(){
+    if(pgAnimRunning) return;
+    pgAnimRunning = true;
+    const step = () => {
+      const view = document.getElementById('view-pong');
+      if(!pgGame || !view || !view.classList.contains('active')){ pgAnimRunning = false; return; }
+      const target = pgGame.ball || pgDisplayBall;
+      const dx = target.x - pgDisplayBall.x;
+      const dy = target.y - pgDisplayBall.y;
+      if(Math.abs(dx) > 60 || Math.abs(dy) > 60){
+        // Top sıfırlandı / çok uzaklaştı — sekmeyi taklit etmeden direkt hizala.
+        pgDisplayBall = { x: target.x, y: target.y };
+      } else {
+        pgDisplayBall = { x: pgDisplayBall.x + dx * 0.35, y: pgDisplayBall.y + dy * 0.35 };
+      }
+      renderPong();
+      if(pgGame.status === 'playing' || Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5){
+        requestAnimationFrame(step);
+      } else {
+        pgAnimRunning = false;
+      }
+    };
+    requestAnimationFrame(step);
   }
 
   function updatePgScoreLabel(){
     const aEl = document.getElementById('pgScoreA');
     const bEl = document.getElementById('pgScoreB');
-    const score = (pgState && pgState.score) || { A: 0, B: 0 };
+    const score = (pgGame && pgGame.score) || { A: 0, B: 0 };
     if(aEl) aEl.textContent = score.A || 0;
     if(bEl) bEl.textContent = score.B || 0;
   }
@@ -8509,12 +9110,12 @@ function toggleChatDrawer(){
   function updatePgStatus(){
     const el = document.getElementById('pgStatus');
     if(!el) return;
-    if(!pgState || pgState.status === 'idle'){
+    if(!pgGame || pgGame.status === 'idle'){
       el.textContent = 'Başlamak için "Başlat / Yeni Tur"a bas';
       return;
     }
-    if(pgState.status === 'over'){
-      el.innerHTML = '🎉 Kazanan: <b>' + (pgState.winner === 'A' ? '🟣 Oyuncu A' : '🌸 Oyuncu B') + '</b>';
+    if(pgGame.status === 'over'){
+      el.innerHTML = '🎉 Kazanan: <b>' + (pgGame.winner === 'A' ? '🟣 Oyuncu A' : '🌸 Oyuncu B') + '</b>';
       return;
     }
     if(!myPgRole){ el.textContent = 'İzleyicisin — iki oyuncu zaten dolu.'; return; }
@@ -8531,31 +9132,38 @@ function toggleChatDrawer(){
     ctx.beginPath(); ctx.moveTo(PONG_W / 2, 0); ctx.lineTo(PONG_W / 2, PONG_H); ctx.stroke();
     ctx.setLineDash([]);
 
-    const paddleY = (pgState && pgState.paddleY) || { A: (PONG_H - PONG_PADDLE_H) / 2, B: (PONG_H - PONG_PADDLE_H) / 2 };
+    const paddleY = pgPaddleY || pgInitialPaddleY();
     ctx.fillStyle = '#8b5cf6';
     ctx.fillRect(PONG_PADDLE_MARGIN, paddleY.A, PONG_PADDLE_W, PONG_PADDLE_H);
     ctx.fillStyle = '#f472b6';
     ctx.fillRect(PONG_W - PONG_PADDLE_MARGIN - PONG_PADDLE_W, paddleY.B, PONG_PADDLE_W, PONG_PADDLE_H);
 
-    const ball = (pgState && pgState.ball) || { x: PONG_W / 2, y: PONG_H / 2 };
     ctx.fillStyle = '#f4c430';
-    ctx.beginPath(); ctx.arc(ball.x, ball.y, PONG_BALL_R, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(pgDisplayBall.x, pgDisplayBall.y, PONG_BALL_R, 0, Math.PI * 2); ctx.fill();
   }
 
   // Raketi doğrudan bir Y konumuna (raketin ÜST kenarı) taşır — sürüklerken kullanılır.
   function pgSetPaddleY(y){
     if(!roomRef || !myPgRole) return;
-    if(!pgState || pgState.status !== 'playing') return;
+    if(!pgGame || pgGame.status !== 'playing') return;
     const clamped = Math.max(0, Math.min(PONG_H - PONG_PADDLE_H, y));
+    // Kendi raketimizi Firebase round-trip'ini beklemeden ANINDA çiz —
+    // mobilde sürüklemeyi çok daha akıcı hissettirir.
+    pgPaddleY = Object.assign({}, pgPaddleY, { [myPgRole]: clamped });
+    renderPong();
     roomRef.child('pg/paddleY/' + myPgRole).set(clamped);
   }
 
   // Ok tuşlarıyla sabit adım kaydırma (klavye desteği).
   function pgNudgePaddle(delta){
-    if(!myPgRole || !pgState) return;
-    const current = (pgState.paddleY && pgState.paddleY[myPgRole]) || (PONG_H - PONG_PADDLE_H) / 2;
+    if(!myPgRole || !pgGame) return;
+    const current = (pgPaddleY && pgPaddleY[myPgRole]) || (PONG_H - PONG_PADDLE_H) / 2;
     pgSetPaddleY(current + delta);
   }
+
+  let pgDragging = false;
+  let pgPendingY = null;
+  let pgWriteTimer = null;
 
   function pgCanvasPointer(e){
     if(!myPgRole) return;
@@ -8565,14 +9173,62 @@ function toggleChatDrawer(){
     const clientY = (e.touches && e.touches[0]) ? e.touches[0].clientY : e.clientY;
     const scaleY = PONG_H / rect.height;
     const relY = (clientY - rect.top) * scaleY;
-    pgSetPaddleY(relY - PONG_PADDLE_H / 2);
+    pgQueuePaddleY(relY - PONG_PADDLE_H / 2);
+  }
+
+  // Firebase'e her pointermove'da (mobilde saniyede 60-120 kez) doğrudan yazmak
+  // yerine, en güncel hedefi biriktirip ~30ms'de bir gönderiyoruz. (Kendi
+  // raketimiz zaten pgSetPaddleY içinde anında yerel olarak çiziliyor; bu
+  // throttle sadece ağa giden yazı sayısını azaltıyor.)
+  function pgQueuePaddleY(y){
+    pgPendingY = y;
+    if(pgWriteTimer) return;
+    pgWriteTimer = setTimeout(() => {
+      pgWriteTimer = null;
+      if(pgPendingY !== null) pgSetPaddleY(pgPendingY);
+    }, 30);
+  }
+
+  // Mobilde dokunarak sürükleme güvenilir çalışsın diye Pointer Events'i
+  // "event.buttons" kontrolüne değil, pointerdown/up ile açılıp kapanan bir
+  // bayrağa ve setPointerCapture'a dayandırıyoruz — çoğu mobil tarayıcıda
+  // touch kaynaklı PointerEvent'lerde "buttons" alanı güvenilir değil, bu
+  // yüzden eski kontrol mobilde sürüklemeyi hiç tetiklemiyordu.
+  function initPgTouch(){
+    const canvas = document.getElementById('pgCanvas');
+    if(!canvas || canvas.dataset.pgWired) return;
+    canvas.dataset.pgWired = '1';
+    const onDown = (e) => {
+      if(!myPgRole) return;
+      pgDragging = true;
+      try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+      pgCanvasPointer(e);
+      e.preventDefault();
+    };
+    const onMove = (e) => {
+      if(!pgDragging) return;
+      pgCanvasPointer(e);
+      e.preventDefault();
+    };
+    const onUp = (e) => {
+      pgDragging = false;
+      pgPendingY = null;
+      if(pgWriteTimer){ clearTimeout(pgWriteTimer); pgWriteTimer = null; }
+    };
+    canvas.addEventListener('pointerdown', onDown);
+    canvas.addEventListener('pointermove', onMove);
+    canvas.addEventListener('pointerup', onUp);
+    canvas.addEventListener('pointercancel', onUp);
+    canvas.addEventListener('pointerleave', (e) => { if(pgDragging) onUp(e); });
   }
 
   // Sadece ODA SAHİBİ tarafından çağrılır — top fiziği, raket çarpışmaları ve sayı hesaplaması
-  // burada MERKEZİ olarak yapılıp transaction ile tek bir doğru sonuç yazılır.
-  function pgComputeNext(cur){
-    const ball = Object.assign({}, cur.ball);
-    const paddleY = cur.paddleY || { A: 0, B: 0 };
+  // burada MERKEZİ olarak yapılıp update() ile 'pg/game' düğümüne yazılır.
+  // Raket konumları ('pg/paddleY') ayrı path olduğu için bu yazı ASLA raketleri ezmez
+  // ve raket yazıları da ASLA bu hesaplamayı/top verisini etkilemez.
+  function pgComputeNext(game, paddleY){
+    const ball = Object.assign({}, game.ball);
+    paddleY = paddleY || { A: 0, B: 0 };
     ball.x += ball.vx;
     ball.y += ball.vy;
 
@@ -8604,10 +9260,10 @@ function toggleChatDrawer(){
     else if(ball.x > PONG_W + 20) scored = 'A';
 
     if(scored){
-      const score = Object.assign({ A: 0, B: 0 }, cur.score);
+      const score = Object.assign({ A: 0, B: 0 }, game.score);
       score[scored] = (score[scored] || 0) + 1;
       const over = score[scored] >= PONG_WIN_SCORE;
-      return Object.assign({}, cur, {
+      return Object.assign({}, game, {
         ball: pgResetBall(scored === 'A' ? -1 : 1),
         score,
         status: over ? 'over' : 'playing',
@@ -8615,15 +9271,22 @@ function toggleChatDrawer(){
       });
     }
 
-    return Object.assign({}, cur, { ball });
+    return Object.assign({}, game, { ball });
   }
 
   function pgTick(){
-    if(!roomRef || !IS_OWNER) return;
-    roomRef.child('pg').transaction(cur => {
-      if(!cur || cur.status !== 'playing') return cur;
-      return pgComputeNext(cur);
-    });
+    if(!roomRef || !IS_OWNER || !pgGame || pgGame.status !== 'playing') return;
+    // Not: Burada bilinçli olarak transaction() DEĞİL, tek yönlü bir okuma +
+    // hedefli update() kullanıyoruz. Sadece oda sahibi bu düğüme (top/skor)
+    // yazdığı için çakışma riski yok; transaction'ın her tick'te sunucuya gidip
+    // gelmesi (25-30 kez/sn) gecikme birikmesine ve topun "sıçrayarak" ilerlemesine
+    // yol açıyordu. 'pg/game' ve 'pg/paddleY' ayrı düğümler olduğu için bu update()
+    // raket pozisyonlarına HİÇ dokunmuyor.
+    const next = pgComputeNext(pgGame, pgPaddleY);
+    const patch = { ball: next.ball, score: next.score, status: next.status, winner: next.winner };
+    pgGame = Object.assign({}, pgGame, patch);
+    roomRef.child('pg/game').update(patch);
+    if(next.status !== 'playing') pgStopLoop();
   }
 
   function pgMaybeStartLoop(){
@@ -8638,19 +9301,21 @@ function toggleChatDrawer(){
   // "Başlat / Yeni Tur": herkes basabilir — skoru koruyarak yeni bir tur başlatır.
   function startPongRound(){
     if(!roomRef) return;
-    roomRef.child('pg').once('value').then(snap => {
+    roomRef.child('pg/game').once('value').then(snap => {
       const cur = snap.val();
-      const fresh = pgInitialState(cur && cur.score);
+      const fresh = pgInitialGame(cur && cur.score);
       fresh.status = 'playing';
-      roomRef.child('pg').set(fresh);
+      roomRef.child('pg/game').set(fresh);
+      roomRef.child('pg/paddleY').set(pgInitialPaddleY());
       if(IS_OWNER) pgMaybeStartLoop();
     });
   }
 
   function resetPongScore(){
     if(!roomRef) return;
-    const fresh = pgInitialState({ A: 0, B: 0 });
-    roomRef.child('pg').set(fresh);
+    const fresh = pgInitialGame({ A: 0, B: 0 });
+    roomRef.child('pg/game').set(fresh);
+    roomRef.child('pg/paddleY').set(pgInitialPaddleY());
   }
 </script>
 
