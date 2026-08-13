@@ -6,6 +6,7 @@
 <title>Lover — Birlikte Vakit Geçirin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
@@ -25,6 +26,11 @@
     --ink-dim: #a79fc4;
     --ink-faint: #6f6790;
     --radius: 18px;
+    --px: 4px;
+    --pixel-font: 'Press Start 2P', 'VT323', monospace;
+    --mono-font: 'VT323', monospace;
+    --pixel-ink: #f3f0fa;
+    --pixel-shadow: #05030a;
   }
 
   html[data-theme="gray"]{
@@ -1748,6 +1754,151 @@
     .xox-board{ grid-template-columns: repeat(3, 72px); grid-template-rows: repeat(3, 72px); }
     .mobile-topbar .mt-name{ max-width:60px; }
   }
+
+  /* ==========================================================
+     PIXEL ART THEME — sadece data-theme="pixel" iken aktif olur
+     (Tema Değiştir butonuyla seçilir, diğer temaları etkilemez)
+     ========================================================== */
+
+  html[data-theme="pixel"] * ,
+  html[data-theme="pixel"] *::before,
+  html[data-theme="pixel"] *::after{
+    border-radius: 0 !important;
+  }
+
+  html[data-theme="pixel"]{
+    image-rendering: pixelated;
+  }
+
+  html[data-theme="pixel"] body{
+    font-family: var(--mono-font) !important;
+    font-size: 19px;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0px, rgba(255,255,255,.05) 1px, transparent 1px, transparent 6px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0px, rgba(255,255,255,.04) 1px, transparent 1px, transparent 6px);
+  }
+
+  /* pixel-stamped chunky text on headings/buttons */
+  html[data-theme="pixel"] h1, html[data-theme="pixel"] h2, html[data-theme="pixel"] h3,
+  html[data-theme="pixel"] .brand-name, html[data-theme="pixel"] .hero h1,
+  html[data-theme="pixel"] button, html[data-theme="pixel"] .nav-item, html[data-theme="pixel"] .tod-choice,
+  html[data-theme="pixel"] .create-btn, html[data-theme="pixel"] .gate-btn, html[data-theme="pixel"] .room-badge{
+    text-shadow: 2px 2px 0 var(--pixel-shadow) !important;
+  }
+
+  html[data-theme="pixel"] img, html[data-theme="pixel"] canvas, html[data-theme="pixel"] video{
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* headline / brand text -> chunky pixel display font */
+  html[data-theme="pixel"] h1, html[data-theme="pixel"] h2, html[data-theme="pixel"] h3,
+  html[data-theme="pixel"] .brand-name, html[data-theme="pixel"] .hero h1, html[data-theme="pixel"] .section-title,
+  html[data-theme="pixel"] .u-name, html[data-theme="pixel"] .nav-label, html[data-theme="pixel"] .empty-title,
+  html[data-theme="pixel"] .modal-title, html[data-theme="pixel"] .gate-title{
+    font-family: var(--pixel-font) !important;
+    letter-spacing: 0 !important;
+    line-height: 1.6 !important;
+  }
+  html[data-theme="pixel"] .hero h1{ font-size: 15px !important; gap:14px; }
+  html[data-theme="pixel"] .section-title{ font-size: 12px !important; }
+  html[data-theme="pixel"] .brand-name{ font-size: 12px !important; background:none !important; -webkit-text-fill-color: var(--rose) !important; color: var(--rose) !important; }
+  html[data-theme="pixel"] .nav-label{ font-size: 9px !important; }
+
+  /* body copy / UI chrome -> readable pixel-mono font */
+  html[data-theme="pixel"] button, html[data-theme="pixel"] input, html[data-theme="pixel"] textarea,
+  html[data-theme="pixel"] select, html[data-theme="pixel"] a,
+  html[data-theme="pixel"] .nav-item, html[data-theme="pixel"] .card, html[data-theme="pixel"] .u-name,
+  html[data-theme="pixel"] .hero p, html[data-theme="pixel"] .tod-choice, html[data-theme="pixel"] .reveal-btn,
+  html[data-theme="pixel"] .room-badge, html[data-theme="pixel"] .puzzle-tile, html[data-theme="pixel"] .xox-cell{
+    font-family: var(--mono-font) !important;
+    letter-spacing: .01em;
+  }
+  html[data-theme="pixel"] button, html[data-theme="pixel"] .nav-item, html[data-theme="pixel"] .tod-choice,
+  html[data-theme="pixel"] .create-btn, html[data-theme="pixel"] .gate-btn{
+    font-size: 17px !important;
+  }
+
+  /* remove soft blur ambience, keep it as flat retro blocks */
+  html[data-theme="pixel"] .glow{
+    filter: none !important;
+    opacity: .10 !important;
+  }
+
+  /* hard pixel borders + beveled inset highlight + offset block-shadow */
+  html[data-theme="pixel"] .card, html[data-theme="pixel"] .hero, html[data-theme="pixel"] .user-card,
+  html[data-theme="pixel"] .brand-mark, html[data-theme="pixel"] .avatar,
+  html[data-theme="pixel"] .nav-item.active, html[data-theme="pixel"] button, html[data-theme="pixel"] .tod-choice,
+  html[data-theme="pixel"] .reveal-btn, html[data-theme="pixel"] .gate-btn,
+  html[data-theme="pixel"] .create-btn, html[data-theme="pixel"] .room-badge, html[data-theme="pixel"] .back-btn,
+  html[data-theme="pixel"] .modal, html[data-theme="pixel"] .modal-box, html[data-theme="pixel"] .panel,
+  html[data-theme="pixel"] input, html[data-theme="pixel"] textarea, html[data-theme="pixel"] select,
+  html[data-theme="pixel"] .color-swatch, html[data-theme="pixel"] .puzzle-tile{
+    border: 4px solid var(--pixel-shadow) !important;
+    box-shadow:
+      inset 2px 2px 0 rgba(255,255,255,.18),
+      inset -2px -2px 0 rgba(0,0,0,.45),
+      6px 6px 0 0 var(--pixel-shadow) !important;
+  }
+  html[data-theme="pixel"] .card:hover, html[data-theme="pixel"] button:hover,
+  html[data-theme="pixel"] .tod-choice:hover, html[data-theme="pixel"] .create-btn:hover,
+  html[data-theme="pixel"] .gate-btn:hover{
+    transform: translate(-3px,-3px) !important;
+    box-shadow:
+      inset 2px 2px 0 rgba(255,255,255,.18),
+      inset -2px -2px 0 rgba(0,0,0,.45),
+      9px 9px 0 0 var(--pixel-shadow) !important;
+  }
+  html[data-theme="pixel"] .card:active, html[data-theme="pixel"] button:active,
+  html[data-theme="pixel"] .tod-choice:active, html[data-theme="pixel"] .create-btn:active,
+  html[data-theme="pixel"] .gate-btn:active{
+    transform: translate(4px,4px) !important;
+    box-shadow:
+      inset -2px -2px 0 rgba(255,255,255,.18),
+      inset 2px 2px 0 rgba(0,0,0,.45),
+      2px 2px 0 0 var(--pixel-shadow) !important;
+  }
+
+  /* real multi-step pixel staircase corners (not a single diagonal chamfer) */
+  html[data-theme="pixel"] .card, html[data-theme="pixel"] .hero, html[data-theme="pixel"] .user-card,
+  html[data-theme="pixel"] .modal, html[data-theme="pixel"] .modal-box,
+  html[data-theme="pixel"] button, html[data-theme="pixel"] .tod-choice, html[data-theme="pixel"] .create-btn,
+  html[data-theme="pixel"] .gate-btn, html[data-theme="pixel"] .room-badge, html[data-theme="pixel"] .back-btn,
+  html[data-theme="pixel"] .panel{
+    clip-path: polygon(
+      0 9px, 3px 9px, 3px 6px, 6px 6px, 6px 3px, 9px 3px, 9px 0,
+      calc(100% - 9px) 0, calc(100% - 6px) 0, calc(100% - 6px) 3px, calc(100% - 3px) 3px, calc(100% - 3px) 6px, 100% 6px, 100% 9px,
+      100% calc(100% - 9px), 100% calc(100% - 6px), calc(100% - 3px) calc(100% - 6px), calc(100% - 3px) calc(100% - 3px), calc(100% - 6px) calc(100% - 3px), calc(100% - 6px) 100%, calc(100% - 9px) 100%,
+      9px 100%, 6px 100%, 6px calc(100% - 3px), 3px calc(100% - 3px), 3px calc(100% - 6px), 0 calc(100% - 6px)
+    ) !important;
+  }
+
+  /* small square sprite avatars — flat pixel blocks, no bevel clipping (too small for stairs) */
+  html[data-theme="pixel"] .avatar, html[data-theme="pixel"] .brand-mark{
+    clip-path: none !important;
+  }
+  html[data-theme="pixel"] .brand-mark{
+    background: linear-gradient(135deg, var(--violet) 0%, var(--violet) 50%, var(--rose) 50%, var(--rose) 100%) !important;
+  }
+  html[data-theme="pixel"] .avatar{
+    background: linear-gradient(135deg, var(--violet-soft) 0%, var(--violet-soft) 50%, var(--violet) 50%, var(--violet) 100%) !important;
+  }
+
+  /* chunky pixel scrollbar with striped thumb */
+  html[data-theme="pixel"] ::-webkit-scrollbar{ width: 16px; height:16px; }
+  html[data-theme="pixel"] ::-webkit-scrollbar-track{ background: var(--bg-soft); border-left: 4px solid var(--pixel-shadow); }
+  html[data-theme="pixel"] ::-webkit-scrollbar-thumb{
+    background: repeating-linear-gradient(45deg, var(--violet) 0px, var(--violet) 4px, var(--violet-soft) 4px, var(--violet-soft) 8px);
+    border: 4px solid var(--pixel-shadow);
+  }
+  html[data-theme="pixel"] ::-webkit-scrollbar-thumb:hover{ background: var(--rose); }
+
+  /* game grid cells stay crisp squares, slightly thicker borders for sprite feel */
+  html[data-theme="pixel"] .xox-cell, html[data-theme="pixel"] .c4-cell,
+  html[data-theme="pixel"] .bs-cell, html[data-theme="pixel"] .sn-cell, html[data-theme="pixel"] .puzzle-tile{
+    border: 2px solid var(--pixel-shadow) !important;
+  }
 </style>
 </head>
 <body>
@@ -1872,7 +2023,7 @@
   </div>
 </div>
 
-<button class="mobile-fab" onclick="toggleTheme()" title="Tema Değiştir">🎨</button>
+<button class="mobile-fab" id="themeFabIcon" onclick="toggleTheme()" title="Tema Değiştir">🎨</button>
 
 <button class="chat-fab" onclick="toggleChatDrawer()" title="Sohbet">
   💬
@@ -1984,7 +2135,7 @@
     <div class="presence-bar" id="presenceBar"></div>
 
     <div class="sidebar-bottom">
-      <div class="nav-item" onclick="toggleTheme()"><span class="ic">🎨</span><span data-i18n="themeToggle">Tema Değiştir</span></div>
+      <div class="nav-item" onclick="toggleTheme()"><span class="ic" id="themeNavIcon">🎨</span><span data-i18n="themeToggle">Tema Değiştir</span></div>
     </div>
   </aside>
 
@@ -3181,13 +3332,22 @@
   }
 
   // ---------- Theme ----------
+  const THEME_ICONS = { violet: '🎨', gray: '🌙', pixel: '👾' };
   function applyTheme(t){
     document.documentElement.setAttribute('data-theme', t);
     try{ localStorage.setItem('lover-theme', t); }catch(e){}
+    const icon = THEME_ICONS[t] || '🎨';
+    const fab = document.getElementById('themeFabIcon');
+    const navIc = document.getElementById('themeNavIcon');
+    if(fab) fab.textContent = icon;
+    if(navIc) navIc.textContent = icon;
   }
+  const THEME_ORDER = ['violet', 'gray', 'pixel'];
   function toggleTheme(){
     const cur = document.documentElement.getAttribute('data-theme') || 'violet';
-    applyTheme(cur === 'violet' ? 'gray' : 'violet');
+    const idx = THEME_ORDER.indexOf(cur);
+    const next = THEME_ORDER[(idx + 1) % THEME_ORDER.length];
+    applyTheme(next);
   }
   (function initTheme(){
     let saved = 'violet';
