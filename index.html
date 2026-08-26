@@ -234,6 +234,74 @@ h1 {
         .counter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-bottom: 8px; display: block; }
         #live-timer { font-family: 'Playfair Display', serif; font-size: 22px; color: #fff; font-weight: 600; }
 
+        /* --- YURDA DÖNÜŞ / KAVUŞMA SAYACI --- */
+        #reunion-container {
+            font-family: 'Inter', sans-serif;
+            background: rgba(255, 77, 109, 0.08);
+            backdrop-filter: blur(10px);
+            padding: 22px 20px;
+            border-radius: 20px;
+            margin: 0 0 40px 0;
+            border: 1px solid rgba(255, 77, 109, 0.25);
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.12);
+        }
+        #reunion-container .counter-label { color: #ff8fa3; }
+        #reunion-timer {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        #reunion-timer .ru-num { display: inline-block; min-width: 1.6em; }
+        #reunion-sub {
+            margin-top: 8px;
+            font-size: 13px;
+            opacity: 0.85;
+        }
+        #reunion-container.kavustuk {
+            background: rgba(255, 77, 109, 0.18);
+            border-color: rgba(255, 77, 109, 0.5);
+            animation: loveGlow 1.8s infinite ease-in-out;
+        }
+        #reunion-timer.kavustuk-text {
+            font-size: 24px;
+            animation: loveGlow 1.5s infinite ease-in-out;
+        }
+
+        /* --- KAVUŞMA GÜNÜ TEMASI (14 Eylül) --- */
+        body.reunion-mode {
+            background: #180007;
+        }
+        body.reunion-mode #bg-photo {
+            background: linear-gradient(rgba(90,0,20,0.55), rgba(40,0,10,0.65)), url("https://i.imgur.com/PyNRVJW.jpeg");
+            background-size: cover; background-position: center center;
+        }
+        body.reunion-mode h1 {
+            background: linear-gradient(90deg, #ff4d6d, #ff8fa3, #ff4d6d);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        body.reunion-mode .card,
+        body.reunion-mode .notes-container,
+        body.reunion-mode #counter-container,
+        body.reunion-mode #reunion-container {
+            border-color: rgba(255, 77, 109, 0.4) !important;
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.2) !important;
+        }
+        #kavustuk-banner {
+            display: none;
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #ff8fa3;
+            text-align: center;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+            animation: loveGlow 1.6s infinite ease-in-out;
+        }
+        body.reunion-mode #kavustuk-banner { display: block; }
+
         /* --- NOTLAR --- */
         .notes-container {
             background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);
@@ -1987,8 +2055,16 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
 
 
 <div class="page" id="main-content">
-    <h1>aynı şehirde olmasak da<br>aynı hislerdeyiz</h1>
-    <div class="subtitle">bir mesafeye değil, bir hisse aitiz.</div>
+    <h1 id="main-h1">aynı şehirde olmasak da<br>aynı hislerdeyiz</h1>
+    <div class="subtitle" id="main-subtitle">bir mesafeye değil, bir hisse aitiz.</div>
+
+    <div id="kavustuk-banner">KAVUŞTUK 🩶💜❤️</div>
+
+    <div id="reunion-container">
+        <span class="counter-label">Kavuşmamıza Kalan</span>
+        <div id="reunion-timer">Hesaplanıyor...</div>
+        <div id="reunion-sub">az kaldı sevgilim 🩶💜</div>
+    </div>
 
     <div id="counter-container">
     <div id="counter-container" onclick="toggleTimerFormat()" style="cursor: pointer;"></div>
@@ -4389,6 +4465,52 @@ function isBirthdayToday(){
     return (d.getDate() === BDAY_DAY && (d.getMonth()+1) === BDAY_MONTH);
 }
 
+// --- YURDA DÖNÜŞ / KAVUŞMA SAYACI (14 Eylül 2026) ---
+const REUNION_DATE = new Date("2026-09-14T00:00:00");
+let __reunionThemeApplied = false;
+
+function applyReunionTheme(){
+    if(__reunionThemeApplied) return;
+    __reunionThemeApplied = true;
+    document.body.classList.add("reunion-mode");
+    const container = document.getElementById("reunion-container");
+    if(container) container.classList.add("kavustuk");
+    const h1 = document.getElementById("main-h1");
+    if(h1) h1.innerHTML = "kavuştuk 🩶💜<br>artık aynı şehirdeyiz";
+    const sub = document.getElementById("main-subtitle");
+    if(sub) sub.textContent = "beklemek bitti, şimdi biz varız.";
+    // kalp yağmurunu hızlandır ve kırmızı kalplerle doldur
+    if(typeof startHeartRain === "function"){
+        setInterval(createHeart, 180);
+    }
+}
+
+function updateReunionCountdown(){
+    const el = document.getElementById("reunion-timer");
+    const sub = document.getElementById("reunion-sub");
+    if(!el) return;
+    const diff = REUNION_DATE.getTime() - Date.now();
+
+    if(diff <= 0){
+        el.classList.add("kavustuk-text");
+        el.textContent = "BUGÜN KAVUŞUYORUZ. 🩶💜";
+        if(sub) sub.textContent = "artık saymaya gerek yok.";
+        applyReunionTheme();
+        return;
+    }
+
+    const gun = Math.floor(diff / 86400000);
+    const saat = Math.floor((diff % 86400000) / 3600000);
+    const dk = Math.floor((diff % 3600000) / 60000);
+    const sn = Math.floor((diff % 60000) / 1000);
+
+    el.innerHTML =
+        '<span class="ru-num">' + gun + '</span> gün ' +
+        '<span class="ru-num">' + String(saat).padStart(2,"0") + '</span> saat ' +
+        '<span class="ru-num">' + String(dk).padStart(2,"0") + '</span> dakika ' +
+        '<span class="ru-num">' + String(sn).padStart(2,"0") + '</span> saniye';
+}
+
 function showBirthday(){
     const el = document.getElementById("birthday-surprise");
     if(el) el.style.display = "flex";
@@ -4478,6 +4600,9 @@ function executeLogin() {
         showWelcomeToast();
         updateLiveTimer();
         setInterval(updateLiveTimer, 1000);
+
+        updateReunionCountdown();
+        setInterval(updateReunionCountdown, 1000);
         
         if (typeof updateFooterDate === "function") updateFooterDate();
         if (typeof startHeartRain === "function") startHeartRain();
@@ -6592,7 +6717,7 @@ function togglePolaroid() {
 (function(){
 // ---- CONFIG ----
 const BASLANGIC = new Date("2026-06-26T00:00:00"); // ilk gün: 26 Haziran 2026
-const TOPLAM_GUN = 79; // 26 Haziran → 12 Eylül 2026 = 79 gün
+const TOPLAM_GUN = 81; // 26 Haziran → 14 Eylül 2026 = 81 gün
 const KISILER = { kevser: "🩶", atakan: "💜" };
 
 // ---- STATE ----
@@ -6697,7 +6822,7 @@ function renderGunlukView(){
     if(!window.akDB){ renderOffline(); return; }
     const bugun = bugunGun();
     document.getElementById("gunluk-progress-label").textContent =
-        bugun + ". gün · 26 Haz – 7 Eyl · " + (TOPLAM_GUN - bugun) + " gün kaldı";
+        bugun + ". gün · 26 Haz – 14 Eyl · " + (TOPLAM_GUN - bugun) + " gün kaldı";
     if(gunlukGorünum === "calendar") renderCalendar(bugun);
     else renderList(bugun);
 }
