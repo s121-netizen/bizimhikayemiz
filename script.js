@@ -1314,6 +1314,7 @@ function filterGallery(month) {
         else if (month === '06.2026' && imgSrc.includes('06.2026')) isMatch = true;
         else if (month === '07.2026' && imgSrc.includes('07.2026')) isMatch = true;
         else if (month === '08.2026' && imgSrc.includes('08.2026')) isMatch = true;
+        else if (month === '09.2026' && imgSrc.includes('09.2026')) isMatch = true;
 
         item.style.display = isMatch ? 'block' : 'none';
     });
