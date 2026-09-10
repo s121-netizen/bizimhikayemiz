@@ -143,6 +143,36 @@
   .panel-msg{ font-size:12px; margin-top:12px; min-height:16px; color:var(--ivory-dim); }
   .panel-msg.error{ color:#e08a8a; }
   .panel-msg.ok{ color:var(--gold); }
+
+  .char-count{
+    font-size:11px; color:var(--ivory-dim); text-align:right;
+    margin-top:6px; letter-spacing:0.02em;
+  }
+  .char-count.warn{ color:#e08a8a; }
+
+  .fab-row{
+    position:fixed; right:18px; bottom:18px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .fab{
+    width:38px; height:38px; border-radius:50%;
+    border:1px solid var(--line); background:rgba(255,255,255,0.03);
+    color:var(--ivory-dim); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; transition:opacity .2s ease, transform .2s ease;
+    opacity:0.55;
+  }
+  .fab:hover{ opacity:1; transform:scale(1.05); }
+
+  .toast{
+    position:fixed; left:50%; bottom:70px; transform:translateX(-50%) translateY(8px);
+    background:var(--panel); border:1px solid var(--line); color:var(--ivory);
+    font-size:12px; padding:8px 16px; border-radius:999px;
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .hint{ font-size:10px; color:var(--ivory-dim); opacity:0.6; margin-top:4px; }
 </style>
 </head>
 <body>
@@ -155,23 +185,30 @@
 
     <p class="eyebrow">şu an</p>
     <div id="content" class="empty">yükleniyor…</div>
-    <div class="meta">son güncelleme: <span id="updatedAt">—</span></div>
+    <div class="meta">son değişiklik: <span id="updatedAt">—</span></div>
 
     <footer>canlı olarak güncellenir</footer>
   </div>
 
-  <button class="edit-trigger" id="editTrigger" title="düzenle" aria-label="düzenle">✎</button>
+  <div class="fab-row">
+    <button class="fab" id="copyTrigger" title="kopyala" aria-label="kopyala">⧉</button>
+    <button class="fab" id="editTrigger" title="düzenle" aria-label="düzenle">✎</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
   <div class="overlay" id="overlay">
     <div class="panel">
       <h3>yeni içerik</h3>
       <label for="newContent">mesaj veya link</label>
-      <textarea id="newContent" placeholder="buraya yaz…"></textarea>
+      <textarea id="newContent" placeholder="buraya yaz…" maxlength="500"></textarea>
+      <div class="char-count" id="charCount">0 / 500</div>
       <div class="panel-actions">
         <button class="btn btn-ghost" id="closeWrite">kapat</button>
         <button class="btn btn-primary" id="publishBtn">yayınla</button>
       </div>
       <div class="panel-msg" id="writeMsg"></div>
+      <div class="hint">ipucu: ⌘/Ctrl + Enter ile yayınla</div>
     </div>
   </div>
 
@@ -224,6 +261,18 @@
     });
   }
 
+  function relativeTime(date){
+    const diffSec = Math.round((Date.now() - date.getTime()) / 1000);
+    if (diffSec < 5) return 'az önce';
+    if (diffSec < 60) return `${diffSec} saniye önce`;
+    const diffMin = Math.round(diffSec / 60);
+    if (diffMin < 60) return `${diffMin} dakika önce`;
+    const diffHour = Math.round(diffMin / 60);
+    if (diffHour < 24) return `${diffHour} saat önce`;
+    const diffDay = Math.round(diffHour / 24);
+    return `${diffDay} gün önce`;
+  }
+
   onValue(ref(db, "guncel"), (snapshot) => {
     const val = snapshot.val();
     contentEl.classList.add('fade');
@@ -237,26 +286,63 @@
         if (newContentInput.value === "") newContentInput.value = String(val);
       }
       contentEl.classList.remove('fade');
-      updatedAtEl.textContent = formatTime(new Date());
     }, 220);
   });
+
+  /* ---- gerçek "son değişiklik" zamanı (guncelZaman'dan) ---- */
+  let lastChangedDate = null;
+  onValue(ref(db, "guncelZaman"), (snapshot) => {
+    const ts = snapshot.val();
+    if (!ts) {
+      updatedAtEl.textContent = '—';
+      lastChangedDate = null;
+      return;
+    }
+    lastChangedDate = new Date(ts);
+    updatedAtEl.textContent = `${relativeTime(lastChangedDate)} (${formatTime(lastChangedDate)})`;
+  });
+
+  // metni her dakika tazele ki "3 dakika önce" yazısı güncel kalsın
+  setInterval(() => {
+    if (lastChangedDate) {
+      updatedAtEl.textContent = `${relativeTime(lastChangedDate)} (${formatTime(lastChangedDate)})`;
+    }
+  }, 30000);
 
   /* ---- düzenle paneli (giriş gerekmez) ---- */
   const editTrigger = document.getElementById('editTrigger');
   const overlay = document.getElementById('overlay');
   const writeMsg = document.getElementById('writeMsg');
+  const charCount = document.getElementById('charCount');
+  const MAX_LEN = 500;
 
-  function openOverlay(){ overlay.classList.add('open'); }
+  function openOverlay(){
+    overlay.classList.add('open');
+    updateCharCount();
+    setTimeout(() => newContentInput.focus(), 50);
+  }
   function closeOverlay(){
     overlay.classList.remove('open');
     writeMsg.textContent = '';
   }
 
+  function updateCharCount(){
+    const len = newContentInput.value.length;
+    charCount.textContent = `${len} / ${MAX_LEN}`;
+    charCount.classList.toggle('warn', len > MAX_LEN * 0.9);
+  }
+
   editTrigger.addEventListener('click', openOverlay);
   document.getElementById('closeWrite').addEventListener('click', closeOverlay);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
+  newContentInput.addEventListener('input', updateCharCount);
 
-  document.getElementById('publishBtn').addEventListener('click', async () => {
+  // Esc ile kapat
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
+  });
+
+  async function publish(){
     const val = newContentInput.value.trim();
     writeMsg.textContent = 'yayınlanıyor…';
     writeMsg.className = 'panel-msg';
@@ -269,6 +355,42 @@
     } catch (err) {
       writeMsg.textContent = 'yayınlanamadı, tekrar dene';
       writeMsg.className = 'panel-msg error';
+    }
+  }
+
+  document.getElementById('publishBtn').addEventListener('click', publish);
+
+  // ⌘/Ctrl + Enter ile hızlı yayınlama
+  newContentInput.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      publish();
+    }
+  });
+
+  /* ---- kopyala butonu ---- */
+  const copyTrigger = document.getElementById('copyTrigger');
+  const toast = document.getElementById('toast');
+  let toastTimer = null;
+
+  function showToast(text){
+    toast.textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  copyTrigger.addEventListener('click', async () => {
+    const text = contentEl.textContent || '';
+    if (!text || contentEl.classList.contains('empty')) {
+      showToast('kopyalanacak bir şey yok');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('kopyalandı');
+    } catch (err) {
+      showToast('kopyalanamadı');
     }
   });
 </script>
