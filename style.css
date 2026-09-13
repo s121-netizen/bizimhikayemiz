@@ -276,6 +276,21 @@ h1 {
         }
         body.reunion-mode #kavustuk-banner { display: block; }
 
+        #reunion-note-widget {
+            display: none;
+            width: fit-content;
+            margin: 0 auto 18px;
+            padding: 10px 22px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.08);
+            color: #f5d6e0;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        body.reunion-mode #reunion-note-widget { display: block; }
+
         /* --- NOTLAR --- */
         .notes-container {
             background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px);
@@ -865,13 +880,8 @@ body.modal-open #mini-game-btn {
     max-height:min(84vh, 780px);
     padding:28px 20px 22px;
     border-radius:20px;
-    background:
-        linear-gradient(rgba(10,10,10,0.82), rgba(10,10,10,0.88)),
-        url('temalar/1.png');
-    background-size:cover;
-    background-position:center center;
+    background: rgba(15,15,18,0.94);
     border:1px solid rgba(255,255,255,0.14);
-    backdrop-filter: blur(4px);
     text-align:left;
     overflow:auto;
     color:#f5f5f5;
