@@ -163,7 +163,7 @@ function applyReunionTheme(){
     const container = document.getElementById("reunion-container");
     if(container) container.classList.add("kavustuk");
     const h1 = document.getElementById("main-h1");
-    if(h1) h1.innerHTML = "kavuştuk 🩶💜<br>artık aynı şehirdeyiz";
+    if(h1) h1.innerHTML = "kavuştuk 🩶💜<br>artık aynı sesteyiz";
     const sub = document.getElementById("main-subtitle");
     if(sub) sub.textContent = "beklemek bitti, şimdi biz varız.";
     // kalp yağmurunu hızlandır (eski interval'ı durdurup tekini çalıştırır)
@@ -3063,3 +3063,57 @@ window.kaydetKitapNot = function(){
 };
 
 })();
+
+
+// Kavuştuk Notu Tıklama ve Okundu Durumu Yönetimi
+function handleReunionClick() {
+    // 1. Notu aç (Sadece tıklayınca çalışır)
+    if (typeof showReunionNotePage === "function") showReunionNotePage(1);
+    if (typeof openReunionNote === "function") openReunionNote();
+    
+    // 2. Okundu işaretle ve animasyonlu rozeti kaldır
+    const badge = document.getElementById('reunion-badge');
+    if (badge) {
+        badge.classList.add('read');
+    }
+    localStorage.setItem('reunion_note_read', 'true');
+}
+
+// Sayfa yüklendiğinde okundu durumunu kontrol et
+document.addEventListener('DOMContentLoaded', function() {
+    const isRead = localStorage.getItem('reunion_note_read');
+    const badge = document.getElementById('reunion-badge');
+    if (isRead === 'true' && badge) {
+        badge.classList.add('read');
+    }
+});
+
+// Kalbe tıklayınca patlama ve 'K' harfi çıkarma efekti
+function popHeart(event, letter) {
+    // Tıklamanın karta geçip kart tıklama olayını (not açmayı) tetiklemesini engelle
+    event.stopPropagation();
+    
+    const heart = event.currentTarget;
+    if (heart.classList.contains('popped')) return;
+
+    // Kalbi patlatıp yok et
+    heart.classList.add('popped');
+
+    // Tıklanan koordinatları al
+    const rect = heart.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    // 'K' Harfini Oluştur
+    const kElem = document.createElement('span');
+    kElem.className = 'popped-k-letter';
+    kElem.textContent = letter || 'K';
+    kElem.style.left = `${x}px`;
+    kElem.style.top = `${y}px`;
+    document.body.appendChild(kElem);
+
+    // 1.2 saniye sonra elementi temizle
+    setTimeout(() => {
+        kElem.remove();
+    }, 1200);
+}
