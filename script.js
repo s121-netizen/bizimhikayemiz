@@ -153,7 +153,7 @@ function isBirthdayToday(){
 }
 
 // --- YURDA DÖNÜŞ / KAVUŞMA SAYACI (14 Eylül 2026) ---
-const REUNION_DATE = new Date("2026-09-14T00:00:00");
+const REUNION_DATE = new Date("2026-09-13T23:25:00");
 let __reunionThemeApplied = false;
 
 function applyReunionTheme(){
@@ -315,6 +315,14 @@ function updateReunionLockState(){
     const locked = Date.now() < REUNION_DATE.getTime();
     btn.classList.toggle("locked", locked);
 }
+
+// --- "Sana Özel Bir Not Var" altındaki kalpler 10 saniyede bir yenilensin ---
+function renewReunionHearts(){
+    document.querySelectorAll('#reunion-card-btn .interactive-heart.popped').forEach(h=>{
+        h.classList.remove('popped');
+    });
+}
+setInterval(renewReunionHearts, 10000);
 
 function showBirthday(){
     const el = document.getElementById("birthday-surprise");
