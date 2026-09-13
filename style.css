@@ -2426,3 +2426,129 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
             40%{ transform:scale(1.35); }
             100%{ transform:scale(1); }
         }
+
+/* --- YENİ KAVUŞTUK WIDGET TASARIMI --- */
+#reunion-note-widget-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.reunion-card-widget {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(20, 15, 30, 0.75);
+    border: 1px solid rgba(123, 44, 191, 0.5);
+    padding: 14px 26px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(123, 44, 191, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+}
+
+.reunion-card-widget:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(123, 44, 191, 0.4);
+    border-color: rgba(196, 160, 255, 0.8);
+    background: rgba(30, 20, 45, 0.85);
+}
+
+.reunion-card-widget .envelope-icon {
+    font-size: 26px;
+    animation: floatEnvelope 2.5s infinite ease-in-out;
+}
+
+.widget-text-wrap {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.widget-title {
+    font-family: 'Playfair Display', serif, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.widget-sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 2px;
+}
+
+/* OKUNMADI BİLDİRİM İŞARETİ (PULSE BILDIRIM ISIGI) */
+.pulse-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background-color: #c4a0ff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #7b2cbf;
+    animation: pulseGlow 1.6s infinite;
+}
+
+/* Okunduysa rozeti gizlemek için class */
+.pulse-badge.read {
+    display: none !important;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(196, 160, 255, 0.8); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 12px rgba(196, 160, 255, 0); }
+    100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(196, 160, 255, 0); }
+}
+
+@keyframes floatEnvelope {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* Tıklanabilir Kalpler ve K Harfi Efekti */
+.interactive-heart {
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.3s ease;
+    user-select: none;
+}
+
+.interactive-heart:hover {
+    transform: scale(1.3);
+}
+
+.interactive-heart.popped {
+    animation: popDisappear 0.3s forwards;
+}
+
+@keyframes popDisappear {
+    0% { transform: scale(1.3); opacity: 1; }
+    50% { transform: scale(1.6); opacity: 0.8; }
+    100% { transform: scale(0); opacity: 0; display: none; }
+}
+
+/* Patlama Sonrası Beliren K Harfi Animasyonu */
+.popped-k-letter {
+    position: fixed;
+    font-family: 'Playfair Display', serif, sans-serif;
+    font-weight: bold;
+    font-size: 22px;
+    color: #c4a0ff;
+    text-shadow: 0 0 10px #7b2cbf, 0 0 20px #ffffff;
+    pointer-events: none;
+    z-index: 9999;
+    animation: kFloatUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes kFloatUp {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+    30% { opacity: 1; transform: translate(-50%, -15px) scale(1.4); }
+    100% { opacity: 0; transform: translate(-50%, -45px) scale(1); }
+}
