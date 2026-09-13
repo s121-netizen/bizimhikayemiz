@@ -2577,6 +2577,18 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
     transform: scale(1.3);
 }
 
+.interactive-heart.heartbeat {
+    animation: heartBeatPulse 1.15s ease-in-out infinite;
+}
+
+@keyframes heartBeatPulse {
+    0%, 100% { transform: scale(1); }
+    20%      { transform: scale(1.18); }
+    35%      { transform: scale(0.95); }
+    50%      { transform: scale(1.12); }
+    70%      { transform: scale(1); }
+}
+
 .interactive-heart.popped {
     animation: popDisappear 0.3s forwards;
 }
