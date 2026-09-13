@@ -163,7 +163,7 @@ function applyReunionTheme(){
     const container = document.getElementById("reunion-container");
     if(container) container.classList.add("kavustuk");
     const h1 = document.getElementById("main-h1");
-    if(h1) h1.innerHTML = "kavuştuk 🩶💜<br>artık aynı şehirdeyiz";
+    if(h1) h1.innerHTML = "kavuştuk 🩶💜<br>artık aynı sesteyiz";
     const sub = document.getElementById("main-subtitle");
     if(sub) sub.textContent = "beklemek bitti, şimdi biz varız.";
     // kalp yağmurunu hızlandır (eski interval'ı durdurup tekini çalıştırır)
