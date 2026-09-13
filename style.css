@@ -276,6 +276,21 @@ h1 {
         }
         body.reunion-mode #kavustuk-banner { display: block; }
 
+        /* --- KAVUŞMA ANI EKRAN PARLAMASI --- */
+        body.kavustuk-flash::after {
+            content: "";
+            position: fixed; inset: 0;
+            background: radial-gradient(circle, rgba(255,214,102,0.55), rgba(255,77,109,0.28) 40%, transparent 72%);
+            z-index: 99997;
+            pointer-events: none;
+            animation: kavustukFlash 1.5s ease-out forwards;
+        }
+        @keyframes kavustukFlash {
+            0%   { opacity: 0; }
+            12%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
         #reunion-note-widget {
             display: none;
             width: fit-content;
@@ -880,7 +895,10 @@ body.modal-open #mini-game-btn {
     max-height:min(84vh, 780px);
     padding:28px 20px 22px;
     border-radius:20px;
-    background: rgba(15,15,18,0.94);
+    background: linear-gradient(rgba(15,10,20,0.55), rgba(15,10,20,0.55)), var(--tema-img, url('temalar/1.png'));
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border:1px solid rgba(255,255,255,0.14);
     text-align:left;
     overflow:auto;
@@ -2461,6 +2479,41 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
 .reunion-card-widget .envelope-icon {
     font-size: 26px;
     animation: floatEnvelope 2.5s infinite ease-in-out;
+}
+
+/* KİLİTLİ NOT DURUMU (kavuşma saatine kadar) */
+.reunion-card-widget .lock-icon {
+    display: none;
+    font-size: 24px;
+    filter: drop-shadow(0 0 6px rgba(196, 160, 255, 0.5));
+}
+.reunion-card-widget.locked {
+    cursor: not-allowed;
+    opacity: 0.88;
+    filter: grayscale(0.25);
+}
+.reunion-card-widget.locked:hover {
+    transform: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(123, 44, 191, 0.2);
+    border-color: rgba(123, 44, 191, 0.5);
+    background: rgba(20, 15, 30, 0.75);
+}
+.reunion-card-widget.locked .envelope-icon,
+.reunion-card-widget.locked .pulse-badge {
+    display: none;
+}
+.reunion-card-widget.locked .lock-icon {
+    display: block;
+}
+.reunion-card-widget.shake {
+    animation: reunionShake 0.4s ease;
+}
+@keyframes reunionShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
 }
 
 .widget-text-wrap {
