@@ -170,6 +170,8 @@ function applyReunionTheme(){
     if(typeof setHeartRainRate === "function"){
         setHeartRainRate(250);
     }
+    // aynı anda kavuşma notunu da aç
+    setTimeout(()=>{ showReunionNotePage(1); openReunionNote(); }, 1200);
 }
 
 function updateReunionCountdown(){
@@ -232,6 +234,28 @@ function closeBdayCard(){
     const m = document.getElementById("bday-card-modal");
     if(m){ m.classList.remove("show"); m.setAttribute("aria-hidden","true"); }
 }
+
+// --- KAVUŞMA NOTU MODALI ---
+let __reunionNotePage = 1;
+function openReunionNote(){
+    const m = document.getElementById("reunion-note-modal");
+    if(m){ m.classList.add("show"); m.setAttribute("aria-hidden","false"); }
+}
+function closeReunionNote(){
+    const m = document.getElementById("reunion-note-modal");
+    if(m){ m.classList.remove("show"); m.setAttribute("aria-hidden","true"); }
+}
+function showReunionNotePage(n){
+    __reunionNotePage = n;
+    document.querySelectorAll("#reunion-note-modal .rn-page").forEach(p=>{
+        p.classList.toggle("active", Number(p.dataset.page) === n);
+    });
+    document.querySelectorAll("#reunion-note-modal .rn-dots span").forEach(d=>{
+        d.classList.toggle("active", Number(d.dataset.dot) === n);
+    });
+}
+function reunionNoteNext(){ if(__reunionNotePage < 2) showReunionNotePage(__reunionNotePage + 1); }
+function reunionNotePrev(){ if(__reunionNotePage > 1) showReunionNotePage(__reunionNotePage - 1); }
 
 
 // --- 1. CİHAZ YETKİ KONTROLÜ (URL'den ?anahtar=aktif gelirse) ---
