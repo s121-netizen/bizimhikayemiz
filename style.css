@@ -846,6 +846,79 @@ body.modal-open #mini-game-btn {
     cursor:pointer;
 }
 
+/* --- KAVUŞMA NOTU MODALI --- */
+#reunion-note-modal{
+    position:fixed; inset:0;
+    display:none;
+    align-items:center; justify-content:center;
+    z-index:99999;
+    padding:16px;
+}
+#reunion-note-modal.show{ display:flex; }
+#reunion-note-modal .backdrop{
+    position:absolute; inset:0;
+    background:rgba(0,0,0,0.78);
+}
+#reunion-note-modal .rn-card{
+    position:relative;
+    width:min(620px, calc(100vw - 26px));
+    max-height:min(84vh, 780px);
+    padding:28px 20px 22px;
+    border-radius:20px;
+    background:
+        linear-gradient(rgba(10,10,10,0.82), rgba(10,10,10,0.88)),
+        url('temalar/1.png');
+    background-size:cover;
+    background-position:center center;
+    border:1px solid rgba(255,255,255,0.14);
+    backdrop-filter: blur(4px);
+    text-align:left;
+    overflow:auto;
+    color:#f5f5f5;
+}
+#reunion-note-modal .rn-card h3{
+    font-family:'Playfair Display', serif;
+    text-align:center;
+    font-size:22px;
+    margin:0 0 20px 0;
+    background: linear-gradient(90deg, #b0b0b0, #7b2cbf, #b0b0b0);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+#reunion-note-modal .rn-card p{
+    margin:0 0 16px 0;
+    line-height:1.85;
+    font-size:15px;
+    opacity:0.95;
+}
+#reunion-note-modal .rn-page{ display:none; }
+#reunion-note-modal .rn-page.active{ display:block; }
+#reunion-note-modal .close{
+    position:absolute; top:12px; right:12px;
+    width:38px; height:38px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.14);
+    background:rgba(255,255,255,0.08);
+    color:#fff; font-size:20px; cursor:pointer;
+}
+#reunion-note-modal .rn-nav{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:20px;
+}
+#reunion-note-modal .rn-nav button{
+    background: rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.18);
+    color:#fff; padding:8px 16px; border-radius:10px;
+    cursor:pointer; font-family:'Inter', sans-serif; font-size:13px;
+}
+#reunion-note-modal .rn-dots{ display:flex; gap:6px; }
+#reunion-note-modal .rn-dots span{
+    width:7px; height:7px; border-radius:50%;
+    background:rgba(255,255,255,0.3);
+}
+#reunion-note-modal .rn-dots span.active{ background:#c4a0ff; }
+
 .gallery-filters {
     display: flex;
     gap: 10px;
