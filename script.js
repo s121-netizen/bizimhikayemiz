@@ -170,11 +170,119 @@ function applyReunionTheme(){
     if(typeof setHeartRainRate === "function"){
         setHeartRainRate(250);
     }
+
+    // --- BÜYÜK KUTLAMA: HAVAİ FİŞEK + KONFETİ + EKRAN PARLAMASI ---
+    if(typeof startFireworks === "function") startFireworks(8000);
+    if(typeof startConfetti === "function"){
+        startConfetti();
+        setTimeout(startConfetti, 700);
+        setTimeout(startConfetti, 1500);
+        setTimeout(startConfetti, 2600);
+    }
+    document.body.classList.add("kavustuk-flash");
+    setTimeout(()=> document.body.classList.remove("kavustuk-flash"), 1500);
+
     // aynı anda kavuşma notunu da aç
     setTimeout(()=>{ showReunionNotePage(1); openReunionNote(); }, 1200);
 }
 
+// --- KAVUŞMA ANI HAVAİ FİŞEK GÖSTERİSİ ---
+function startFireworks(durationMs){
+    durationMs = durationMs || 8000;
+    const old = document.getElementById('fireworks-canvas');
+    if(old) old.remove();
+
+    const canvas = document.createElement('canvas');
+    canvas.id = 'fireworks-canvas';
+    canvas.style.position = 'fixed';
+    canvas.style.inset = '0';
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+    canvas.style.zIndex = '99998';
+    canvas.style.pointerEvents = 'none';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    function resize(){
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const colors = ['#ff4d6d', '#c4a0ff', '#7b2cbf', '#ffd166', '#ffffff', '#ff8fa3'];
+    let particles = [];
+
+    function spawnBurst(x, y){
+        const count = 55 + Math.floor(Math.random() * 30);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        for(let i = 0; i < count; i++){
+            const angle = (Math.PI * 2) * (i / count);
+            const speed = 2 + Math.random() * 4.2;
+            particles.push({
+                x, y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                alpha: 1,
+                color,
+                size: 1.6 + Math.random() * 2.2
+            });
+        }
+    }
+
+    let running = true;
+    function loop(){
+        if(!running) return;
+        ctx.fillStyle = 'rgba(10,0,15,0.18)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p=>{
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.045;
+            p.alpha -= 0.012;
+        });
+        particles = particles.filter(p => p.alpha > 0);
+        particles.forEach(p=>{
+            ctx.globalAlpha = Math.max(p.alpha, 0);
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(loop);
+    }
+    loop();
+
+    // hemen art arda birkaç patlama
+    for(let i = 0; i < 4; i++){
+        setTimeout(()=>{
+            spawnBurst(
+                Math.random() * canvas.width * 0.8 + canvas.width * 0.1,
+                Math.random() * canvas.height * 0.4 + canvas.height * 0.08
+            );
+        }, i * 150);
+    }
+
+    const burstInterval = setInterval(()=>{
+        spawnBurst(
+            Math.random() * canvas.width * 0.8 + canvas.width * 0.1,
+            Math.random() * canvas.height * 0.45 + canvas.height * 0.08
+        );
+    }, 420);
+
+    setTimeout(()=>{
+        clearInterval(burstInterval);
+        setTimeout(()=>{
+            running = false;
+            canvas.remove();
+            window.removeEventListener('resize', resize);
+        }, 1800);
+    }, durationMs);
+}
+
 function updateReunionCountdown(){
+    updateReunionLockState();
     const el = document.getElementById("reunion-timer");
     const sub = document.getElementById("reunion-sub");
     if(!el) return;
@@ -198,6 +306,14 @@ function updateReunionCountdown(){
         '<span class="ru-num">' + String(saat).padStart(2,"0") + '</span> saat ' +
         '<span class="ru-num">' + String(dk).padStart(2,"0") + '</span> dakika ' +
         '<span class="ru-num">' + String(sn).padStart(2,"0") + '</span> saniye';
+}
+
+// --- SANA ÖZEL NOT: KAVUŞMA SAATİNE KADAR KİLİTLİ ---
+function updateReunionLockState(){
+    const btn = document.getElementById("reunion-card-btn");
+    if(!btn) return;
+    const locked = Date.now() < REUNION_DATE.getTime();
+    btn.classList.toggle("locked", locked);
 }
 
 function showBirthday(){
@@ -3067,6 +3183,17 @@ window.kaydetKitapNot = function(){
 
 // Kavuştuk Notu Tıklama ve Okundu Durumu Yönetimi
 function handleReunionClick() {
+    // Kavuşma saatine kadar not kilitli, tıklansa da açılmaz
+    if (Date.now() < REUNION_DATE.getTime()) {
+        const btn = document.getElementById('reunion-card-btn');
+        if (btn) {
+            btn.classList.remove('shake');
+            void btn.offsetWidth;
+            btn.classList.add('shake');
+        }
+        return;
+    }
+
     // 1. Notu aç (Sadece tıklayınca çalışır)
     if (typeof showReunionNotePage === "function") showReunionNotePage(1);
     if (typeof openReunionNote === "function") openReunionNote();
