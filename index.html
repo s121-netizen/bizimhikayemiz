@@ -49,29 +49,6 @@
     <h1 id="main-h1">aynı şehirde olmasak da<br>aynı hislerdeyiz</h1>
     <div class="subtitle" id="main-subtitle">bir mesafeye değil, bir hisse aitiz.</div>
 
-<!-- <!-- GÜNCELLENMİŞ KAVUŞTUK WIDGET YAPISI -->
-<div id="reunion-note-widget-container">
-    <div id="kavustuk-banner">KAVUŞTUK 🩶💜❤️</div>
-    
-    <div class="reunion-card-widget locked" id="reunion-card-btn" onclick="handleReunionClick()">
-        <div class="lock-icon" id="reunion-lock-icon">🔒</div>
-        <div class="envelope-icon">
-            <span class="interactive-heart" onclick="popHeart(event, 'K')">💜</span><span class="interactive-heart" onclick="popHeart(event, 'K')">🩶</span>
-        </div>
-        <div class="widget-text-wrap">
-            <span class="widget-title" onclick="popHeart(event, 'K')">Sana Özel Bir Not Var</span>
-            <span class="widget-sub">aynı sesteyiz <span class="interactive-heart" onclick="event.stopPropagation(); popHeart(event, 'K')">💜</span><span class="interactive-heart" onclick="event.stopPropagation(); popHeart(event, 'K')">🩶</span></span>
-        </div>
-        <div class="pulse-badge" id="reunion-badge"></div>
-    </div>
-</div>
-
-    <div id="reunion-container">
-        <span class="counter-label">Kavuşmamıza Kalan</span>
-        <div id="reunion-timer">Hesaplanıyor...</div>
-        <div id="reunion-sub">az kaldı sevgilim 🩶💜</div>
-    </div>
-
     <div id="counter-container">
     <div id="counter-container" onclick="toggleTimerFormat()" style="cursor: pointer;"></div>
     <span class="counter-label">Her Saniye Senleyim</span>
@@ -105,7 +82,7 @@
     <div class="card card-three"><p>mesafeler kalbi güçlendirir.</p></div>
 
     <!-- ===== 90 GÜNLÜK KİTAP ===== -->
-    <div style="margin: 40px 0 20px 0; text-align:center;">
+    <div style="margin: 40px 0 20px 0; text-align:center; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px;">
         <button id="gunluk-open-btn" onclick="openGunluk()" style="
             background: rgba(123,44,191,0.18);
             border: 1px solid rgba(123,44,191,0.4);
@@ -120,6 +97,21 @@
             transition: all 0.3s ease;
             letter-spacing: 0.5px;
         ">📖 günlükler</button>
+
+        <!-- GÜNCELLENMİŞ KAVUŞTUK WIDGET YAPISI -->
+        <div id="reunion-note-widget-container" style="margin:0;">
+            <div class="reunion-card-widget" id="reunion-card-btn" onclick="handleReunionClick()">
+                <div class="envelope-icon">
+                    <span class="interactive-heart" onclick="popHeart(event, 'K')">💜</span><span class="interactive-heart" onclick="popHeart(event, 'K')">🩶</span>
+                </div>
+                <div class="widget-text-wrap">
+                    <span class="widget-title" onclick="popHeart(event, 'K')">Sana Özel Bir Not Var</span>
+                    <span class="widget-sub">aynı sesteyiz <span class="interactive-heart" onclick="event.stopPropagation(); popHeart(event, 'K')">💜</span><span class="interactive-heart" onclick="event.stopPropagation(); popHeart(event, 'K')">🩶</span></span>
+                </div>
+                <div class="pulse-badge" id="reunion-badge"></div>
+            </div>
+        </div>
+
         <button id="todo-open-btn" onclick="openTodoModu()" style="
             background: rgba(176,176,176,0.14);
             border: 1px solid rgba(176,176,176,0.4);
@@ -133,7 +125,6 @@
             box-shadow: 0 0 24px rgba(176,176,176,0.15);
             transition: all 0.3s ease;
             letter-spacing: 0.5px;
-            margin-left: 10px;
         ">🎒 okul dönüşü yapılacaklar</button>
     </div>
 
