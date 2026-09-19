@@ -208,89 +208,6 @@ h1 {
         .counter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-bottom: 8px; display: block; }
         #live-timer { font-family: 'Playfair Display', serif; font-size: 22px; color: #fff; font-weight: 600; }
 
-        /* --- YURDA DÖNÜŞ / KAVUŞMA SAYACI --- */
-        #reunion-container {
-            font-family: 'Inter', sans-serif;
-            background: rgba(255, 77, 109, 0.08);
-            backdrop-filter: blur(8px);
-            padding: 22px 20px;
-            border-radius: 20px;
-            margin: 0 0 40px 0;
-            border: 1px solid rgba(255, 77, 109, 0.25);
-            box-shadow: 0 0 30px rgba(255, 77, 109, 0.12);
-        }
-        #reunion-container .counter-label { color: #ff8fa3; }
-        #reunion-timer {
-            font-family: 'Playfair Display', serif;
-            font-size: 26px;
-            color: #fff;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        #reunion-timer .ru-num { display: inline-block; min-width: 1.6em; }
-        #reunion-sub {
-            margin-top: 8px;
-            font-size: 13px;
-            opacity: 0.85;
-        }
-        #reunion-container.kavustuk {
-            background: rgba(255, 77, 109, 0.18);
-            border-color: rgba(255, 77, 109, 0.5);
-            animation: loveGlow 1.8s infinite ease-in-out;
-        }
-        #reunion-timer.kavustuk-text {
-            font-size: 24px;
-            animation: loveGlow 1.5s infinite ease-in-out;
-        }
-
-        /* --- KAVUŞMA GÜNÜ TEMASI (14 Eylül) --- */
-        body.reunion-mode {
-            background: #180007;
-        }
-        body.reunion-mode #bg-photo {
-            background: linear-gradient(rgba(90,0,20,0.55), rgba(40,0,10,0.65)), url("https://i.imgur.com/PyNRVJW.jpeg");
-            background-size: cover; background-position: center center;
-        }
-        body.reunion-mode h1 {
-            background: linear-gradient(90deg, #ff4d6d, #ff8fa3, #ff4d6d);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        body.reunion-mode .card,
-        body.reunion-mode .notes-container,
-        body.reunion-mode #counter-container,
-        body.reunion-mode #reunion-container {
-            border-color: rgba(255, 77, 109, 0.4) !important;
-            box-shadow: 0 0 30px rgba(255, 77, 109, 0.2) !important;
-        }
-        #kavustuk-banner {
-            display: none;
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            color: #ff8fa3;
-            text-align: center;
-            margin-bottom: 18px;
-            letter-spacing: 0.5px;
-            animation: loveGlow 1.6s infinite ease-in-out;
-        }
-        body.reunion-mode #kavustuk-banner { display: block; }
-
-        /* --- KAVUŞMA ANI EKRAN PARLAMASI --- */
-        body.kavustuk-flash::after {
-            content: "";
-            position: fixed; inset: 0;
-            background: radial-gradient(circle, rgba(255,214,102,0.55), rgba(255,77,109,0.28) 40%, transparent 72%);
-            z-index: 99997;
-            pointer-events: none;
-            animation: kavustukFlash 1.5s ease-out forwards;
-        }
-        @keyframes kavustukFlash {
-            0%   { opacity: 0; }
-            12%  { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
         #reunion-note-widget {
             display: none;
             width: fit-content;
@@ -2479,41 +2396,6 @@ body.theme-grey    { --polaroid-bg: #e9e9e9; --polaroid-text: #333333; }
 .reunion-card-widget .envelope-icon {
     font-size: 26px;
     animation: floatEnvelope 2.5s infinite ease-in-out;
-}
-
-/* KİLİTLİ NOT DURUMU (kavuşma saatine kadar) */
-.reunion-card-widget .lock-icon {
-    display: none;
-    font-size: 24px;
-    filter: drop-shadow(0 0 6px rgba(196, 160, 255, 0.5));
-}
-.reunion-card-widget.locked {
-    cursor: not-allowed;
-    opacity: 0.88;
-    filter: grayscale(0.25);
-}
-.reunion-card-widget.locked:hover {
-    transform: none;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(123, 44, 191, 0.2);
-    border-color: rgba(123, 44, 191, 0.5);
-    background: rgba(20, 15, 30, 0.75);
-}
-.reunion-card-widget.locked .envelope-icon,
-.reunion-card-widget.locked .pulse-badge {
-    display: none;
-}
-.reunion-card-widget.locked .lock-icon {
-    display: block;
-}
-.reunion-card-widget.shake {
-    animation: reunionShake 0.4s ease;
-}
-@keyframes reunionShake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(6px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
 }
 
 .widget-text-wrap {
