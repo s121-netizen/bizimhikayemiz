@@ -172,8 +172,8 @@ select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),
     <h1>Hoş geldin!</h1>
     <p class="sub">Kimsin bakalım?</p>
     <div class="pick">
-      <button data-user="skawrax"><span class="em">🦊</span>Skawrax</button>
-      <button data-user="skawraxia"><span class="em">🦋</span>Skawraxia</button>
+      <button data-user="skawrax"><span class="em">🐻</span>Skawrax</button>
+      <button data-user="skawraxia"><span class="em">🦎</span>Skawraxia</button>
     </div>
     <button class="link" id="adminLink">Yönetici girişi</button>
   </div>
@@ -257,7 +257,7 @@ const FIREBASE_CONFIG = {
 const SITE_PASSWORD = "28112025";      // ilk giriş şifresi
 const ADMIN_PIN     = "ADMIN1234";     // ⚠️ yönetici şifresi — mutlaka değiştir!
 const WHATSAPP_NO   = "905368315009";  // 0536 831 50 09
-const USERS = { skawrax:{name:"Skawrax",emoji:"🦊"}, skawraxia:{name:"Skawraxia",emoji:"🦋"} };
+const USERS = { skawrax:{name:"Skawrax",emoji:"🐻"}, skawraxia:{name:"Skawraxia",emoji:"🦎"} };
 
 const DEFAULT_PRODUCTS = [
   {name:"Kahve Buluşması", emoji:"☕", price:100, desc:"Birlikte güzel bir kahve molası"},
@@ -307,12 +307,18 @@ if (useFirebase) {
       return nv;
     },
     async spend(u, total, items){
+      // Realtime Database ilk denemede yerel değeri null verebilir; null'da iptal ETMEYİZ,
+      // sunucu gerçek değerle updater'ı tekrar çalıştırır.
+      let deducted = false;
       const r = await R.runTransaction(R.ref(rt,"users/"+u+"/points"), cur=>{
+        deducted = false;
+        if (cur === null) return null;   // gerçek değeri bekle
         const c = Number(cur)||0;
-        if (c < total) return;          // iptal et
+        if (c < total) return;           // gerçekten yetersiz: iptal et
+        deducted = true;
         return c - total;
       });
-      if (!r.committed) throw new Error("Yetersiz puan");
+      if (!r.committed || !deducted) throw new Error("Yetersiz puan");
       const left = Number(r.snapshot.val())||0;
       await R.push(R.ref(rt,"orders"),{user:u,items,total,ts:Date.now()});
       await R.push(R.ref(rt,"logs"),{user:u,amount:-total,note:"Satın alma: "+items.map(i=>i.name+" x"+i.qty).join(", "),ts:Date.now()});
@@ -584,8 +590,8 @@ async function renderAdminPoints(){
   catch(e){ toast("Puanlar okunamadı: "+e.message); }
   $("view").innerHTML = `
     <div class="grid" style="margin-bottom:18px">
-      <div class="card"><div class="emo">🦊</div><h3>Skawrax</h3><div class="price">⭐ ${a}</div></div>
-      <div class="card"><div class="emo">🦋</div><h3>Skawraxia</h3><div class="price">⭐ ${b}</div></div>
+      <div class="card"><div class="emo">🐻</div><h3>Skawrax</h3><div class="price">⭐ ${a}</div></div>
+      <div class="card"><div class="emo">🦎</div><h3>Skawraxia</h3><div class="price">⭐ ${b}</div></div>
     </div>
     <div class="panel"><h3>💰 Puan yükle / düş</h3>
       <div class="row">
