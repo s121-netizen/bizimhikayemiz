@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tişört Mağazası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f0f14; --bg2:#16161d; --card:#1b1b24; --card2:#22222d;
+    --ink:#f2f2f7; --muted:#9a9ab0; --line:#2c2c3a;
+    --purple:#8b5cf6; --purple2:#a78bfa; --purple-d:#6d3fe0;
+    --glow:rgba(139,92,246,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);
+    background-image:radial-gradient(900px 400px at 85% -5%,rgba(139,92,246,.18),transparent 60%),
+                     radial-gradient(700px 400px at 0% 10%,rgba(100,100,140,.15),transparent 60%);
+    background-repeat:no-repeat;min-height:100vh}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;
+    padding:16px 6vw;background:rgba(15,15,20,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line)}
+  .logo{font-weight:800;font-size:20px;letter-spacing:-.6px;display:flex;align-items:center;gap:10px}
+  .logo i{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--purple),var(--purple-d));
+    display:grid;place-items:center;font-style:normal;font-size:15px;box-shadow:0 4px 14px var(--glow)}
+  .logo span{color:var(--purple2)}
+  nav{display:flex;gap:28px;font-size:14px;color:var(--muted);font-weight:500}
+  nav a{color:inherit;text-decoration:none;transition:.2s}
+  nav a:hover{color:var(--ink)}
+  .cart-btn{display:flex;align-items:center;gap:10px;background:var(--card2);color:var(--ink);border:1px solid var(--line);
+    border-radius:12px;padding:9px 16px;font:600 14px inherit;font-family:inherit;cursor:pointer;transition:.2s}
+  .cart-btn:hover{border-color:var(--purple);box-shadow:0 0 0 4px rgba(139,92,246,.12)}
+  .cart-btn b{background:var(--purple);color:#fff;border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:12px;padding:0 6px}
+
+  /* Hero */
+  .hero{max-width:1200px;margin:auto;padding:76px 6vw 36px;text-align:center}
+  .pill{display:inline-block;font-size:12px;font-weight:600;color:var(--purple2);background:rgba(139,92,246,.12);
+    border:1px solid rgba(139,92,246,.3);padding:6px 14px;border-radius:999px;margin-bottom:22px;letter-spacing:.3px}
+  .hero h1{font-size:clamp(34px,6vw,62px);font-weight:800;letter-spacing:-2px;line-height:1.05}
+  .hero h1 em{font-style:normal;background:linear-gradient(120deg,var(--purple2),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);margin:18px auto 0;max-width:480px;line-height:1.6}
+
+  /* Grid */
+  .section-head{max-width:1200px;margin:30px auto 0;padding:0 6vw;display:flex;justify-content:space-between;align-items:end}
+  .section-head h2{font-size:22px;letter-spacing:-.5px}
+  .section-head span{color:var(--muted);font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px;padding:22px 6vw 90px;max-width:1200px;margin:auto}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;
+    transition:transform .25s,border-color .25s,box-shadow .25s}
+  .card:hover{transform:translateY(-6px);border-color:rgba(139,92,246,.5);box-shadow:0 18px 40px rgba(0,0,0,.45),0 0 0 1px rgba(139,92,246,.15)}
+  .img{position:relative;aspect-ratio:1/1;background:var(--bg2);overflow:hidden}
+  .img img,.img svg{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+  .card:hover .img img,.card:hover .img svg{transform:scale(1.06)}
+  .tag{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;letter-spacing:.4px;color:#fff;
+    background:rgba(139,92,246,.9);padding:5px 10px;border-radius:8px}
+  .info{padding:18px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .title{font-size:16px;font-weight:600;letter-spacing:-.2px}
+  .price{font-size:18px;font-weight:800;color:var(--purple2);white-space:nowrap}
+  .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+  .sizes{display:flex;gap:6px;flex-wrap:wrap}
+  .size{border:1px solid var(--line);background:var(--card2);color:var(--muted);border-radius:9px;min-width:40px;padding:8px 10px;
+    font:600 12px inherit;font-family:inherit;cursor:pointer;transition:.15s}
+  .size:hover{border-color:var(--purple2);color:var(--ink)}
+  .size.active{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 4px 14px var(--glow)}
+  .add{margin-top:auto;background:linear-gradient(135deg,var(--purple),var(--purple-d));color:#fff;border:0;border-radius:12px;
+    padding:13px;font:600 14px inherit;font-family:inherit;cursor:pointer;transition:.2s;box-shadow:0 6px 18px var(--glow)}
+  .add:hover{filter:brightness(1.12);transform:translateY(-1px)}
+  .add:active{transform:scale(.98)}
+
+  /* Sepet */
+  .overlay{position:fixed;inset:0;background:rgba(5,5,10,.65);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:.3s;z-index:20}
+  .overlay.open{opacity:1;pointer-events:auto}
+  aside{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--bg2);border-left:1px solid var(--line);
+    transform:translateX(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);z-index:30;display:flex;flex-direction:column}
+  aside.open{transform:none}
+  aside h2{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:18px;letter-spacing:-.3px}
+  aside h2 button{background:var(--card2);color:var(--muted);border:1px solid var(--line);width:34px;height:34px;border-radius:10px;font-size:18px;cursor:pointer}
+  aside h2 button:hover{color:var(--ink)}
+  #items{flex:1;overflow:auto;padding:10px 22px}
+  .item{display:flex;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+  .item .mini{width:62px;height:62px;border-radius:12px;overflow:hidden;background:var(--card);flex-shrink:0}
+  .item .mini img,.item .mini svg{width:100%;height:100%;object-fit:cover;display:block}
+  .item .d{flex:1;font-size:14px;font-weight:600}
+  .item .d small{display:block;color:var(--muted);font-weight:400;margin-top:4px}
+  .qty{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;font-size:14px;font-weight:600}
+  .qty button{width:26px;height:26px;border-radius:7px;border:0;background:var(--card2);color:var(--ink);cursor:pointer}
+  .qty button:hover{background:var(--purple)}
+  .foot{padding:20px 22px;border-top:1px solid var(--line);background:var(--card)}
+  .total{display:flex;justify-content:space-between;font-size:17px;font-weight:700;margin-bottom:14px}
+  .total span:last-child{color:var(--purple2);font-size:20px;font-weight:800}
+  .order{width:100%;background:linear-gradient(135deg,var(--purple),var(--purple-d));color:#fff;border:0;border-radius:12px;padding:15px;
+    font:700 15px inherit;font-family:inherit;cursor:pointer;box-shadow:0 8px 22px var(--glow);transition:.2s}
+  .order:hover{filter:brightness(1.12)}
+  .empty{text-align:center;color:var(--muted);margin-top:60px;font-size:14px}
+
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--card2);color:var(--ink);
+    border:1px solid rgba(139,92,246,.5);padding:13px 22px;border-radius:14px;font-size:14px;font-weight:500;transition:.35s;z-index:40;
+    box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .toast.show{transform:translateX(-50%)}
+
+  footer{border-top:1px solid var(--line);text-align:center;padding:30px;color:var(--muted);font-size:13px}
+
+  @media(max-width:640px){ nav{display:none} .hero{padding-top:50px} .grid{gap:16px} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><i>👕</i>tişört<span>.shop</span></div>
+  <nav><a href="#urunler">Ürünler</a><a href="#urunler">Yeni Gelenler</a><a href="#urunler">Koleksiyon</a></nav>
+  <button class="cart-btn" id="openCart">Sepet <b id="count">0</b></button>
+</header>
+
+<section class="hero">
+  <div class="pill">YENİ SEZON 2026</div>
+  <h1>Tarzını yansıtan <em>tişörtler</em></h1>
+  <p>Premium pamuk, rahat kalıp. Bedenini seç, sepete ekle, WhatsApp'tan kolayca sipariş ver.</p>
+</section>
+
+<div class="section-head" id="urunler">
+  <h2>Tüm Ürünler</h2><span id="pcount"></span>
+</div>
+<main class="grid" id="grid"></main>
+
+<footer>© 2026 tişört.shop · Tüm hakları saklıdır</footer>
+
+<div class="overlay" id="overlay"></div>
+<aside id="cart">
+  <h2>Sepetim <button id="closeCart">×</button></h2>
+  <div id="items"></div>
+  <div class="foot">
+    <div class="total"><span>Toplam</span><span id="total">0 ₺</span></div>
+    <button class="order" id="order">WhatsApp ile Sipariş Ver</button>
+  </div>
+</aside>
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== AYARLAR ======
+const WHATSAPP = "905551112233"; // kendi numaranı yaz (başında + olmadan, 90 ile)
+const SIZES = ["XS","S","M","L","XL","XXL"];
+
+// ====== ÜRÜNLER ======
+// img: kendi görsel linkini yaz. Boş bırakırsan renkli tişört çizimi gösterilir.
+// tag: kartın köşesindeki etiket (boş bırakılabilir)
+const PRODUCTS = [
+  { id:1, title:"Basic Beyaz Tişört",   price:299, color:"#e9e9f0", tag:"Çok Satan", img:"" },
+  { id:2, title:"Siyah Oversize",       price:399, color:"#2a2a33", tag:"Yeni",      img:"" },
+  { id:3, title:"Mor Gradient Baskılı", price:449, color:"#7c4dff", tag:"Yeni",      img:"" },
+  { id:4, title:"Gri Melanj Basic",     price:329, color:"#8e8e9c", tag:"",          img:"" },
+  { id:5, title:"Antrasit Polo Yaka",   price:479, color:"#45455a", tag:"",          img:"" },
+  { id:6, title:"Lila Yaz Koleksiyonu", price:349, color:"#b9a3f5", tag:"İndirim",   img:"" },
+];
+
+// ====== YARDIMCILAR ======
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString("tr-TR") + " ₺";
+const shirtSVG = (c,id) => `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#262633"/><stop offset="1" stop-color="#15151d"/></linearGradient>
+    <linearGradient id="sh${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="url(#bg${id})"/>
+  <ellipse cx="100" cy="182" rx="55" ry="6" fill="#000" opacity=".35"/>
+  <path d="M70 28 L38 44 L16 86 L45 99 L55 83 L55 174 L145 174 L145 83 L155 99 L184 86 L162 44 L130 28 Q100 54 70 28Z" fill="${c}"/>
+  <path d="M70 28 L38 44 L16 86 L45 99 L55 83 L55 174 L145 174 L145 83 L155 99 L184 86 L162 44 L130 28 Q100 54 70 28Z" fill="url(#sh${id})"/>
+  <path d="M70 28 Q100 54 130 28" fill="none" stroke="#000" stroke-opacity=".28" stroke-width="3"/>
+</svg>`;
+const visual = p => p.img ? `<img src="${p.img}" alt="${p.title}" loading="lazy">` : shirtSVG(p.color,p.id);
+
+let cart = [];
+try { cart = JSON.parse(localStorage.getItem("cart") || "[]"); } catch(e){}
+const save = () => { try { localStorage.setItem("cart", JSON.stringify(cart)); } catch(e){} };
+
+const selected = {}; // ürün id -> seçili beden
+
+// ====== ÜRÜN LİSTESİ ======
+function renderGrid(){
+  $("#pcount").textContent = PRODUCTS.length + " ürün";
+  $("#grid").innerHTML = PRODUCTS.map(p => `
+    <div class="card">
+      <div class="img">${visual(p)}${p.tag ? `<span class="tag">${p.tag}</span>` : ""}</div>
+      <div class="info">
+        <div class="row"><div class="title">${p.title}</div><div class="price">${fmt(p.price)}</div></div>
+        <div class="label">Beden</div>
+        <div class="sizes" data-id="${p.id}">
+          ${SIZES.map(s => `<button class="size ${selected[p.id]===s?'active':''}" data-size="${s}">${s}</button>`).join("")}
+        </div>
+        <button class="add" data-id="${p.id}">Sepete Ekle</button>
+      </div>
+    </div>`).join("");
+}
+
+$("#grid").addEventListener("click", e => {
+  const sizeBtn = e.target.closest(".size");
+  if (sizeBtn){
+    const id = +sizeBtn.parentElement.dataset.id;
+    selected[id] = sizeBtn.dataset.size;
+    sizeBtn.parentElement.querySelectorAll(".size").forEach(b => b.classList.toggle("active", b === sizeBtn));
+    return;
+  }
+  const add = e.target.closest(".add");
+  if (add){
+    const id = +add.dataset.id;
+    if (!selected[id]) return toast("Önce bir beden seç");
+    const found = cart.find(i => i.id === id && i.size === selected[id]);
+    found ? found.qty++ : cart.push({ id, size: selected[id], qty: 1 });
+    save(); renderCart(); toast("Sepete eklendi ✓");
+  }
+});
+
+// ====== SEPET ======
+function renderCart(){
+  const total = cart.reduce((t,i) => t + PRODUCTS.find(p => p.id===i.id).price * i.qty, 0);
+  $("#count").textContent = cart.reduce((t,i) => t + i.qty, 0);
+  $("#total").textContent = fmt(total);
+  $("#items").innerHTML = cart.length ? cart.map((i,idx) => {
+    const p = PRODUCTS.find(p => p.id===i.id);
+    return `<div class="item">
+      <div class="mini">${visual(p)}</div>
+      <div class="d">${p.title}<small>Beden: ${i.size} · ${fmt(p.price)}</small></div>
+      <div class="qty">
+        <button data-act="dec" data-i="${idx}">−</button>${i.qty}<button data-act="inc" data-i="${idx}">+</button>
+      </div></div>`;
+  }).join("") : `<p class="empty">Sepetin şu an boş</p>`;
+}
+
+$("#items").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  const i = +b.dataset.i;
+  if (b.dataset.act === "inc") cart[i].qty++;
+  if (b.dataset.act === "dec" && --cart[i].qty <= 0) cart.splice(i,1);
+  save(); renderCart();
+});
+
+const toggleCart = open => {
+  $("#cart").classList.toggle("open", open);
+  $("#overlay").classList.toggle("open", open);
+};
+$("#openCart").onclick = () => toggleCart(true);
+$("#closeCart").onclick = $("#overlay").onclick = () => toggleCart(false);
+
+$("#order").onclick = () => {
+  if (!cart.length) return toast("Sepet boş");
+  let msg = "Merhaba, sipariş vermek istiyorum:\n\n";
+  let total = 0;
+  cart.forEach(i => {
+    const p = PRODUCTS.find(p => p.id===i.id);
+    total += p.price * i.qty;
+    msg += `• ${p.title} - ${i.size} - ${i.qty} adet (${fmt(p.price * i.qty)})\n`;
+  });
+  msg += `\nToplam: ${fmt(total)}`;
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank");
+};
+
+function toast(t){
+  const el = $("#toast"); el.textContent = t; el.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1700);
+}
+
+renderGrid(); renderCart();
+</script>
+</body>
+</html>
