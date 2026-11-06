@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Puan Mağazası 💖</title>
+<style>
+:root{
+  --bg1:#fff1f5; --bg2:#efe9ff; --card:#ffffffcc; --ink:#2b2140; --muted:#7a6f92;
+  --pink:#ff5c8a; --purple:#7c5cff; --ok:#22b07d; --warn:#f5a524; --err:#e5484d;
+  --shadow:0 10px 30px rgba(124,92,255,.15); --r:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;color:var(--ink);
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));background-attachment:fixed;}
+button{font:inherit;cursor:pointer;border:0}
+input,select{font:inherit}
+.hidden{display:none!important}
+.grad{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff}
+
+/* floating hearts */
+.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.hearts span{position:absolute;bottom:-40px;font-size:20px;opacity:.25;animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-110vh) rotate(40deg);opacity:0}}
+
+.screen{position:relative;z-index:1;min-height:100vh;padding:24px 16px}
+
+/* LOGIN */
+#login{display:flex;align-items:center;justify-content:center}
+.box{background:var(--card);backdrop-filter:blur(10px);border-radius:28px;box-shadow:var(--shadow);
+  padding:36px 28px;width:100%;max-width:420px;text-align:center}
+.box h1{font-size:28px;margin-bottom:6px}
+.box p.sub{color:var(--muted);margin-bottom:24px}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:10px}
+.pick button{background:#fff;border:2px solid #eadfff;border-radius:18px;padding:22px 10px;font-weight:700;
+  font-size:17px;transition:.2s;color:var(--ink)}
+.pick button .em{display:block;font-size:34px;margin-bottom:8px}
+.pick button:hover{transform:translateY(-4px);border-color:var(--pink);box-shadow:var(--shadow)}
+.field{width:100%;padding:14px 16px;border-radius:14px;border:2px solid #eadfff;background:#fff;margin:10px 0;outline:0;text-align:center;font-size:18px;letter-spacing:3px}
+.field:focus{border-color:var(--purple)}
+.btn{padding:13px 22px;border-radius:14px;font-weight:700;transition:.15s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid #eadfff}
+.btn.full{width:100%}
+.link{background:none;color:var(--muted);text-decoration:underline;margin-top:16px;font-size:13px}
+.err{color:var(--err);font-size:14px;min-height:20px;margin-top:4px}
+
+/* TOP BAR */
+.top{max-width:1100px;margin:0 auto 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hello h2{font-size:22px}
+.hello small{color:var(--muted)}
+.right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.points{padding:10px 18px;border-radius:999px;font-weight:800;box-shadow:var(--shadow);font-size:18px}
+.iconbtn{background:#fff;border-radius:999px;padding:10px 16px;font-weight:700;box-shadow:var(--shadow);position:relative}
+.badge{position:absolute;top:-6px;right:-4px;background:var(--pink);color:#fff;border-radius:999px;min-width:22px;height:22px;
+  font-size:12px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+
+.wrap{max-width:1100px;margin:0 auto}
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.tab{padding:10px 18px;border-radius:999px;background:#ffffffaa;font-weight:700;color:var(--muted)}
+.tab.on{background:#fff;color:var(--purple);box-shadow:var(--shadow)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+.card{background:var(--card);backdrop-filter:blur(8px);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:8px;transition:.2s}
+.card:hover{transform:translateY(-4px)}
+.card .emo{font-size:46px;text-align:center}
+.card h3{font-size:17px;text-align:center}
+.card p{color:var(--muted);font-size:13px;text-align:center;flex:1}
+.price{text-align:center;font-weight:800;color:var(--pink);font-size:18px}
+.card .btn{padding:10px}
+.cant{opacity:.7}
+
+.panel{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.panel h3{margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row input,.row select{padding:11px 14px;border-radius:12px;border:2px solid #eadfff;background:#fff;outline:0;flex:1;min-width:120px}
+.list .item{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px dashed #e0d6f5;align-items:center}
+.list .item:last-child{border:0}
+.pos{color:var(--ok);font-weight:800}.neg{color:var(--err);font-weight:800}
+.muted{color:var(--muted);font-size:13px}
+.empty{text-align:center;color:var(--muted);padding:30px}
+
+/* CART DRAWER */
+.overlay{position:fixed;inset:0;background:#2b214066;z-index:20;opacity:0;pointer-events:none;transition:.25s}
+.overlay.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(400px,100%);background:#fff;z-index:30;transform:translateX(100%);
+  transition:.3s;display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,.15)}
+.drawer.show{transform:none}
+.drawer header{padding:20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0e8ff}
+.drawer .body{flex:1;overflow:auto;padding:12px 20px}
+.drawer footer{padding:20px;border-top:1px solid #f0e8ff}
+.ci{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed #eee}
+.ci .n{flex:1;font-weight:600}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:28px;height:28px;border-radius:8px;background:#f3edff;font-weight:800}
+.total{display:flex;justify-content:space-between;font-weight:800;font-size:18px;margin-bottom:6px}
+
+/* MODAL */
+.modal{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:#2b214099;padding:16px}
+.modal .box{max-width:400px}
+.big{font-size:60px;margin-bottom:8px}
+
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(100px);background:#2b2140;color:#fff;
+  padding:12px 22px;border-radius:999px;z-index:60;transition:.3s;font-weight:600;max-width:90%;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+.demo{position:fixed;top:0;left:0;right:0;background:var(--warn);color:#fff;font-size:12px;text-align:center;padding:4px;z-index:70}
+</style>
+</head>
+<body>
+
+<div class="hearts" id="hearts"></div>
+<div class="demo hidden" id="demoBar">⚠️ Demo modu: Firebase bağlı değil, veriler sadece bu tarayıcıda saklanıyor.</div>
+
+<!-- ================= LOGIN ================= -->
+<div id="login" class="screen">
+  <div class="box" id="stepName">
+    <div class="big">💖</div>
+    <h1>Hoş geldin!</h1>
+    <p class="sub">Kimsin bakalım?</p>
+    <div class="pick">
+      <button data-user="skawrax"><span class="em">🦊</span>Skawrax</button>
+      <button data-user="skawraxia"><span class="em">🦋</span>Skawraxia</button>
+    </div>
+    <button class="link" id="adminLink">Yönetici girişi</button>
+  </div>
+
+  <div class="box hidden" id="stepPass">
+    <div class="big">🔐</div>
+    <h1 id="passTitle">Merhaba</h1>
+    <p class="sub">İlk girişte şifreyi girmen gerekiyor.</p>
+    <input class="field" id="passInput" type="password" inputmode="numeric" placeholder="••••••••" autocomplete="off">
+    <div class="err" id="passErr"></div>
+    <button class="btn grad full" id="passBtn">Giriş yap</button>
+    <button class="link" id="passBack">← Geri dön</button>
+  </div>
+
+  <div class="box hidden" id="stepAdmin">
+    <div class="big">🛠️</div>
+    <h1>Yönetici</h1>
+    <p class="sub">Yönetici şifresini gir.</p>
+    <input class="field" id="adminInput" type="password" placeholder="••••" autocomplete="off">
+    <div class="err" id="adminErr"></div>
+    <button class="btn grad full" id="adminBtn">Giriş yap</button>
+    <button class="link" id="adminBack">← Geri dön</button>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="screen hidden">
+  <div class="top">
+    <div class="hello"><h2 id="helloName">Merhaba</h2><small>Sınav puanlarınla hediyeler al ✨</small></div>
+    <div class="right">
+      <div class="points grad" id="pointsBox">⭐ 0 puan</div>
+      <button class="iconbtn" id="cartBtn">🛒 Sepet<span class="badge hidden" id="cartBadge">0</span></button>
+      <button class="iconbtn" id="logoutBtn">Çıkış</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="tabs" id="tabs"></div>
+    <div id="view"></div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer">
+  <header><h3>🛒 Sepetim</h3><button class="iconbtn" id="closeCart">✕</button></header>
+  <div class="body" id="cartBody"></div>
+  <footer>
+    <div class="total"><span>Toplam</span><span id="cartTotal">0 puan</span></div>
+    <div class="muted" id="cartInfo" style="margin-bottom:12px"></div>
+    <button class="btn grad full" id="buyBtn">Satın Al</button>
+  </footer>
+</aside>
+
+<!-- SUCCESS MODAL -->
+<div class="modal hidden" id="okModal">
+  <div class="box">
+    <div class="big">🎉</div>
+    <h1>Satın alındı!</h1>
+    <p class="sub">Şimdi WhatsApp'tan bana yazman gerekiyor, mesaj hazır 💌</p>
+    <button class="btn full" style="background:#25D366;color:#fff" id="waBtn">WhatsApp'ta Yaz</button>
+    <button class="link" id="okClose">Kapat</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+/* =====================================================================
+   AYARLAR  — Firebase bilgileri entegre edildi
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCXq0iO2_b-ZKgQV-rty73CzsnfZcQZ5ag",
+  authDomain: "puan-8ef9b.firebaseapp.com",
+  projectId: "puan-8ef9b",
+  storageBucket: "puan-8ef9b.firebasestorage.app",
+  messagingSenderId: "412425350426",
+  appId: "1:412425350426:web:78978b04da1fc4e2bfd0a3",
+  measurementId: "G-G1B0W5K76Y"
+};
+const SITE_PASSWORD = "28112025";      // ilk giriş şifresi
+const ADMIN_PIN     = "ADMIN1234";     // ⚠️ yönetici şifresi — mutlaka değiştir!
+const WHATSAPP_NO   = "905368315009";  // 0536 831 50 09
+const USERS = { skawrax:{name:"Skawrax",emoji:"🦊"}, skawraxia:{name:"Skawraxia",emoji:"🦋"} };
+
+const DEFAULT_PRODUCTS = [
+  {name:"Kahve Buluşması", emoji:"☕", price:100, desc:"Birlikte güzel bir kahve molası"},
+  {name:"Çiçek Buketi",    emoji:"💐", price:150, desc:"Sana özel taptaze çiçekler"},
+  {name:"Tatlı Sürprizi",  emoji:"🍰", price:120, desc:"Favori tatlından bir porsiyon"},
+  {name:"Film Gecesi",     emoji:"🎬", price:200, desc:"Abur cuburlu, battaniyeli gece"},
+  {name:"Masaj Hakkı",     emoji:"💆", price:250, desc:"20 dakika rahatlatıcı masaj"},
+  {name:"Akşam Yemeği",    emoji:"🍝", price:350, desc:"İstediğin yerde romantik yemek"},
+  {name:"Hediye Paketi",   emoji:"🎁", price:500, desc:"Sürpriz hediye, içi gizli"},
+  {name:"Alışveriş Günü",  emoji:"🛍️", price:800, desc:"Bir gün boyunca alışveriş keyfi"},
+];
+
+/* =====================================================================
+   VERİ KATMANI  (Firebase varsa Firestore, yoksa localStorage demo)
+   ===================================================================== */
+const useFirebase = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId);
+let db;
+
+if (useFirebase) {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const F = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+  const app = initializeApp(FIREBASE_CONFIG);
+  const fs = F.getFirestore(app);
+
+  db = {
+    async getPoints(u){
+      const s = await F.getDoc(F.doc(fs,"users",u));
+      return s.exists() ? (s.data().points||0) : 0;
+    },
+    async addPoints(u, amount, note){
+      const ref = F.doc(fs,"users",u);
+      const total = await F.runTransaction(fs, async tx=>{
+        const s = await tx.get(ref);
+        const cur = s.exists() ? (s.data().points||0) : 0;
+        const nv = Math.max(0, cur + amount);
+        tx.set(ref,{points:nv},{merge:true});
+        return nv;
+      });
+      await F.addDoc(F.collection(fs,"logs"),{user:u,amount,note:note||"",ts:Date.now()});
+      return total;
+    },
+    async spend(u, total, items){
+      const ref = F.doc(fs,"users",u);
+      const left = await F.runTransaction(fs, async tx=>{
+        const s = await tx.get(ref);
+        const cur = s.exists() ? (s.data().points||0) : 0;
+        if (cur < total) throw new Error("Yetersiz puan");
+        tx.set(ref,{points:cur-total},{merge:true});
+        return cur-total;
+      });
+      await F.addDoc(F.collection(fs,"orders"),{user:u,items,total,ts:Date.now()});
+      await F.addDoc(F.collection(fs,"logs"),{user:u,amount:-total,note:"Satın alma: "+items.map(i=>i.name+" x"+i.qty).join(", "),ts:Date.now()});
+      return left;
+    },
+    async getProducts(){
+      let snap = await F.getDocs(F.collection(fs,"products"));
+      if (snap.empty){
+        for (const p of DEFAULT_PRODUCTS) await F.addDoc(F.collection(fs,"products"),p);
+        snap = await F.getDocs(F.collection(fs,"products"));
+      }
+      return snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.price-b.price);
+    },
+    async saveProduct(p){ await F.addDoc(F.collection(fs,"products"),p); },
+    async deleteProduct(id){ await F.deleteDoc(F.doc(fs,"products",id)); },
+    async getOrders(u){
+      const q = u ? F.query(F.collection(fs,"orders"),F.where("user","==",u)) : F.collection(fs,"orders");
+      const s = await F.getDocs(q);
+      return s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.ts-a.ts);
+    },
+    async getLogs(u){
+      const q = u ? F.query(F.collection(fs,"logs"),F.where("user","==",u)) : F.collection(fs,"logs");
+      const s = await F.getDocs(q);
+      return s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.ts-a.ts);
+    }
+  };
+} else {
+  document.getElementById("demoBar").classList.remove("hidden");
+  const L = {
+    get(k,d){ try{return JSON.parse(localStorage.getItem("demo_"+k)) ?? d}catch{return d} },
+    set(k,v){ localStorage.setItem("demo_"+k,JSON.stringify(v)); }
+  };
+  db = {
+    async getPoints(u){ return L.get("pts",{})[u]||0; },
+    async addPoints(u,amount,note){
+      const p=L.get("pts",{}); p[u]=Math.max(0,(p[u]||0)+amount); L.set("pts",p);
+      const lg=L.get("logs",[]); lg.push({id:Date.now()+"",user:u,amount,note:note||"",ts:Date.now()}); L.set("logs",lg);
+      return p[u];
+    },
+    async spend(u,total,items){
+      const p=L.get("pts",{}); if((p[u]||0)<total) throw new Error("Yetersiz puan");
+      p[u]-=total; L.set("pts",p);
+      const o=L.get("orders",[]); o.push({id:Date.now()+"",user:u,items,total,ts:Date.now()}); L.set("orders",o);
+      const lg=L.get("logs",[]); lg.push({id:Date.now()+"l",user:u,amount:-total,note:"Satın alma: "+items.map(i=>i.name+" x"+i.qty).join(", "),ts:Date.now()}); L.set("logs",lg);
+      return p[u];
+    },
+    async getProducts(){
+      let pr=L.get("products",null);
+      if(!pr){ pr=DEFAULT_PRODUCTS.map((p,i)=>({id:"d"+i,...p})); L.set("products",pr); }
+      return [...pr].sort((a,b)=>a.price-b.price);
+    },
+    async saveProduct(p){ const pr=await this.getProducts(); pr.push({id:Date.now()+"",...p}); L.set("products",pr); },
+    async deleteProduct(id){ L.set("products",L.get("products",[]).filter(p=>p.id!==id)); },
+    async getOrders(u){ return L.get("orders",[]).filter(o=>!u||o.user===u).sort((a,b)=>b.ts-a.ts); },
+    async getLogs(u){ return L.get("logs",[]).filter(o=>!u||o.user===u).sort((a,b)=>b.ts-a.ts); }
+  };
+}
+
+/* =====================================================================
+   YARDIMCILAR
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtDate = ts => new Date(ts).toLocaleString("tr-TR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+let toastT;
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2600); }
+
+// hearts bg
+for(let i=0;i<14;i++){
+  const s=document.createElement("span");
+  s.textContent=["💖","💗","✨","💜","🌸"][i%5];
+  s.style.left=Math.random()*100+"%";
+  s.style.fontSize=(14+Math.random()*22)+"px";
+  s.style.animationDuration=(10+Math.random()*14)+"s";
+  s.style.animationDelay=(-Math.random()*20)+"s";
+  $("hearts").appendChild(s);
+}
+
+/* =====================================================================
+   DURUM
+   ===================================================================== */
+let me = null;          // "skawrax" | "skawraxia" | "admin"
+let points = 0;
+let products = [];
+let cart = {};          // id -> qty
+let tab = "shop";
+let pendingUser = null;
+let lastOrderMsg = "";
+
+const isAdmin = () => me === "admin";
+
+/* =====================================================================
+   GİRİŞ
+   ===================================================================== */
+function show(step){ ["stepName","stepPass","stepAdmin"].forEach(s=>$(s).classList.toggle("hidden",s!==step)); }
+
+document.querySelectorAll("[data-user]").forEach(b=>b.addEventListener("click",()=>{
+  pendingUser=b.dataset.user;
+  if(localStorage.getItem("auth_"+pendingUser)==="1"){ enter(pendingUser); return; }
+  $("passTitle").textContent="Merhaba "+USERS[pendingUser].name+" "+USERS[pendingUser].emoji;
+  $("passInput").value=""; $("passErr").textContent="";
+  show("stepPass"); setTimeout(()=>$("passInput").focus(),50);
+}));
+$("passBack").onclick=()=>show("stepName");
+$("passBtn").onclick=()=>{
+  if($("passInput").value.trim()===SITE_PASSWORD){ localStorage.setItem("auth_"+pendingUser,"1"); enter(pendingUser); }
+  else { $("passErr").textContent="Şifre yanlış, tekrar dene 💭"; }
+};
+$("passInput").addEventListener("keydown",e=>{ if(e.key==="Enter") $("passBtn").click(); });
+
+$("adminLink").onclick=()=>{ $("adminInput").value=""; $("adminErr").textContent=""; show("stepAdmin"); setTimeout(()=>$("adminInput").focus(),50); };
+$("adminBack").onclick=()=>show("stepName");
+$("adminBtn").onclick=()=>{
+  if($("adminInput").value===ADMIN_PIN) enter("admin");
+  else $("adminErr").textContent="Yönetici şifresi yanlış.";
+};
+$("adminInput").addEventListener("keydown",e=>{ if(e.key==="Enter") $("adminBtn").click(); });
+
+$("logoutBtn").onclick=()=>{ sessionStorage.removeItem("session"); me=null; cart={}; location.reload(); };
+
+async function enter(user){
+  me=user; sessionStorage.setItem("session",user);
+  $("login").classList.add("hidden"); $("app").classList.remove("hidden");
+  $("helloName").textContent = isAdmin() ? "Yönetici Paneli 🛠️" : "Merhaba "+USERS[user].name+" "+USERS[user].emoji;
+  $("pointsBox").classList.toggle("hidden",isAdmin());
+  $("cartBtn").classList.toggle("hidden",isAdmin());
+  tab = isAdmin() ? "admin" : "shop";
+  try{ products = await db.getProducts(); }catch(e){ console.error(e); toast("Ürünler yüklenemedi: "+e.message); }
+  await refreshPoints();
+  renderTabs(); renderView(); renderCart();
+  setInterval(refreshPoints,10000);
+}
+
+async function refreshPoints(){
+  if(isAdmin()||!me) return;
+  try{ points = await db.getPoints(me); }catch(e){ console.error(e); }
+  $("pointsBox").textContent="⭐ "+points+" puan";
+  if(tab==="shop") renderShopStates();
+  renderCart();
+}
+
+/* =====================================================================
+   SEKMELER
+   ===================================================================== */
+function renderTabs(){
+  const t = isAdmin()
+    ? [["admin","💰 Puan Yükle"],["products","🛍️ Ürünler"],["orders","📦 Siparişler"],["logs","📜 Hareketler"]]
+    : [["shop","🛍️ Mağaza"],["orders","📦 Siparişlerim"],["logs","📜 Puan Geçmişi"]];
+  $("tabs").innerHTML = t.map(([k,l])=>`<button class="tab ${tab===k?"on":""}" data-tab="${k}">${l}</button>`).join("");
+  $("tabs").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{ tab=b.dataset.tab; renderTabs(); renderView(); });
+}
+
+async function renderView(){
+  const v=$("view");
+  if(tab==="shop") return renderShop();
+  v.innerHTML='<div class="empty">Yükleniyor…</div>';
+  try{
+    if(tab==="orders"){
+      const o = await db.getOrders(isAdmin()?null:me);
+      v.innerHTML = `<div class="panel list"><h3>📦 ${isAdmin()?"Tüm siparişler":"Siparişlerim"}</h3>` +
+        (o.length? o.map(x=>`<div class="item"><div><b>${isAdmin()?esc(USERS[x.user]?.name||x.user)+" · ":""}${x.items.map(i=>esc(i.name)+" x"+i.qty).join(", ")}</b><div class="muted">${fmtDate(x.ts)}</div></div><span class="neg">-${x.total}</span></div>`).join("")
+        : '<div class="empty">Henüz sipariş yok 🛒</div>') + "</div>";
+    } else if(tab==="logs"){
+      const l = await db.getLogs(isAdmin()?null:me);
+      v.innerHTML = `<div class="panel list"><h3>📜 ${isAdmin()?"Tüm puan hareketleri":"Puan geçmişi"}</h3>` +
+        (l.length? l.map(x=>`<div class="item"><div><b>${isAdmin()?esc(USERS[x.user]?.name||x.user)+" · ":""}${esc(x.note||(x.amount>0?"Puan yüklendi":"Puan düşüldü"))}</b><div class="muted">${fmtDate(x.ts)}</div></div><span class="${x.amount>0?"pos":"neg"}">${x.amount>0?"+":""}${x.amount}</span></div>`).join("")
+        : '<div class="empty">Henüz hareket yok ✨</div>') + "</div>";
+    } else if(tab==="admin") renderAdminPoints();
+    else if(tab==="products") renderAdminProducts();
+  }catch(e){ v.innerHTML=`<div class="empty">Hata: ${esc(e.message)}</div>`; }
+}
+
+/* =====================================================================
+   MAĞAZA
+   ===================================================================== */
+function renderShop(){
+  $("view").innerHTML = `<div class="grid">` + products.map(p=>`
+    <div class="card" data-id="${p.id}">
+      <div class="emo">${esc(p.emoji||"🎁")}</div>
+      <h3>${esc(p.name)}</h3>
+      <p>${esc(p.desc||"")}</p>
+      <div class="price">⭐ ${p.price}</div>
+      <button class="btn grad add" data-id="${p.id}">Sepete Ekle</button>
+    </div>`).join("") + `</div>`;
+  $("view").querySelectorAll(".add").forEach(b=>b.onclick=()=>addToCart(b.dataset.id));
+  renderShopStates();
+}
+function renderShopStates(){
+  document.querySelectorAll(".card[data-id]").forEach(c=>{
+    const p=products.find(x=>x.id===c.dataset.id); if(!p) return;
+    c.classList.toggle("cant", p.price>points);
+  });
+}
+
+/* =====================================================================
+   SEPET
+   ===================================================================== */
+function cartItems(){ return Object.entries(cart).map(([id,q])=>({p:products.find(x=>x.id===id),q})).filter(x=>x.p); }
+function cartTotal(){ return cartItems().reduce((s,{p,q})=>s+p.price*q,0); }
+
+function addToCart(id){
+  cart[id]=(cart[id]||0)+1; renderCart(); toast("Sepete eklendi 🛒");
+}
+function renderCart(){
+  const items=cartItems(), total=cartTotal(), count=items.reduce((s,x)=>s+x.q,0);
+  $("cartBadge").textContent=count; $("cartBadge").classList.toggle("hidden",!count);
+  $("cartTotal").textContent=total+" puan";
+  $("cartBody").innerHTML = items.length ? items.map(({p,q})=>`
+    <div class="ci"><span style="font-size:28px">${esc(p.emoji||"🎁")}</span>
+      <div class="n">${esc(p.name)}<div class="muted">⭐ ${p.price}</div></div>
+      <div class="qty"><button data-d="-1" data-id="${p.id}">−</button><b>${q}</b><button data-d="1" data-id="${p.id}">+</button></div>
+    </div>`).join("") : '<div class="empty">Sepetin boş 🥺</div>';
+  $("cartBody").querySelectorAll(".qty button").forEach(b=>b.onclick=()=>{
+    const id=b.dataset.id; cart[id]=(cart[id]||0)+Number(b.dataset.d);
+    if(cart[id]<=0) delete cart[id]; renderCart();
+  });
+  const enough = total<=points;
+  $("cartInfo").textContent = !items.length ? "" : enough ? `Satın alınca ${points-total} puanın kalacak.` : `Puanın yetmiyor — ${total-points} puan daha lazım.`;
+  $("cartInfo").style.color = enough ? "" : "var(--err)";
+  $("buyBtn").disabled = !items.length || !enough;
+}
+const openCart = v => { $("drawer").classList.toggle("show",v); $("overlay").classList.toggle("show",v); };
+$("cartBtn").onclick=()=>openCart(true);
+$("closeCart").onclick=()=>openCart(false);
+$("overlay").onclick=()=>openCart(false);
+
+$("buyBtn").onclick=async()=>{
+  const items=cartItems(); if(!items.length) return;
+  const total=cartTotal();
+  $("buyBtn").disabled=true; $("buyBtn").textContent="İşleniyor…";
+  try{
+    const list = items.map(({p,q})=>({name:p.name,qty:q,price:p.price}));
+    const left = await db.spend(me,total,list);
+    points=left;
+    lastOrderMsg =
+      `Merhaba! 💖 Ben ${USERS[me].name}.\nPuan mağazasından satın aldım:\n\n` +
+      list.map(i=>`• ${i.name} x${i.qty} (${i.price*i.qty} puan)`).join("\n") +
+      `\n\nToplam: ${total} puan\nKalan puanım: ${left}`;
+    cart={}; openCart(false);
+    $("pointsBox").textContent="⭐ "+points+" puan";
+    renderCart(); if(tab==="shop") renderShopStates();
+    $("okModal").classList.remove("hidden");
+  }catch(e){
+    toast(e.message==="Yetersiz puan" ? "Yetersiz puan 😢" : "Hata: "+e.message);
+    await refreshPoints();
+  }finally{ $("buyBtn").textContent="Satın Al"; renderCart(); }
+};
+$("waBtn").onclick=()=>{ window.open(`https://wa.me/${WHATSAPP_NO}?text=${encodeURIComponent(lastOrderMsg)}`,"_blank"); };
+$("okClose").onclick=()=>$("okModal").classList.add("hidden");
+
+/* =====================================================================
+   YÖNETİCİ
+   ===================================================================== */
+async function renderAdminPoints(){
+  const [a,b] = await Promise.all([db.getPoints("skawrax"),db.getPoints("skawraxia")]);
+  $("view").innerHTML = `
+    <div class="grid" style="margin-bottom:18px">
+      <div class="card"><div class="emo">🦊</div><h3>Skawrax</h3><div class="price">⭐ ${a}</div></div>
+      <div class="card"><div class="emo">🦋</div><h3>Skawraxia</h3><div class="price">⭐ ${b}</div></div>
+    </div>
+    <div class="panel"><h3>💰 Puan yükle / düş</h3>
+      <div class="row">
+        <select id="aUser"><option value="skawrax">Skawrax</option><option value="skawraxia">Skawraxia</option></select>
+        <input id="aAmt" type="number" placeholder="Puan (eksi yazarsan düşer)">
+        <input id="aNote" type="text" placeholder="Not (örn. Matematik sınavı 90)">
+        <button class="btn grad" id="aBtn">Uygula</button>
+      </div>
+    </div>`;
+  $("aBtn").onclick=async()=>{
+    const amt=parseInt($("aAmt").value,10);
+    if(!amt){ toast("Geçerli bir puan gir"); return; }
+    try{
+      await db.addPoints($("aUser").value,amt,$("aNote").value.trim()||(amt>0?"Sınav puanı":"Puan düşüldü"));
+      toast("Puan güncellendi ✅"); renderAdminPoints();
+    }catch(e){ toast("Hata: "+e.message); }
+  };
+}
+
+async function renderAdminProducts(){
+  products = await db.getProducts();
+  $("view").innerHTML = `
+    <div class="panel"><h3>➕ Yeni ürün ekle</h3>
+      <div class="row">
+        <input id="pEmo" placeholder="Emoji 🎁" style="max-width:90px">
+        <input id="pName" placeholder="Ürün adı">
+        <input id="pDesc" placeholder="Açıklama">
+        <input id="pPrice" type="number" placeholder="Puan" style="max-width:110px">
+        <button class="btn grad" id="pBtn">Ekle</button>
+      </div>
+    </div>
+    <div class="panel list"><h3>🛍️ Mevcut ürünler</h3>` +
+    (products.length? products.map(p=>`<div class="item"><div><b>${esc(p.emoji||"🎁")} ${esc(p.name)}</b><div class="muted">${esc(p.desc||"")} · ⭐ ${p.price}</div></div><button class="btn ghost del" data-id="${p.id}" style="padding:8px 14px">Sil</button></div>`).join("")
+    :'<div class="empty">Ürün yok</div>') + `</div>`;
+  $("pBtn").onclick=async()=>{
+    const name=$("pName").value.trim(), price=parseInt($("pPrice").value,10);
+    if(!name||!price||price<1){ toast("Ad ve puan gerekli"); return; }
+    await db.saveProduct({name,price,emoji:$("pEmo").value.trim()||"🎁",desc:$("pDesc").value.trim()});
+    toast("Ürün eklendi ✅"); renderAdminProducts();
+  };
+  $("view").querySelectorAll(".del").forEach(b=>b.onclick=async()=>{
+    if(!confirm("Bu ürün silinsin mi?")) return;
+    await db.deleteProduct(b.dataset.id); toast("Silindi"); renderAdminProducts();
+  });
+}
+
+/* oturum varsa devam */
+const s = sessionStorage.getItem("session");
+if(s && (USERS[s] || s==="admin")) enter(s);
+</script>
+</body>
+</html>
