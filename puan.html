@@ -92,6 +92,15 @@ select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),
 .price{text-align:center;font-weight:800;color:var(--pink);font-size:18px}
 .card .btn{padding:10px}
 .cant{opacity:.7}
+.tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:4px}
+.tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:#f3edff;color:var(--purple)}
+.tag.keep{background:#fff0c9;color:#a8710a}
+.tag.low{background:#ffe3e5;color:var(--err)}
+.prog .bar{height:8px;border-radius:999px;background:#eadfff;overflow:hidden}
+.prog .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:999px;transition:width .4s}
+.prog small{display:block;text-align:center;color:var(--muted);font-size:12px;margin-top:4px}
+.card .btn:disabled{opacity:.55}
+.actions{display:flex;gap:8px;flex-shrink:0}
 
 .panel{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
 .panel h3{margin-bottom:12px}
@@ -307,21 +316,47 @@ if (useFirebase) {
       return nv;
     },
     async spend(u, total, items){
-      // Realtime Database ilk denemede yerel değeri null verebilir; null'da iptal ETMEYİZ,
-      // sunucu gerçek değerle updater'ı tekrar çalıştırır.
-      let deducted = false;
-      const r = await R.runTransaction(R.ref(rt,"users/"+u+"/points"), cur=>{
-        deducted = false;
-        if (cur === null) return null;   // gerçek değeri bekle
-        const c = Number(cur)||0;
-        if (c < total) return;           // gerçekten yetersiz: iptal et
-        deducted = true;
-        return c - total;
-      });
-      if (!r.committed || !deducted) throw new Error("Yetersiz puan");
-      const left = Number(r.snapshot.val())||0;
+      // need: "puan düşmez" (eşik) ürünler için puanın ulaşması gereken en yüksek değer
+      const need = items.reduce((m,i)=> i.keep ? Math.max(m,i.price) : m, 0);
+      const taken = [];
+      const undo = async()=>{
+        for(const t of taken){
+          try{ await R.runTransaction(R.ref(rt,"products/"+t.id+"/stock"), c=> c===null ? null : (Number(c)||0)+t.qty); }
+          catch(e){ console.error("Stok geri alınamadı",e); }
+        }
+      };
+      let left;
+      try{
+        // 1) stoklu ürünlerin stoğunu düş
+        for(const i of items){
+          const sv = await R.get(R.ref(rt,"products/"+i.id+"/stock"));
+          if(!sv.exists()) continue;                 // stok takibi yok = sınırsız
+          let ok = false;
+          const r = await R.runTransaction(R.ref(rt,"products/"+i.id+"/stock"), cur=>{
+            ok = false;
+            if (cur === null) return null;           // gerçek değeri bekle
+            const c = Number(cur)||0;
+            if (c < i.qty) return;                   // stok yetmiyor: iptal
+            ok = true; return c - i.qty;
+          });
+          if(!r.committed || !ok) throw new Error("Stok yetersiz: "+i.name);
+          taken.push({id:i.id, qty:i.qty});
+        }
+        // 2) puanı düş (eşik ürünlerde düşmez ama puanın yetmesi şart)
+        let deducted = false;
+        const r = await R.runTransaction(R.ref(rt,"users/"+u+"/points"), cur=>{
+          deducted = false;
+          if (cur === null) return null;
+          const c = Number(cur)||0;
+          if (c < total || c < need) return;
+          deducted = true;
+          return c - total;
+        });
+        if (!r.committed || !deducted) throw new Error("Yetersiz puan");
+        left = Number(r.snapshot.val())||0;
+      }catch(e){ await undo(); throw e; }
       await R.push(R.ref(rt,"orders"),{user:u,items,total,ts:Date.now()});
-      await R.push(R.ref(rt,"logs"),{user:u,amount:-total,note:"Satın alma: "+items.map(i=>i.name+" x"+i.qty).join(", "),ts:Date.now()});
+      if(total>0) await R.push(R.ref(rt,"logs"),{user:u,amount:-total,note:"Satın alma: "+items.filter(i=>!i.keep).map(i=>i.name+" x"+i.qty).join(", "),ts:Date.now()});
       return left;
     },
     async getProducts(){
@@ -335,6 +370,7 @@ if (useFirebase) {
     },
     async saveProduct(p){ await R.push(R.ref(rt,"products"),p); },
     async deleteProduct(id){ await R.remove(R.ref(rt,"products/"+id)); },
+    async updateProduct(id,patch){ await R.update(R.ref(rt,"products/"+id),patch); },   // stock:null => sınırsız
     async getOrders(u){
       const l = rows(await R.get(R.ref(rt,"orders")));
       return l.filter(o=>!u||o.user===u).sort((a,b)=>b.ts-a.ts);
@@ -358,10 +394,19 @@ if (useFirebase) {
       return p[u];
     },
     async spend(u,total,items){
-      const p=L.get("pts",{}); if((p[u]||0)<total) throw new Error("Yetersiz puan");
-      p[u]-=total; L.set("pts",p);
+      const need = items.reduce((m,i)=> i.keep ? Math.max(m,i.price) : m, 0);
+      const p=L.get("pts",{}); const cur=p[u]||0;
+      if(cur<total || cur<need) throw new Error("Yetersiz puan");
+      const pr=L.get("products",[]);
+      for(const i of items){
+        const x=pr.find(z=>z.id===i.id);
+        if(x && typeof x.stock==="number" && x.stock<i.qty) throw new Error("Stok yetersiz: "+i.name);
+      }
+      items.forEach(i=>{ const x=pr.find(z=>z.id===i.id); if(x && typeof x.stock==="number") x.stock-=i.qty; });
+      L.set("products",pr);
+      p[u]=cur-total; L.set("pts",p);
       const o=L.get("orders",[]); o.push({id:Date.now()+"",user:u,items,total,ts:Date.now()}); L.set("orders",o);
-      const lg=L.get("logs",[]); lg.push({id:Date.now()+"l",user:u,amount:-total,note:"Satın alma: "+items.map(i=>i.name+" x"+i.qty).join(", "),ts:Date.now()}); L.set("logs",lg);
+      if(total>0){ const lg=L.get("logs",[]); lg.push({id:Date.now()+"l",user:u,amount:-total,note:"Satın alma: "+items.filter(i=>!i.keep).map(i=>i.name+" x"+i.qty).join(", "),ts:Date.now()}); L.set("logs",lg); }
       return p[u];
     },
     async getProducts(){
@@ -371,6 +416,11 @@ if (useFirebase) {
     },
     async saveProduct(p){ const pr=await this.getProducts(); pr.push({id:Date.now()+"",...p}); L.set("products",pr); },
     async deleteProduct(id){ L.set("products",L.get("products",[]).filter(p=>p.id!==id)); },
+    async updateProduct(id,patch){
+      const pr=L.get("products",[]); const x=pr.find(p=>p.id===id); if(!x) return;
+      Object.entries(patch).forEach(([k,v])=>{ if(v===null) delete x[k]; else x[k]=v; });
+      L.set("products",pr);
+    },
     async getOrders(u){ return L.get("orders",[]).filter(o=>!u||o.user===u).sort((a,b)=>b.ts-a.ts); },
     async getLogs(u){ return L.get("logs",[]).filter(o=>!u||o.user===u).sort((a,b)=>b.ts-a.ts); }
   };
@@ -388,6 +438,9 @@ for (const k of Object.keys(db)) {
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmtDate = ts => new Date(ts).toLocaleString("tr-TR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+const hasStock = p => typeof p.stock==="number";
+const soldOut = p => hasStock(p) && p.stock<=0;
+const maxQty  = p => Math.min(p.keep?1:Infinity, hasStock(p)?p.stock:Infinity);
 let toastT;
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2600); }
 
@@ -455,9 +508,17 @@ async function enter(user){
   try{ products = await db.getProducts(); }catch(e){ console.error(e); toast("Ürünler yüklenemedi: "+e.message); }
   await refreshPoints();
   renderTabs(); renderView(); renderCart();
-  if(!pollT) pollT=setInterval(refreshPoints,10000);
+  if(!pollT) pollT=setInterval(poll,10000);
 }
 
+async function poll(){
+  await refreshPoints();
+  if(isAdmin()||!me) return;
+  try{
+    const np = await db.getProducts();
+    if(JSON.stringify(np)!==JSON.stringify(products)){ products=np; if(tab==="shop") renderShop(); renderCart(); }
+  }catch(e){ console.error(e); }
+}
 async function refreshPoints(){
   if(isAdmin()||!me) return;
   try{ points = await db.getPoints(me); }catch(e){ console.error(e); }
@@ -485,7 +546,7 @@ async function renderView(){
     if(tab==="orders"){
       const o = await db.getOrders(isAdmin()?null:me);
       v.innerHTML = `<div class="panel list"><h3>📦 ${isAdmin()?"Tüm siparişler":"Siparişlerim"}</h3>` +
-        (o.length? o.map(x=>`<div class="item"><div><b>${isAdmin()?esc(USERS[x.user]?.name||x.user)+" · ":""}${x.items.map(i=>esc(i.name)+" x"+i.qty).join(", ")}</b><div class="muted">${fmtDate(x.ts)}</div></div><span class="neg">-${x.total}</span></div>`).join("")
+        (o.length? o.map(x=>`<div class="item"><div><b>${isAdmin()?esc(USERS[x.user]?.name||x.user)+" · ":""}${x.items.map(i=>esc(i.name)+" x"+i.qty+(i.keep?" 🎯":"")).join(", ")}</b><div class="muted">${fmtDate(x.ts)}</div></div>${x.total>0?`<span class="neg">-${x.total}</span>`:'<span class="muted">puan düşmedi</span>'}</div>`).join("")
         : '<div class="empty">Henüz sipariş yok 🛒</div>') + "</div>";
     } else if(tab==="logs"){
       const l = await db.getLogs(isAdmin()?null:me);
@@ -507,7 +568,12 @@ function renderShop(){
       <div class="emo">${esc(p.emoji||"🎁")}</div>
       <h3>${esc(p.name)}</h3>
       <p>${esc(p.desc||"")}</p>
-      <div class="price">⭐ ${p.price}</div>
+      <div class="tags">
+        ${p.keep?'<span class="tag keep">🎯 Puan düşmez</span>':""}
+        ${hasStock(p)?`<span class="tag ${p.stock<=3?"low":""}">${p.stock>0?"Stok: "+p.stock:"Tükendi"}</span>`:""}
+      </div>
+      <div class="price">${p.keep?`🎯 ${p.price} puana ulaşınca`:`⭐ ${p.price}`}</div>
+      ${p.keep?'<div class="prog"><div class="bar"><i></i></div><small></small></div>':""}
       <button class="btn grad add" data-id="${esc(p.id)}">Sepete Ekle</button>
     </div>`).join("") + `</div>`;
   $("view").querySelectorAll(".add").forEach(b=>b.onclick=()=>addToCart(b.dataset.id));
@@ -516,7 +582,16 @@ function renderShop(){
 function renderShopStates(){
   document.querySelectorAll(".card[data-id]").forEach(c=>{
     const p=products.find(x=>x.id===c.dataset.id); if(!p) return;
-    c.classList.toggle("cant", p.price>points);
+    const out=soldOut(p);
+    const locked = p.keep ? points<p.price : false;
+    c.classList.toggle("cant", out || locked || (!p.keep && p.price>points));
+    const btn=c.querySelector(".add");
+    btn.disabled = out || locked;
+    btn.textContent = out ? "Tükendi" : locked ? `🔒 ${p.price-points} puan kaldı` : "Sepete Ekle";
+    if(p.keep){
+      c.querySelector(".bar i").style.width = Math.min(100, points/p.price*100)+"%";
+      c.querySelector(".prog small").textContent = points>=p.price ? "Hedefe ulaştın! 🎉" : points+" / "+p.price;
+    }
   });
 }
 
@@ -524,27 +599,46 @@ function renderShopStates(){
    SEPET
    ===================================================================== */
 function cartItems(){ return Object.entries(cart).map(([id,q])=>({p:products.find(x=>x.id===id),q})).filter(x=>x.p); }
-function cartTotal(){ return cartItems().reduce((s,{p,q})=>s+p.price*q,0); }
+function cartTotal(){ return cartItems().reduce((s,{p,q})=>s+(p.keep?0:p.price*q),0); }   // eşik ürünler puan düşürmez
+function cartNeed(){ return cartItems().reduce((m,{p})=>p.keep?Math.max(m,p.price):m,0); }
+function stockProblem(){ const x=cartItems().find(({p,q})=>hasStock(p)&&q>p.stock); return x?x.p.name:null; }
 
+function canAdd(p,showToast=true){
+  const t = m=>{ if(showToast) toast(m); return false; };
+  if(soldOut(p)) return t("Tükendi 😢");
+  if(p.keep && points<p.price) return t(`Bunun için ${p.price} puana ulaşmalısın 🎯`);
+  if((cart[p.id]||0)>=maxQty(p)) return t(p.keep ? "Bu ürünü bir seferde 1 adet alabilirsin" : "Stokta bu kadar var");
+  return true;
+}
 function addToCart(id){
+  const p=products.find(x=>x.id===id); if(!p||!canAdd(p)) return;
   cart[id]=(cart[id]||0)+1; renderCart(); toast("Sepete eklendi 🛒");
 }
 function renderCart(){
-  const items=cartItems(), total=cartTotal(), count=items.reduce((s,x)=>s+x.q,0);
+  const items=cartItems(), total=cartTotal(), need=cartNeed(), count=items.reduce((s,x)=>s+x.q,0);
   $("cartBadge").textContent=count; $("cartBadge").classList.toggle("hidden",!count);
   $("cartTotal").textContent=total+" puan";
   $("cartBody").innerHTML = items.length ? items.map(({p,q})=>`
     <div class="ci"><span style="font-size:28px">${esc(p.emoji||"🎁")}</span>
-      <div class="n">${esc(p.name)}<div class="muted">⭐ ${p.price}</div></div>
+      <div class="n">${esc(p.name)}<div class="muted">${p.keep?"🎯 Puan düşmez ("+p.price+" puan gerekir)":"⭐ "+p.price}</div></div>
       <div class="qty"><button data-d="-1" data-id="${esc(p.id)}">−</button><b>${q}</b><button data-d="1" data-id="${esc(p.id)}">+</button></div>
     </div>`).join("") : '<div class="empty">Sepetin boş 🥺</div>';
   $("cartBody").querySelectorAll(".qty button").forEach(b=>b.onclick=()=>{
-    const id=b.dataset.id; cart[id]=(cart[id]||0)+Number(b.dataset.d);
+    const id=b.dataset.id, d=Number(b.dataset.d), p=products.find(x=>x.id===id);
+    if(d>0 && p && !canAdd(p)) return;
+    cart[id]=(cart[id]||0)+d;
     if(cart[id]<=0) delete cart[id]; renderCart();
   });
-  const enough = total<=points;
-  $("cartInfo").textContent = !items.length ? "" : enough ? `Satın alınca ${points-total} puanın kalacak.` : `Puanın yetmiyor — ${total-points} puan daha lazım.`;
-  $("cartInfo").style.color = enough ? "" : "var(--err)";
+  const bad = stockProblem();
+  const enough = total<=points && need<=points && !bad;
+  let info="", color="var(--err)";
+  if(items.length){
+    if(bad) info=`Stok yetersiz: ${bad}`;
+    else if(total>points) info=`Puanın yetmiyor — ${total-points} puan daha lazım.`;
+    else if(need>points) info=`Bu ürün için ${need} puana ulaşmalısın — ${need-points} puan daha lazım.`;
+    else { color=""; info = total>0 ? `Satın alınca ${points-total} puanın kalacak.` : `Puanın düşmeyecek, ${points} puanın kalacak 🎯`; }
+  }
+  $("cartInfo").textContent=info; $("cartInfo").style.color=color;
   $("buyBtn").disabled = !items.length || !enough;
 }
 const openCart = v => { $("drawer").classList.toggle("show",v); $("overlay").classList.toggle("show",v); document.body.classList.toggle("lock",v); };
@@ -558,20 +652,22 @@ $("buyBtn").onclick=async()=>{
   const total=cartTotal();
   $("buyBtn").disabled=true; $("buyBtn").textContent="İşleniyor…";
   try{
-    const list = items.map(({p,q})=>({name:p.name,qty:q,price:p.price}));
+    const list = items.map(({p,q})=>({id:p.id,name:p.name,qty:q,price:p.price,keep:!!p.keep}));
     const left = await db.spend(me,total,list);
     points=left;
     lastOrderMsg =
       `Merhaba! 💖 Ben ${USERS[me].name}.\nPuan mağazasından satın aldım:\n\n` +
-      list.map(i=>`• ${i.name} x${i.qty} (${i.price*i.qty} puan)`).join("\n") +
-      `\n\nToplam: ${total} puan\nKalan puanım: ${left}`;
+      list.map(i=>i.keep ? `• ${i.name} x${i.qty} 🎯 (${i.price} puana ulaştım, puan düşmedi)` : `• ${i.name} x${i.qty} (${i.price*i.qty} puan)`).join("\n") +
+      `\n\nHarcanan puan: ${total}\nKalan puanım: ${left}`;
     cart={}; openCart(false);
     $("pointsBox").textContent="⭐ "+points+" puan";
-    renderCart(); if(tab==="shop") renderShopStates();
+    try{ products=await db.getProducts(); }catch(_){}
+    renderCart(); if(tab==="shop") renderShop();
     $("okModal").classList.remove("hidden");
   }catch(e){
-    toast(e.message==="Yetersiz puan" ? "Yetersiz puan 😢" : "Hata: "+e.message);
+    toast(e.message==="Yetersiz puan" ? "Yetersiz puan 😢" : e.message.startsWith("Stok") ? e.message+" 😢" : "Hata: "+e.message);
     await refreshPoints();
+    try{ products=await db.getProducts(); if(tab==="shop") renderShop(); }catch(_){}
   }finally{ $("buyBtn").textContent="Satın Al"; renderCart(); }
 };
 $("waBtn").onclick=()=>{
@@ -620,20 +716,41 @@ async function renderAdminProducts(){
         <input id="pName" placeholder="Ürün adı">
         <input id="pDesc" placeholder="Açıklama">
         <input id="pPrice" type="number" inputmode="numeric" placeholder="Puan" style="max-width:110px">
+        <input id="pStock" type="number" inputmode="numeric" placeholder="Stok (boş = sınırsız)" style="max-width:170px">
+        <select id="pKind" style="max-width:260px">
+          <option value="spend">Puan harcanır (normal)</option>
+          <option value="keep">🎯 Puana ulaşınca alınır, puan düşmez</option>
+        </select>
         <button class="btn grad" id="pBtn">Ekle</button>
       </div>
     </div>
     <div class="panel list"><h3>🛍️ Mevcut ürünler</h3>` +
-    (products.length? products.map(p=>`<div class="item"><div><b>${esc(p.emoji||"🎁")} ${esc(p.name)}</b><div class="muted">${esc(p.desc||"")} · ⭐ ${p.price}</div></div><button class="btn ghost del" data-id="${esc(p.id)}" style="padding:8px 14px">Sil</button></div>`).join("")
+    (products.length? products.map(p=>`<div class="item"><div><b>${esc(p.emoji||"🎁")} ${esc(p.name)}</b>
+      <div class="muted">${esc(p.desc||"")} · ${p.keep?"🎯 "+p.price+" puana ulaşınca (puan düşmez)":"⭐ "+p.price}</div>
+      <div class="muted">${hasStock(p)?"Stok: <b>"+p.stock+"</b>":"Stok: sınırsız"}</div></div>
+      <div class="actions"><button class="btn ghost stk" data-id="${esc(p.id)}" style="padding:8px 14px">Stok</button><button class="btn ghost del" data-id="${esc(p.id)}" style="padding:8px 14px">Sil</button></div></div>`).join("")
     :'<div class="empty">Ürün yok</div>') + `</div>`;
   $("pBtn").onclick=async()=>{
     const name=$("pName").value.trim(), price=parseInt($("pPrice").value,10);
     if(!name||!price||price<1){ toast("Ad ve puan gerekli"); return; }
+    const prod={name,price,emoji:$("pEmo").value.trim()||"🎁",desc:$("pDesc").value.trim()};
+    const st=$("pStock").value.trim();
+    if(st!==""){ const n=parseInt(st,10); if(isNaN(n)||n<0){ toast("Stok geçerli bir sayı olmalı"); return; } prod.stock=n; }
+    if($("pKind").value==="keep") prod.keep=true;
     try{
-      await db.saveProduct({name,price,emoji:$("pEmo").value.trim()||"🎁",desc:$("pDesc").value.trim()});
+      await db.saveProduct(prod);
       toast("Ürün eklendi ✅"); renderAdminProducts();
     }catch(e){ toast("Hata: "+e.message); }
   };
+  $("view").querySelectorAll(".stk").forEach(b=>b.onclick=async()=>{
+    const p=products.find(x=>x.id===b.dataset.id); if(!p) return;
+    const v=prompt(`"${p.name}" için yeni stok (boş bırakırsan sınırsız olur):`, hasStock(p)?p.stock:"");
+    if(v===null) return;
+    const t=v.trim(); let stock=null;
+    if(t!==""){ stock=parseInt(t,10); if(isNaN(stock)||stock<0){ toast("Geçerli bir sayı gir"); return; } }
+    try{ await db.updateProduct(p.id,{stock}); toast("Stok güncellendi ✅"); renderAdminProducts(); }
+    catch(e){ toast("Hata: "+e.message); }
+  });
   $("view").querySelectorAll(".del").forEach(b=>b.onclick=async()=>{
     if(!confirm("Bu ürün silinsin mi?")) return;
     try{ await db.deleteProduct(b.dataset.id); toast("Silindi"); renderAdminProducts(); }
