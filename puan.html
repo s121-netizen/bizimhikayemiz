@@ -100,7 +100,10 @@ select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),
 .prog .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:999px;transition:width .4s}
 .prog small{display:block;text-align:center;color:var(--muted);font-size:12px;margin-top:4px}
 .card .btn:disabled{opacity:.55}
-.actions{display:flex;gap:8px;flex-shrink:0}
+.actions{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.tag.for{background:#ffe8f0;color:var(--pink)}
+.own{padding:8px 34px 8px 12px;border:2px solid #eadfff;background-color:#fff;font-size:14px;min-height:0;max-width:150px}
+.hint{color:var(--muted);font-size:13px;margin:-4px 0 12px}
 
 .panel{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
 .panel h3{margin-bottom:12px}
@@ -248,6 +251,18 @@ select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),
   </div>
 </div>
 
+<!-- NOTIFY MODAL (yönetici) -->
+<div class="modal hidden" id="notifyModal">
+  <div class="box">
+    <div class="big">💌</div>
+    <h1>Haber ver</h1>
+    <p class="sub" id="nTo"></p>
+    <textarea class="field" id="nText" rows="5" style="letter-spacing:0;font-size:16px;text-align:left;resize:none;font-family:inherit"></textarea>
+    <button class="btn full" style="background:#25D366;color:#fff" id="nSend">WhatsApp'ta gönder</button>
+    <button class="link" id="nClose">Şimdi değil</button>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script type="module">
@@ -266,6 +281,7 @@ const FIREBASE_CONFIG = {
 const SITE_PASSWORD = "28112025";      // ilk giriş şifresi
 const ADMIN_PIN     = "ADMIN1234";     // ⚠️ yönetici şifresi — mutlaka değiştir!
 const WHATSAPP_NO   = "905368315009";  // 0536 831 50 09
+const USER_PHONES   = { skawrax:"", skawraxia:"" };  // bildirim için 90 ile başlayan numara; boşsa WhatsApp kişi seçtirir
 const USERS = { skawrax:{name:"Skawrax",emoji:"🐻"}, skawraxia:{name:"Skawraxia",emoji:"🦎"} };
 
 const DEFAULT_PRODUCTS = [
@@ -283,6 +299,7 @@ const DEFAULT_PRODUCTS = [
    VERİ KATMANI  (Firebase varsa Firestore, yoksa localStorage demo)
    ===================================================================== */
 const withTimeout = (pr, ms, msg) => Promise.race([pr, new Promise((_,rej)=>setTimeout(()=>rej(new Error(msg)),ms))]);
+const visibleTo = (p,u) => !u || !p.for || p.for==='all' || p.for===u;
 let useFirebase = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId);
 let db, R, rt;
 
@@ -327,6 +344,12 @@ if (useFirebase) {
       };
       let left;
       try{
+        // 0) ürün bu kişiye ait mi?
+        for(const i of items){
+          const ps = await R.get(R.ref(rt,"products/"+i.id));
+          if(!ps.exists()) throw new Error("Ürün artık mağazada yok: "+i.name);
+          if(!visibleTo(ps.val(),u)) throw new Error("Bu ürün sana özel değil: "+i.name);
+        }
         // 1) stoklu ürünlerin stoğunu düş
         for(const i of items){
           const sv = await R.get(R.ref(rt,"products/"+i.id+"/stock"));
@@ -355,22 +378,23 @@ if (useFirebase) {
         if (!r.committed || !deducted) throw new Error("Yetersiz puan");
         left = Number(r.snapshot.val())||0;
       }catch(e){ await undo(); throw e; }
-      await R.push(R.ref(rt,"orders"),{user:u,items,total,ts:Date.now()});
+      await R.push(R.ref(rt,"orders"),{user:u,items,total,status:"pending",ts:Date.now()});
       if(total>0) await R.push(R.ref(rt,"logs"),{user:u,amount:-total,note:"Satın alma: "+items.filter(i=>!i.keep).map(i=>i.name+" x"+i.qty).join(", "),ts:Date.now()});
       return left;
     },
-    async getProducts(){
+    async getProducts(u){
       let snap = await R.get(R.ref(rt,"products"));
       if (!snap.exists()){
         const seed = {}; DEFAULT_PRODUCTS.forEach((p,i)=>seed["d"+i]=p);
         await R.set(R.ref(rt,"products"),seed);
         snap = await R.get(R.ref(rt,"products"));
       }
-      return rows(snap).sort((a,b)=>(a.price||0)-(b.price||0));
+      return rows(snap).filter(p=>visibleTo(p,u)).sort((a,b)=>(a.price||0)-(b.price||0));
     },
     async saveProduct(p){ await R.push(R.ref(rt,"products"),p); },
     async deleteProduct(id){ await R.remove(R.ref(rt,"products/"+id)); },
     async updateProduct(id,patch){ await R.update(R.ref(rt,"products/"+id),patch); },   // stock:null => sınırsız
+    async updateOrder(id,patch){ await R.update(R.ref(rt,"orders/"+id),patch); },
     async getOrders(u){
       const l = rows(await R.get(R.ref(rt,"orders")));
       return l.filter(o=>!u||o.user===u).sort((a,b)=>b.ts-a.ts);
@@ -399,20 +423,25 @@ if (useFirebase) {
       if(cur<total || cur<need) throw new Error("Yetersiz puan");
       const pr=L.get("products",[]);
       for(const i of items){
+        const y=pr.find(z=>z.id===i.id);
+        if(!y) throw new Error("Ürün artık mağazada yok: "+i.name);
+        if(!visibleTo(y,u)) throw new Error("Bu ürün sana özel değil: "+i.name);
+      }
+      for(const i of items){
         const x=pr.find(z=>z.id===i.id);
         if(x && typeof x.stock==="number" && x.stock<i.qty) throw new Error("Stok yetersiz: "+i.name);
       }
       items.forEach(i=>{ const x=pr.find(z=>z.id===i.id); if(x && typeof x.stock==="number") x.stock-=i.qty; });
       L.set("products",pr);
       p[u]=cur-total; L.set("pts",p);
-      const o=L.get("orders",[]); o.push({id:Date.now()+"",user:u,items,total,ts:Date.now()}); L.set("orders",o);
+      const o=L.get("orders",[]); o.push({id:Date.now()+"",user:u,items,total,status:"pending",ts:Date.now()}); L.set("orders",o);
       if(total>0){ const lg=L.get("logs",[]); lg.push({id:Date.now()+"l",user:u,amount:-total,note:"Satın alma: "+items.filter(i=>!i.keep).map(i=>i.name+" x"+i.qty).join(", "),ts:Date.now()}); L.set("logs",lg); }
       return p[u];
     },
-    async getProducts(){
+    async getProducts(u){
       let pr=L.get("products",null);
       if(!pr){ pr=DEFAULT_PRODUCTS.map((p,i)=>({id:"d"+i,...p})); L.set("products",pr); }
-      return [...pr].sort((a,b)=>a.price-b.price);
+      return pr.filter(p=>visibleTo(p,u)).sort((a,b)=>a.price-b.price);
     },
     async saveProduct(p){ const pr=await this.getProducts(); pr.push({id:Date.now()+"",...p}); L.set("products",pr); },
     async deleteProduct(id){ L.set("products",L.get("products",[]).filter(p=>p.id!==id)); },
@@ -421,6 +450,7 @@ if (useFirebase) {
       Object.entries(patch).forEach(([k,v])=>{ if(v===null) delete x[k]; else x[k]=v; });
       L.set("products",pr);
     },
+    async updateOrder(id,patch){ const o=L.get("orders",[]); const x=o.find(z=>z.id===id); if(x){ Object.assign(x,patch); L.set("orders",o); } },
     async getOrders(u){ return L.get("orders",[]).filter(o=>!u||o.user===u).sort((a,b)=>b.ts-a.ts); },
     async getLogs(u){ return L.get("logs",[]).filter(o=>!u||o.user===u).sort((a,b)=>b.ts-a.ts); }
   };
@@ -466,8 +496,10 @@ let tab = "shop";
 let pendingUser = null;
 let lastOrderMsg = "";
 let pollT = null;
+let lastPts = null, orderSt = null;
 
 const isAdmin = () => me === "admin";
+const loadProducts = () => db.getProducts(isAdmin()?null:me);
 
 /* =====================================================================
    GİRİŞ
@@ -505,8 +537,9 @@ async function enter(user){
   $("pointsBox").classList.toggle("hidden",isAdmin());
   $("cartBtn").classList.toggle("hidden",isAdmin());
   tab = isAdmin() ? "admin" : "shop";
-  try{ products = await db.getProducts(); }catch(e){ console.error(e); toast("Ürünler yüklenemedi: "+e.message); }
+  try{ products = await loadProducts(); }catch(e){ console.error(e); toast("Ürünler yüklenemedi: "+e.message); }
   await refreshPoints();
+  if(!isAdmin()) checkOrders();
   renderTabs(); renderView(); renderCart();
   if(!pollT) pollT=setInterval(poll,10000);
 }
@@ -514,14 +547,22 @@ async function enter(user){
 async function poll(){
   await refreshPoints();
   if(isAdmin()||!me) return;
+  checkOrders();
   try{
-    const np = await db.getProducts();
-    if(JSON.stringify(np)!==JSON.stringify(products)){ products=np; if(tab==="shop") renderShop(); renderCart(); }
+    const np = await loadProducts();
+    if(JSON.stringify(np)!==JSON.stringify(products)){ const old=new Set(products.map(p=>p.id)); const add=np.filter(p=>!old.has(p.id)); if(add.length) toast("🆕 Yeni ürün: "+add.map(p=>p.name).join(", ")); products=np; if(tab==="shop") renderShop(); renderCart(); }
+  }catch(e){ console.error(e); }
+}
+async function checkOrders(){
+  try{
+    const os=await db.getOrders(me);
+    if(orderSt) os.forEach(o=>{ if(orderSt[o.id]==="pending" && (o.status||"done")==="done") toast("🎁 Siparişin hazır: "+o.items.map(i=>i.name).join(", ")); });
+    orderSt={}; os.forEach(o=>orderSt[o.id]=o.status||"done");
   }catch(e){ console.error(e); }
 }
 async function refreshPoints(){
   if(isAdmin()||!me) return;
-  try{ points = await db.getPoints(me); }catch(e){ console.error(e); }
+  try{ points = await db.getPoints(me); if(lastPts!==null && points>lastPts) toast("🎉 +"+(points-lastPts)+" puan yüklendi!"); lastPts=points; }catch(e){ console.error(e); }
   $("pointsBox").textContent="⭐ "+points+" puan";
   if(tab==="shop") renderShopStates();
   renderCart();
@@ -544,10 +585,22 @@ async function renderView(){
   v.innerHTML='<div class="empty">Yükleniyor…</div>';
   try{
     if(tab==="orders"){
-      const o = await db.getOrders(isAdmin()?null:me);
+      let o = await db.getOrders(isAdmin()?null:me);
+      const pend = x => (x.status||"done")==="pending";
+      o = [...o].sort((a,b)=>(pend(b)?1:0)-(pend(a)?1:0) || b.ts-a.ts);
+      const stTag = x => pend(x) ? '<span class="tag keep">⏳ Bekliyor</span>' : '<span class="tag" style="background:#dff7ec;color:var(--ok)">✅ Yapıldı</span>';
       v.innerHTML = `<div class="panel list"><h3>📦 ${isAdmin()?"Tüm siparişler":"Siparişlerim"}</h3>` +
-        (o.length? o.map(x=>`<div class="item"><div><b>${isAdmin()?esc(USERS[x.user]?.name||x.user)+" · ":""}${x.items.map(i=>esc(i.name)+" x"+i.qty+(i.keep?" 🎯":"")).join(", ")}</b><div class="muted">${fmtDate(x.ts)}</div></div>${x.total>0?`<span class="neg">-${x.total}</span>`:'<span class="muted">puan düşmedi</span>'}</div>`).join("")
+        (o.length? o.map(x=>`<div class="item"><div><b>${isAdmin()?esc(USERS[x.user]?.name||x.user)+" · ":""}${x.items.map(i=>esc(i.name)+" x"+i.qty+(i.keep?" 🎯":"")).join(", ")}</b><div class="muted">${fmtDate(x.ts)} · ${stTag(x)}</div></div>
+          <div class="actions">${x.total>0?`<span class="neg">-${x.total}</span>`:'<span class="muted">puan düşmedi</span>'}${isAdmin()&&pend(x)?`<button class="btn grad ord" data-id="${esc(x.id)}" style="padding:8px 14px">Yapıldı ✓</button>`:""}</div></div>`).join("")
         : '<div class="empty">Henüz sipariş yok 🛒</div>') + "</div>";
+      v.querySelectorAll(".ord").forEach(b=>b.onclick=async()=>{
+        const x=o.find(z=>z.id===b.dataset.id); if(!x) return;
+        try{
+          await db.updateOrder(x.id,{status:"done",doneTs:Date.now()});
+          toast("Yapıldı olarak işaretlendi ✅"); await renderView();
+          notify(x.user,`Merhaba ${USERS[x.user]?.name||""} 💖\nSiparişin hazır 🎁: `+x.items.map(i=>i.name+" x"+i.qty).join(", "));
+        }catch(e){ toast("Hata: "+e.message); }
+      });
     } else if(tab==="logs"){
       const l = await db.getLogs(isAdmin()?null:me);
       v.innerHTML = `<div class="panel list"><h3>📜 ${isAdmin()?"Tüm puan hareketleri":"Puan geçmişi"}</h3>` +
@@ -561,21 +614,28 @@ async function renderView(){
 /* =====================================================================
    MAĞAZA
    ===================================================================== */
+let shopFilter="all";
 function renderShop(){
   if(!products.length){ $("view").innerHTML='<div class="empty">Henüz ürün yok 🎁</div>'; return; }
-  $("view").innerHTML = `<div class="grid">` + products.map(p=>`
+  const mine=products.filter(p=>p.for===me).length, keeps=products.filter(p=>p.keep).length;
+  const chips=[["all","Hepsi"],["mine","💌 Sana özel ("+mine+")"],["keep","🎯 Hedefler ("+keeps+")"]];
+  const list=products.filter(p=> shopFilter==="mine"?p.for===me : shopFilter==="keep"?p.keep : true);
+  $("view").innerHTML = `<div class="tabs">`+chips.map(([k,l])=>`<button class="tab ${shopFilter===k?"on":""}" data-f="${k}">${l}</button>`).join("")+`</div>` +
+    (list.length ? `<div class="grid">` + list.map(p=>`
     <div class="card" data-id="${esc(p.id)}">
       <div class="emo">${esc(p.emoji||"🎁")}</div>
       <h3>${esc(p.name)}</h3>
       <p>${esc(p.desc||"")}</p>
       <div class="tags">
+        ${p.for===me?'<span class="tag for">💌 Sana özel</span>':""}
         ${p.keep?'<span class="tag keep">🎯 Puan düşmez</span>':""}
         ${hasStock(p)?`<span class="tag ${p.stock<=3?"low":""}">${p.stock>0?"Stok: "+p.stock:"Tükendi"}</span>`:""}
       </div>
       <div class="price">${p.keep?`🎯 ${p.price} puana ulaşınca`:`⭐ ${p.price}`}</div>
       ${p.keep?'<div class="prog"><div class="bar"><i></i></div><small></small></div>':""}
       <button class="btn grad add" data-id="${esc(p.id)}">Sepete Ekle</button>
-    </div>`).join("") + `</div>`;
+    </div>`).join("") + `</div>` : '<div class="empty">Bu kategoride ürün yok 🎁</div>');
+  $("view").querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ shopFilter=b.dataset.f; renderShop(); });
   $("view").querySelectorAll(".add").forEach(b=>b.onclick=()=>addToCart(b.dataset.id));
   renderShopStates();
 }
@@ -654,20 +714,20 @@ $("buyBtn").onclick=async()=>{
   try{
     const list = items.map(({p,q})=>({id:p.id,name:p.name,qty:q,price:p.price,keep:!!p.keep}));
     const left = await db.spend(me,total,list);
-    points=left;
+    points=left; lastPts=left;
     lastOrderMsg =
       `Merhaba! 💖 Ben ${USERS[me].name}.\nPuan mağazasından satın aldım:\n\n` +
       list.map(i=>i.keep ? `• ${i.name} x${i.qty} 🎯 (${i.price} puana ulaştım, puan düşmedi)` : `• ${i.name} x${i.qty} (${i.price*i.qty} puan)`).join("\n") +
       `\n\nHarcanan puan: ${total}\nKalan puanım: ${left}`;
     cart={}; openCart(false);
     $("pointsBox").textContent="⭐ "+points+" puan";
-    try{ products=await db.getProducts(); }catch(_){}
+    try{ products=await loadProducts(); }catch(_){}
     renderCart(); if(tab==="shop") renderShop();
     $("okModal").classList.remove("hidden");
   }catch(e){
     toast(e.message==="Yetersiz puan" ? "Yetersiz puan 😢" : e.message.startsWith("Stok") ? e.message+" 😢" : "Hata: "+e.message);
     await refreshPoints();
-    try{ products=await db.getProducts(); if(tab==="shop") renderShop(); }catch(_){}
+    try{ products=await loadProducts(); if(tab==="shop") renderShop(); }catch(_){}
   }finally{ $("buyBtn").textContent="Satın Al"; renderCart(); }
 };
 $("waBtn").onclick=()=>{
@@ -676,6 +736,20 @@ $("waBtn").onclick=()=>{
   if(!w) location.href=url;   // popup engellenirse aynı sekmede aç
 };
 $("okClose").onclick=()=>$("okModal").classList.add("hidden");
+
+/* Yönetici: kişiye WhatsApp ile haber ver */
+let notifyTo = null;
+function notify(user,text){
+  notifyTo = user;
+  $("nTo").textContent = user&&USERS[user] ? USERS[user].name+" "+USERS[user].emoji+" için mesaj hazır" : "Mesajı göndereceğin kişiyi WhatsApp'ta seçeceksin";
+  $("nText").value = text; $("notifyModal").classList.remove("hidden");
+}
+$("nSend").onclick=()=>{
+  const url=`https://wa.me/${(notifyTo&&USER_PHONES[notifyTo])||""}?text=${encodeURIComponent($("nText").value)}`;
+  $("notifyModal").classList.add("hidden");
+  const w=window.open(url,"_blank","noopener"); if(!w) location.href=url;
+};
+$("nClose").onclick=()=>$("notifyModal").classList.add("hidden");
 
 /* =====================================================================
    YÖNETİCİ
@@ -701,17 +775,30 @@ async function renderAdminPoints(){
     const amt=parseInt($("aAmt").value,10);
     if(!amt){ toast("Geçerli bir puan gir"); return; }
     try{
-      await db.addPoints($("aUser").value,amt,$("aNote").value.trim()||(amt>0?"Sınav puanı":"Puan düşüldü"));
+      const u=$("aUser").value, note=$("aNote").value.trim();
+      const tot = await db.addPoints(u,amt,note||(amt>0?"Sınav puanı":"Puan düşüldü"));
       toast("Puan güncellendi ✅"); renderAdminPoints();
+      notify(u,`Merhaba ${USERS[u].name} ${USERS[u].emoji}\n`+(amt>0?`🎉 ${amt} puan yüklendi`:`${-amt} puan düşüldü`)+(note?` (${note})`:"")+`.\nToplam puanın: ${tot} ⭐`);
     }catch(e){ toast("Hata: "+e.message); }
   };
 }
 
+let adminFilter="*", lastFor="all";
+const OWNERS=[["all","👥 Herkes"],["skawrax","🐻 Skawrax"],["skawraxia","🦎 Skawraxia"]];
+const ownerOf = p => (p.for==="skawrax"||p.for==="skawraxia") ? p.for : "all";
+const ownerLabel = v => (OWNERS.find(o=>o[0]===v)||OWNERS[0])[1];
+const ownerOpts = sel => OWNERS.map(([v,l])=>`<option value="${v}"${v===sel?" selected":""}>${l}</option>`).join("");
+
 async function renderAdminProducts(){
   try{ products = await db.getProducts(); }catch(e){ toast("Ürünler yüklenemedi: "+e.message); }
+  const cnt = k => products.filter(p=>ownerOf(p)===k).length;
+  const filters=[["*","Hepsi ("+products.length+")"],["skawrax","🐻 Skawrax ("+cnt("skawrax")+")"],["skawraxia","🦎 Skawraxia ("+cnt("skawraxia")+")"],["all","👥 Ortak ("+cnt("all")+")"]];
+  const shown = adminFilter==="*" ? products : products.filter(p=>ownerOf(p)===adminFilter);
   $("view").innerHTML = `
     <div class="panel"><h3>➕ Yeni ürün ekle</h3>
+      <div class="hint">Kişi seçersen ürün yalnızca onun mağazasında görünür ve sadece o satın alabilir.</div>
       <div class="row">
+        <select id="pFor" style="max-width:190px">${ownerOpts(lastFor)}</select>
         <input id="pEmo" placeholder="Emoji 🎁" style="max-width:90px">
         <input id="pName" placeholder="Ürün adı">
         <input id="pDesc" placeholder="Açıklama">
@@ -724,12 +811,14 @@ async function renderAdminProducts(){
         <button class="btn grad" id="pBtn">Ekle</button>
       </div>
     </div>
-    <div class="panel list"><h3>🛍️ Mevcut ürünler</h3>` +
-    (products.length? products.map(p=>`<div class="item"><div><b>${esc(p.emoji||"🎁")} ${esc(p.name)}</b>
+    <div class="panel list"><h3>🛍️ Mevcut ürünler</h3>
+    <div class="tabs" style="margin-bottom:8px">${filters.map(([k,l])=>`<button class="tab ${adminFilter===k?"on":""}" data-af="${k}">${l}</button>`).join("")}</div>` +
+    (shown.length? shown.map(p=>`<div class="item"><div><b>${esc(p.emoji||"🎁")} ${esc(p.name)}</b>
       <div class="muted">${esc(p.desc||"")} · ${p.keep?"🎯 "+p.price+" puana ulaşınca (puan düşmez)":"⭐ "+p.price}</div>
-      <div class="muted">${hasStock(p)?"Stok: <b>"+p.stock+"</b>":"Stok: sınırsız"}</div></div>
-      <div class="actions"><button class="btn ghost stk" data-id="${esc(p.id)}" style="padding:8px 14px">Stok</button><button class="btn ghost del" data-id="${esc(p.id)}" style="padding:8px 14px">Sil</button></div></div>`).join("")
-    :'<div class="empty">Ürün yok</div>') + `</div>`;
+      <div class="muted">${hasStock(p)?"Stok: <b>"+p.stock+"</b>":"Stok: sınırsız"} · <span class="tag for">${ownerLabel(ownerOf(p))}</span></div></div>
+      <div class="actions"><select class="own" data-id="${esc(p.id)}" title="Kimin için">${ownerOpts(ownerOf(p))}</select><button class="btn ghost stk" data-id="${esc(p.id)}" style="padding:8px 14px">Stok</button><button class="btn ghost del" data-id="${esc(p.id)}" style="padding:8px 14px">Sil</button></div></div>`).join("")
+    :'<div class="empty">Bu filtrede ürün yok</div>') + `</div>`;
+  $("view").querySelectorAll("[data-af]").forEach(b=>b.onclick=()=>{ adminFilter=b.dataset.af; renderAdminProducts(); });
   $("pBtn").onclick=async()=>{
     const name=$("pName").value.trim(), price=parseInt($("pPrice").value,10);
     if(!name||!price||price<1){ toast("Ad ve puan gerekli"); return; }
@@ -737,11 +826,18 @@ async function renderAdminProducts(){
     const st=$("pStock").value.trim();
     if(st!==""){ const n=parseInt(st,10); if(isNaN(n)||n<0){ toast("Stok geçerli bir sayı olmalı"); return; } prod.stock=n; }
     if($("pKind").value==="keep") prod.keep=true;
+    const target=$("pFor").value; if(target!=="all") prod.for=target;
     try{
       await db.saveProduct(prod);
-      toast("Ürün eklendi ✅"); renderAdminProducts();
+      lastFor=target; adminFilter="*";
+      toast(target==="all" ? "Ürün herkes için eklendi ✅" : "Ürün "+ownerLabel(target)+" için eklendi ✅"); renderAdminProducts();
+      notify(target==="all"?null:target,`Mağazaya ${target==="all"?"yeni":"senin için yeni"} bir ürün ekledim 🎁\n${prod.emoji} ${prod.name} — `+(prod.keep?`${prod.price} puana ulaşınca alabilirsin 🎯`:`${prod.price} puan`));
     }catch(e){ toast("Hata: "+e.message); }
   };
+  $("view").querySelectorAll(".own").forEach(sel=>sel.onchange=async()=>{
+    try{ await db.updateProduct(sel.dataset.id,{for: sel.value==="all"?null:sel.value}); toast("Ürün artık: "+ownerLabel(sel.value)+" ✅"); renderAdminProducts(); }
+    catch(e){ toast("Hata: "+e.message); }
+  });
   $("view").querySelectorAll(".stk").forEach(b=>b.onclick=async()=>{
     const p=products.find(x=>x.id===b.dataset.id); if(!p) return;
     const v=prompt(`"${p.name}" için yeni stok (boş bırakırsan sınırsız olur):`, hasStock(p)?p.stock:"");
@@ -752,7 +848,8 @@ async function renderAdminProducts(){
     catch(e){ toast("Hata: "+e.message); }
   });
   $("view").querySelectorAll(".del").forEach(b=>b.onclick=async()=>{
-    if(!confirm("Bu ürün silinsin mi?")) return;
+    const p=products.find(x=>x.id===b.dataset.id);
+    if(!confirm('"'+(p?p.name:"Bu ürün")+'" silinsin mi?')) return;
     try{ await db.deleteProduct(b.dataset.id); toast("Silindi"); renderAdminProducts(); }
     catch(e){ toast("Hata: "+e.message); }
   });
