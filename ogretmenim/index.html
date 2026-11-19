@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Öğretmenler Günün Kutlu Olsun, Kevser Öğretmenim</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;700;800&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f3efe2; --ink:#2b2a24; --muted:#6b675a;
+  --board:#24433a; --chalk:#f4f1e6; --lizard:#8fd16a; --bear:#b9794a;
+  --paper:#fffbe6; --line:#bcd3e6; --margin:#e58b8b; --apple:#d9473b;
+  --hand:'Caveat','Segoe Script','Bradley Hand',cursive;
+  --body:'Nunito','Trebuchet MS',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#171a17;--ink:#ece8d8;--muted:#a7a38f;--paper:#2a2a22;--line:#3b4a58;}
+}
+:root[data-theme="dark"]{--bg:#171a17;--ink:#ece8d8;--muted:#a7a38f;--paper:#2a2a22;--line:#3b4a58;}
+*,*::before,*::after{box-sizing:inherit;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.05rem/1.6 var(--body)}
+main{max-width:760px;margin:0 auto;padding:0 18px 56px}
+h1,h2{font-family:var(--hand);font-weight:700;line-height:1.05;margin:0}
+section{margin-top:44px}
+h2{font-size:2.3rem;margin-bottom:6px}
+.sub{color:var(--muted);margin:0 0 18px}
+
+.board{background:var(--board);color:var(--chalk);border:10px solid #8b6a47;border-radius:6px;
+  margin-top:20px;padding:28px 22px 22px;text-align:center;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+.board h1{font-size:clamp(2.4rem,9vw,4rem);letter-spacing:.5px}
+.board p{font-family:var(--hand);font-size:1.6rem;margin:10px 0 0;opacity:.92}
+.scene{display:flex;justify-content:center;align-items:flex-end;gap:26px;margin-top:18px;line-height:1}
+.who{text-align:center;font-size:4.2rem}
+.who b{display:block;font:700 1rem var(--body);opacity:.85;margin-top:6px}
+.av{height:120px;width:auto;max-width:140px;object-fit:contain;display:block;margin:0 auto}
+
+.lines{background:var(--board);color:var(--chalk);border:10px solid #8b6a47;border-radius:6px;padding:20px;min-height:230px}
+.lines ol{margin:0;padding-left:34px;font-family:var(--hand);font-size:1.55rem;line-height:1.35}
+.lines li{animation:pop .25s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.lines .hint{font-family:var(--hand);font-size:1.5rem;opacity:.7;margin:0}
+.bar{display:flex;gap:12px;align-items:center;margin-top:14px;flex-wrap:wrap}
+button{font:800 1rem var(--body);cursor:pointer;border:0;border-radius:999px;padding:12px 22px;
+  background:var(--apple);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25);
+  touch-action:manipulation;-webkit-user-select:none;user-select:none;outline:none}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.25)}
+button:focus-visible{outline:3px solid var(--lizard);outline-offset:3px}
+button[disabled]{background:#6f8f55;cursor:default}
+button.alt{background:#5f7f4c}
+button.ghost{background:transparent;color:var(--muted);box-shadow:none;padding:6px 10px;text-decoration:underline}
+.count{color:var(--muted);font-weight:700}
+
+.card{background:var(--paper);border:2px solid var(--ink);border-radius:4px;padding:18px 18px 12px}
+.card .wrap{overflow-x:auto}
+.card table{width:100%;border-collapse:collapse}
+.card th,.card td{text-align:left;padding:9px 6px;border-bottom:1px dashed var(--line)}
+.card th{font-family:var(--hand);font-size:1.5rem;font-weight:700}
+.card td:last-child,.card th:last-child{text-align:right;white-space:nowrap}
+.grade{font-family:var(--hand);font-size:1.7rem;color:var(--apple);font-weight:700}
+.card input{font:inherit;color:inherit;background:transparent;border:0;border-bottom:2px dashed var(--muted);
+  width:100%;padding:4px 2px;border-radius:0;outline:none}
+.card input:focus{border-bottom-color:var(--lizard)}
+.card input.n{width:4.5rem;text-align:right;font-family:var(--hand);font-size:1.5rem;color:var(--apple);font-weight:700}
+.del{padding:2px 10px;margin-left:6px;font-size:1rem;background:transparent;color:var(--apple);box-shadow:none}
+.note{font-family:var(--hand);font-size:1.5rem;margin:14px 0 6px;color:var(--apple)}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+.letter{background:var(--paper);border-left:4px solid var(--margin);padding:14px 18px 18px 22px;border-radius:4px;
+  background-image:repeating-linear-gradient(transparent 0 31px,var(--line) 31px 32px);
+  line-height:32px;font-family:var(--hand);font-size:1.6rem;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.letter p{margin:0 0 32px}
+.sign{text-align:right}
+
+footer{margin-top:48px;text-align:center;color:var(--muted)}
+footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block}
+.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.hearts i{position:absolute;bottom:-30px;font-style:normal;animation:up 2.4s ease-in forwards}
+@keyframes up{to{transform:translateY(-110vh) rotate(20deg);opacity:0}}
+
+.polaroid{margin:0;background:#fffdf3;color:#2b2a24;padding:12px 12px 8px;border-radius:3px;transform:rotate(-1.5deg);
+  box-shadow:0 6px 0 rgba(0,0,0,.12),0 10px 24px rgba(0,0,0,.18);max-width:520px;margin-inline:auto}
+.polaroid img{width:100%;max-height:440px;object-fit:cover;display:block;border-radius:2px}
+.polaroid figcaption{font-family:var(--hand);font-size:1.7rem;text-align:center;padding-top:6px}
+.ph{height:240px;display:flex;align-items:center;justify-content:center;background:#e9e4cf;color:#6b675a;font-family:var(--hand);font-size:1.7rem}
+.odev{list-style:none;margin:0;padding:0}
+.odev li{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px dashed var(--line)}
+.odev label{flex:1;display:flex;align-items:center;gap:12px;font-family:var(--hand);font-size:1.6rem;line-height:1.2}
+.odev input[type=checkbox]{width:26px;height:26px;accent-color:#5f7f4c;flex:none}
+.odev li.done span{text-decoration:line-through;opacity:.55}
+.odev .empty{font-family:var(--hand);font-size:1.5rem;color:var(--muted);padding:8px 4px}
+.add{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.add input{flex:1;min-width:180px;font-size:1.1rem}
+.aferin{position:fixed;inset:0;z-index:90;pointer-events:none;overflow:hidden}
+.aferin .cf{position:absolute;top:-50px;animation:fall linear forwards}
+@keyframes fall{to{transform:translate(var(--dx),115vh) rotate(720deg)}}
+.aferin .txt{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:var(--hand);
+  font-weight:700;font-size:clamp(3.5rem,18vw,8rem);color:#ffd23f;text-shadow:3px 3px 0 #b8741a,0 0 30px rgba(255,210,63,.8);text-align:center}
+.aferin .txt.on{display:flex;animation:bump .6s ease-out}
+@keyframes bump{0%{transform:scale(.2) rotate(-12deg);opacity:0}60%{transform:scale(1.2) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@media (prefers-reduced-motion:reduce){.aferin .cf,.aferin .txt.on{animation:none}.aferin .cf{display:none}}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+.toast.on{opacity:1}
+.status{font-size:.9rem;color:var(--muted);font-weight:700}
+
+.gate{position:fixed;inset:0;z-index:80;background:var(--board);color:var(--chalk);display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:22px;padding:24px;text-align:center}
+.gate.on{display:flex}
+.gate h2{font-size:2.6rem}
+.gate .pick{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.gate .pick button{background:var(--chalk);color:var(--board);border-radius:18px;padding:16px 20px;font-size:1.1rem}
+.gate .av{height:90px}
+
+.ceza{position:fixed;inset:-40px;z-index:99;display:none;flex-direction:column;align-items:center;justify-content:center;
+  background:#e00000;color:#fff;text-align:center;padding:40px;animation:flash .16s infinite alternate,quake .1s infinite}
+.ceza.on{display:flex}
+.ceza h1{font-size:clamp(3rem,17vw,8rem);text-shadow:4px 4px 0 #6b0000;letter-spacing:2px}
+.ceza h1 span{display:inline-block;animation:jig .14s infinite alternate}
+.ceza p{font-weight:800;margin-top:18px;opacity:.85}
+@keyframes flash{from{background:#b80000}to{background:#ff2020}}
+@keyframes quake{0%{translate:0 0}25%{translate:-16px 12px}50%{translate:14px -14px}75%{translate:-12px -10px}100%{translate:16px 14px}}
+@keyframes jig{from{transform:translateY(-14px) rotate(-14deg) scale(.95)}to{transform:translateY(14px) rotate(14deg) scale(1.2)}}
+@media (prefers-reduced-motion:reduce){.lines li{animation:none}.hearts{display:none}
+  .ceza{animation:none}.ceza h1 span{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <h2>Kim giriyor?</h2>
+  <div class="pick">
+    <button data-role="teacher" id="pickT"></button>
+    <button data-role="student" id="pickS"></button>
+  </div>
+</div>
+
+<main>
+<header class="board">
+  <h1>Öğretmenler Günün Kutlu Olsun, Kevser Öğretmenim!</h1>
+  <p>Sınıfın en şanslı öğrencisinden sana küçük bir ödev teslimi.</p>
+  <div class="scene">
+    <div class="who" id="whoT"></div>
+    <div class="who" id="whoS"></div>
+  </div>
+</header>
+
+<section id="teacherDesk" hidden>
+  <h2>Öğretmen masası</h2>
+  <p class="sub">Yaramazlık mı yaptı? Ceza ver. İyi mi davrandı? Aferin ver. Öğrencinin ekranında görünür.</p>
+  <div class="bar">
+    <button id="cezaBtn">🚨 Ceza ver</button>
+    <button class="alt" id="aferinBtn">⭐ Aferin ver</button>
+    <span class="status" id="status"></span>
+  </div>
+</section>
+
+<section>
+  <h2>Ceza tahtası</h2>
+  <p class="sub">Derse geç kalan öğrenci tahtaya yazı yazar. Butona bas, ben yazayım.</p>
+  <div class="lines" id="board" aria-live="polite">
+    <p class="hint" id="hint">Tahta boş. Öğrenci henüz yazmaya başlamadı…</p>
+    <ol id="list"></ol>
+  </div>
+  <div class="bar">
+    <button id="write">Bir satır yaz ✍️</button>
+    <span class="count" id="count">0 / 10</span>
+  </div>
+</section>
+
+<section>
+  <h2>Ödev defteri</h2>
+  <p class="sub" id="odevSub">Öğretmenin verdiği ödevler burada. Yapınca işaretle.</p>
+  <div class="card">
+    <ul class="odev" id="odevList"></ul>
+    <div class="empty odev" id="odevEmpty"><div class="empty">Henüz ödev yok. Öğrenci rahat rahat oturuyor 😴</div></div>
+    <div class="add" id="odevAdd" hidden>
+      <input id="odevIn" placeholder="Yeni ödev yaz…" maxlength="120" aria-label="Yeni ödev">
+      <button id="odevBtn">Ödev ver 📝</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Sınıf fotoğrafı</h2>
+  <p class="sub">Bizim sınıfın tek ve en güzel fotoğrafı.</p>
+  <figure class="polaroid">
+    <img src="foto.jpg" alt="Kevser ve Atakan" onerror="this.outerHTML='<div class=ph>📷 Fotoğrafımız yolda…</div>'">
+    <figcaption>Sınıf fotoğrafı 📸</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Karne</h2>
+  <p class="sub">Bu dönemin değerlendirmesi, öğrenciden öğretmene.</p>
+  <div class="card">
+    <div class="wrap">
+      <table>
+        <thead><tr><th>Ders</th><th>Not</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="tools">
+      <button class="alt" id="editBtn">Düzenle ✏️</button>
+      <button class="alt" id="addBtn" hidden>+ Ders ekle</button>
+    </div>
+    <p class="note">Öğrenci notu: Bu karne sadece öğretmen için hazırlanmıştır, başka öğretmenlere gösterilmez.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Öğretmenime mektup</h2>
+  <div class="letter">
+    <p>Sevgili Kevserim Öğretmenim,</p>
+    <p>Sen bana en çok güneşte duran taşın sıcaklığı gibi iyi geliyorsun. Hep bir adım önde, hep sakin.</p>
+    <p>Ben koca bir ayıyım ama yanında kendimi küçücük bir öğrenci gibi hissediyorum ve bunu çok seviyorum.</p>
+    <p>Sen bana yaşamayı, sevmeyi, sevilmeyi, hayatı, sevinmeyi, mutluluğu, aşkı, aşka olan inancımı, her şeyi öğreten kişisin. Seni çok seviyorum hayatım. Senin kalbindeki yerin, kalbimden bile büyük.</p>
+    <p>İyi ki varsın. Öğretmenler Günün kutlu olsun!</p>
+    <p class="sign">Öğrencin Atakan 🐻</p>
+  </div>
+</section>
+
+<footer>
+  <b>24 Kasım Öğretmenler Günü</b>
+  Bu site sadece sana özel. 🦎💚🐻
+  <div><button class="ghost" id="switchRole">Kim olduğunu değiştir</button></div>
+</footer>
+</main>
+
+<div class="ceza" id="ceza"><h1 id="cezaTxt"></h1><p>(kapatmak için dokun)</p></div>
+<div class="hearts" id="hearts" aria-hidden="true"></div>
+<div class="aferin" id="aferin" aria-hidden="true"><div id="confetti"></div><div class="txt" id="aferinTxt">Aferin! ⭐</div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module">
+const $ = id => document.getElementById(id);
+
+/* ---------- Avatarlar: ogretmen.png / ogrenci.png yoksa emoji ---------- */
+function avatar(src, emoji, label){
+  return '<img class="av" src="'+src+'" alt="'+label+'" onerror="this.outerHTML=\'<span>'+emoji+'</span>\'">';
+}
+$('whoT').innerHTML = avatar('ogretmen.png','🦎','Öğretmen') + '<b>Öğretmen</b>';
+$('whoS').innerHTML = avatar('ogrenci.png','🐻','Öğrenci') + '<b>Öğrenci</b>';
+$('pickT').innerHTML = avatar('ogretmen.png','🦎','Öğretmen') + 'Ben öğretmenim';
+$('pickS').innerHTML = avatar('ogrenci.png','🐻','Öğrenci') + 'Ben öğrenciyim';
+
+/* ---------- Rol ve kimlik ---------- */
+function store(k, v){
+  try{ if(v === undefined) return localStorage.getItem(k); if(v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); }catch(e){ return null; }
+}
+let myId = store('myId') || (Math.random().toString(36).slice(2) + Date.now().toString(36));
+store('myId', myId);
+let role = store('role');
+let roleHook = null;
+function applyRole(){
+  $('gate').classList.toggle('on', !role);
+  $('teacherDesk').hidden = role !== 'teacher';
+  if(roleHook) roleHook();
+}
+document.querySelectorAll('[data-role]').forEach(b => b.addEventListener('click', () => {
+  role = b.dataset.role; store('role', role); applyRole();
+}));
+$('switchRole').addEventListener('click', () => { role = null; store('role', null); applyRole(); });
+applyRole();
+
+/* ---------- Toast ---------- */
+let tt;
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2600); }
+
+/* ---------- Ceza tahtası (öğrenci yazıyor) ---------- */
+(function(){
+  const LINE = 'Öğretmenim dünyanın en iyi öğretmeni.', MAX = 10; let n = 0;
+  $('write').addEventListener('click', function(){
+    if(n >= MAX) return; n++;
+    $('hint').style.display = 'none';
+    const li = document.createElement('li'); li.textContent = LINE; $('list').appendChild(li);
+    $('count').textContent = n + ' / ' + MAX;
+    if(n === MAX){
+      const d = document.createElement('p'); d.className = 'hint';
+      d.textContent = 'Ceza bitti öğretmenim. Ama bu cümleyi yüz kere daha yazarım. 💚';
+      $('board').appendChild(d);
+      this.textContent = 'Ödev teslim edildi ✔'; this.disabled = true;
+      for(let i=0;i<14;i++){
+        const h = document.createElement('i'); h.textContent = i%2 ? '💚' : '🤎';
+        h.style.left = Math.random()*100 + '%'; h.style.fontSize = (18+Math.random()*22) + 'px';
+        h.style.animationDelay = Math.random()*.6 + 's'; $('hearts').appendChild(h);
+        setTimeout(() => h.remove(), 3200);
+      }
+    }
+  });
+})();
+
+/* ---------- Karne (düzenlenebilir) ---------- */
+let notlar = [
+  {d:'Sabır (beni her seferinde çekiyorsun)', n:'100'},
+  {d:'Güldürme sanatı', n:'100'},
+  {d:'Sarılma ve sıcaklık', n:'100'},
+  {d:'Bana inanma', n:'100'}
+];
+let editing = false, saveRemote = null;
+const rows = $('rows');
+
+function renderRows(){
+  rows.innerHTML = '';
+  notlar.forEach((r, i) => {
+    const tr = document.createElement('tr'), a = document.createElement('td'), b = document.createElement('td');
+    if(editing){
+      const i1 = document.createElement('input'); i1.value = r.d; i1.placeholder = 'Ders adı'; i1.setAttribute('aria-label','Ders adı');
+      i1.addEventListener('input', () => r.d = i1.value);
+      const i2 = document.createElement('input'); i2.value = r.n; i2.className = 'n'; i2.placeholder = 'Not'; i2.setAttribute('aria-label','Not');
+      i2.addEventListener('input', () => r.n = i2.value);
+      const x = document.createElement('button'); x.className = 'del'; x.textContent = '✕'; x.setAttribute('aria-label','Dersi sil');
+      x.addEventListener('click', () => { notlar.splice(i,1); renderRows(); });
+      a.appendChild(i1); b.append(i2, x);
+    } else { a.textContent = r.d; b.textContent = r.n; b.className = 'grade'; }
+    tr.append(a, b); rows.appendChild(tr);
+  });
+}
+$('editBtn').addEventListener('click', () => {
+  if(!editing){ editing = true; }
+  else {
+    notlar = notlar.filter(r => r.d.trim() || r.n.trim());
+    editing = false;
+    if(saveRemote) saveRemote(notlar).then(() => toast('Karne kaydedildi ✔')).catch(() => toast('Kaydedilemedi, bağlantıyı kontrol et'));
+    else toast('Bağlantı yok, sadece bu cihazda değişti');
+  }
+  $('editBtn').textContent = editing ? 'Kaydet ✔' : 'Düzenle ✏️';
+  $('addBtn').hidden = !editing;
+  renderRows();
+});
+$('addBtn').addEventListener('click', () => { notlar.push({d:'', n:''}); renderRows(); });
+renderRows();
+
+/* ---------- Ceza ekranı (diğer kişilerde) ---------- */
+let vib, cezaTimer;
+function startCeza(){
+  const h = $('cezaTxt'); h.innerHTML = '';
+  'CEZALISIN'.split('').forEach(ch => {
+    const s = document.createElement('span'); s.textContent = ch;
+    s.style.animationDelay = (-Math.random()*.3) + 's'; s.style.animationDuration = (.1 + Math.random()*.15) + 's';
+    h.appendChild(s);
+  });
+  $('ceza').classList.add('on');
+  const buzz = () => { try{ navigator.vibrate && navigator.vibrate([120,40,120,40,120,40,240]); }catch(e){} };
+  buzz(); clearInterval(vib); vib = setInterval(buzz, 700);
+  clearTimeout(cezaTimer); cezaTimer = setTimeout(stopCeza, 8000);
+}
+function stopCeza(){
+  $('ceza').classList.remove('on'); clearInterval(vib);
+  try{ navigator.vibrate && navigator.vibrate(0); }catch(e){}
+}
+$('ceza').addEventListener('click', stopCeza);
+
+/* ---------- Ödev defteri ---------- */
+let odevler = [], saveOdev = null;
+function pushOdev(){
+  if(saveOdev) saveOdev(odevler).catch(() => toast('Kaydedilemedi, bağlantıyı kontrol et'));
+  else toast('Bağlantı yok, sadece bu cihazda değişti');
+}
+function renderOdev(){
+  const ul = $('odevList'); ul.innerHTML = '';
+  $('odevEmpty').hidden = odevler.length > 0;
+  $('odevAdd').hidden = role !== 'teacher';
+  $('odevSub').textContent = role === 'teacher'
+    ? 'Öğrenciye ödev yaz. Yapınca işaretleyecek.'
+    : 'Öğretmenin verdiği ödevler burada. Yapınca işaretle.';
+  odevler.forEach((o, i) => {
+    const li = document.createElement('li'); if(o.done) li.className = 'done';
+    const lab = document.createElement('label');
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!o.done;
+    cb.disabled = role !== 'student';
+    cb.addEventListener('change', () => { o.done = cb.checked; renderOdev(); pushOdev(); if(cb.checked) toast('Ödev yapıldı ✔'); });
+    const sp = document.createElement('span'); sp.textContent = o.t;
+    lab.append(cb, sp); li.appendChild(lab);
+    if(role === 'teacher'){
+      const x = document.createElement('button'); x.className = 'del'; x.textContent = '✕'; x.setAttribute('aria-label','Ödevi sil');
+      x.addEventListener('click', () => { odevler.splice(i,1); renderOdev(); pushOdev(); });
+      li.appendChild(x);
+    }
+    ul.appendChild(li);
+  });
+}
+function addOdev(){
+  const t = $('odevIn').value.trim(); if(!t) return;
+  odevler.push({t, done:false}); $('odevIn').value = ''; renderOdev(); pushOdev();
+}
+$('odevBtn').addEventListener('click', addOdev);
+$('odevIn').addEventListener('keydown', e => { if(e.key === 'Enter') addOdev(); });
+roleHook = renderOdev; renderOdev();
+
+/* ---------- Aferin konfetisi ---------- */
+let aferinT;
+function startAferin(){
+  const box = $('confetti'); box.innerHTML = '';
+  const emo = ['⭐','✨','🎉','💚','🤎','🌟'], cols = ['#ffd23f','#8fd16a','#ff6b6b','#5ec4ff','#ff9ff3','#b9794a'];
+  for(let i=0;i<90;i++){
+    const c = document.createElement('i'); c.className = 'cf'; c.style.fontStyle = 'normal';
+    if(i % 3 === 0){ c.textContent = emo[i % emo.length]; c.style.fontSize = (20 + Math.random()*20) + 'px'; }
+    else { c.style.width = (8 + Math.random()*8) + 'px'; c.style.height = (12 + Math.random()*10) + 'px'; c.style.background = cols[i % cols.length]; }
+    c.style.left = Math.random()*100 + '%';
+    c.style.setProperty('--dx', (Math.random()*160 - 80) + 'px');
+    c.style.animationDuration = (2.2 + Math.random()*2.2) + 's';
+    c.style.animationDelay = (Math.random()*1.4) + 's';
+    box.appendChild(c);
+  }
+  $('aferinTxt').classList.add('on');
+  try{ navigator.vibrate && navigator.vibrate([80,40,80]); }catch(e){}
+  clearTimeout(aferinT);
+  aferinT = setTimeout(() => { $('aferinTxt').classList.remove('on'); box.innerHTML = ''; }, 5500);
+}
+
+/* ---------- Firebase ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyCVufVE2sG5-qSFt3G_pt8TnE-qo6hj7eM",
+  authDomain: "project-6700528244363532387.firebaseapp.com",
+  databaseURL: "https://project-6700528244363532387-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "project-6700528244363532387",
+  storageBucket: "project-6700528244363532387.firebasestorage.app",
+  messagingSenderId: "524187994352",
+  appId: "1:524187994352:web:8688a70183fab05cc6da35"
+};
+
+try{
+  const V = '10.14.1';
+  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/'+V+'/firebase-app.js');
+  const { getDatabase, ref, onValue, set, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/'+V+'/firebase-database.js');
+  const db = getDatabase(initializeApp(firebaseConfig));
+
+  saveRemote = list => set(ref(db, 'notlar'), list);
+  saveOdev = list => set(ref(db, 'odevler'), list);
+
+  onValue(ref(db, 'odevler'), snap => {
+    const v = snap.val();
+    odevler = v ? (Array.isArray(v) ? v : Object.values(v)).filter(Boolean) : [];
+    renderOdev();
+  });
+
+  let firstA = true;
+  onValue(ref(db, 'aferin'), snap => {
+    if(firstA){ firstA = false; return; }
+    const v = snap.val();
+    if(v && v.by !== myId) startAferin();
+  });
+  $('aferinBtn').addEventListener('click', () => {
+    set(ref(db, 'aferin'), { by: myId, t: serverTimestamp(), k: Math.random() })
+      .then(() => toast('Aferin gönderildi ⭐'))
+      .catch(() => toast('Gönderilemedi, bağlantıyı kontrol et'));
+  });
+
+  onValue(ref(db, 'notlar'), snap => {
+    const v = snap.val();
+    if(v && !editing){ notlar = (Array.isArray(v) ? v : Object.values(v)).filter(Boolean); renderRows(); }
+  });
+
+  onValue(ref(db, '.info/connected'), s => { $('status').textContent = s.val() ? 'Bağlı ✔' : 'Bağlanıyor…'; });
+
+  let first = true;
+  onValue(ref(db, 'ceza'), snap => {
+    if(first){ first = false; return; }          // sayfa açılırken eski cezayı gösterme
+    const v = snap.val();
+    if(v && v.by !== myId) startCeza();          // cezayı veren kişide değil, diğerlerinde çıkar
+  });
+
+  $('cezaBtn').addEventListener('click', () => {
+    set(ref(db, 'ceza'), { by: myId, t: serverTimestamp(), k: Math.random() })
+      .then(() => toast('Ceza gönderildi 🚨'))
+      .catch(() => toast('Gönderilemedi, bağlantıyı kontrol et'));
+  });
+}catch(e){
+  console.error('Firebase yüklenemedi', e);
+  $('status').textContent = 'Çevrimdışı';
+  $('cezaBtn').addEventListener('click', () => toast('Bağlantı yok, ceza gönderilemedi'));
+  $('aferinBtn').addEventListener('click', () => toast('Bağlantı yok, aferin gönderilemedi'));
+}
+</script>
+</body>
+</html>
