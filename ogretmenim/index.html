@@ -104,7 +104,9 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 @media (prefers-reduced-motion:reduce){.aferin .cf,.aferin .txt.on{animation:none}.aferin .cf{display:none}}
 .add input{font:inherit;color:inherit;background:transparent;border:0;border-bottom:2px dashed var(--muted);padding:4px 2px;outline:none;border-radius:0}
 .add input:focus{border-bottom-color:var(--lizard)}
-#yaziCount{flex:none;width:4.5rem;min-width:0;text-align:center}
+.cnt{flex:1 1 100%;display:flex;align-items:center;gap:12px;font-weight:700}
+.add .cnt input{flex:1;min-width:0;height:36px;padding:0;border:0;accent-color:#5f7f4c;touch-action:pan-y}
+.cnt output{font-family:var(--hand);font-size:2.2rem;line-height:1;min-width:2.4ch;text-align:center;color:var(--apple);font-weight:700}
 .lines.yz{min-height:0}
 .lines .task{font-family:var(--hand);font-size:1.8rem;margin:0 0 8px;color:#ffe9a8;line-height:1.15}
 .typed{font-family:var(--hand);font-size:1.7rem;border-top:2px dashed rgba(244,241,230,.4);margin-top:12px;padding-top:8px;min-height:2.8rem;word-break:break-word}
@@ -112,14 +114,21 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 .typed.bad{animation:shk .3s}
 @keyframes blink{50%{opacity:0}}
 @keyframes shk{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-.kb{margin-top:14px;padding:14px 8px 8px;border-radius:14px;background:#24433a url(klavye.jpg) center 88%/cover;border:8px solid #8b6a47;position:relative;overflow:hidden}
+.kb{position:fixed;left:0;right:0;bottom:0;z-index:60;max-width:760px;margin:0 auto;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));border-radius:16px 16px 0 0;background:#24433a url(klavye.jpg) 50% 100%/auto 210%;border:8px solid #8b6a47;border-bottom:0;overflow:hidden}
 .kb::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.1)}
 .kb .row{position:relative;display:flex;gap:5px;margin-bottom:6px}
-.kb button.k{flex:1;min-width:0;height:48px;padding:0;border-radius:10px;font:700 1.6rem var(--hand);
+.kb button.k{flex:1;min-width:0;height:42px;padding:0;border-radius:10px;font:700 1.6rem var(--hand);
   background:rgba(244,241,230,.95);color:#24433a;box-shadow:0 3px 0 rgba(0,0,0,.4)}
 .kb button.k.sp{flex:6;font-size:1.2rem}
 .kb button.k.en{flex:2;background:#8fd16a}
 .kb button.k.bk{flex:2;background:#e58b8b}
+.kbbar{position:relative;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;color:#f4f1e6;font-family:var(--hand);font-size:1.5rem;line-height:1}
+.kbbar button{padding:4px 14px;font-size:.95rem;background:#e58b8b;color:#2b2a24}
+.kb button.k.sh{flex:1.6;background:#d9d4bf}
+.kb button.k.sh.on{background:#8fd16a}
+.kb button.k.pn{flex:1}
+.fab{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:55;width:56px;height:56px;padding:0;border-radius:50%;font-size:1.7rem;background:var(--board);border:3px solid #8b6a47}
+#yaziTyped{cursor:text}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
   background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
 .toast.on{opacity:1}
@@ -176,8 +185,8 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
   </div>
   <p class="sub" style="margin-top:20px">Yazı cezası: cümleyi ve kaç kez yazılacağını seç.</p>
   <div class="add">
-    <input id="yaziText" placeholder="Örn. Derse geç kalmayacağım" maxlength="80" aria-label="Ceza cümlesi">
-    <input id="yaziCount" type="number" min="1" max="50" value="5" aria-label="Kaç kez">
+    <input id="yaziText" inputmode="none" placeholder="Örn. Derse geç kalmayacağım" maxlength="80" aria-label="Ceza cümlesi">
+    <div class="cnt"><span>Kaç kez yazsın?</span><input id="yaziCount" type="range" min="1" max="50" step="1" value="5" aria-label="Kaç kez yazılsın"><output id="yaziCountOut" for="yaziCount">5</output></div>
     <button id="yaziBtn">Yazı cezası ver ✍️</button>
   </div>
 </section>
@@ -197,7 +206,6 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
     <button class="alt" id="yaziCancel" hidden>Cezayı kaldır</button>
   </div>
   <p class="status" id="yaziRule" hidden>Büyük-küçük harf, boşluk ve noktalama fark etmez. ı/i, ö/o, ü/u, ğ/g, ş/s, ç/c karışabilir. Cümle uzadıkça 1-3 harf yanlışa ve 1 eksik harfe izin var.</p>
-  <div class="kb" id="kb" hidden></div>
 </section>
 
 <section>
@@ -222,7 +230,7 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
     <ul class="odev" id="odevList"></ul>
     <div class="empty odev" id="odevEmpty"><div class="empty">Henüz ödev yok. Öğrenci rahat rahat oturuyor 😴</div></div>
     <div class="add" id="odevAdd" hidden>
-      <input id="odevIn" placeholder="Yeni ödev yaz…" maxlength="120" aria-label="Yeni ödev">
+      <input id="odevIn" inputmode="none" placeholder="Yeni ödev yaz…" maxlength="120" aria-label="Yeni ödev">
       <button id="odevBtn">Ödev ver 📝</button>
     </div>
   </div>
@@ -274,6 +282,10 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 </footer>
 </main>
 
+<div class="kb" id="kb" hidden>
+  <div class="kbbar"><span id="kbFor">Klavye</span><button id="kbClose" aria-label="Klavyeyi kapat">Kapat ⌄</button></div>
+</div>
+<button class="fab" id="kbToggle" aria-label="Klavyeyi aç" hidden>⌨️</button>
 <div class="ceza" id="ceza"><h1 id="cezaTxt"></h1><p>(kapatmak için dokun)</p></div>
 <div class="hearts" id="hearts" aria-hidden="true"></div>
 <div class="aferin" id="aferin" aria-hidden="true"><div id="confetti"></div><div class="txt" id="aferinTxt">Aferin! ⭐</div></div>
@@ -369,9 +381,9 @@ function renderRows(){
   notlar.forEach((r, i) => {
     const tr = document.createElement('tr'), a = document.createElement('td'), b = document.createElement('td');
     if(editing){
-      const i1 = document.createElement('input'); i1.value = r.d; i1.placeholder = 'Ders adı'; i1.setAttribute('aria-label','Ders adı');
+      const i1 = document.createElement('input'); i1.inputMode = 'none'; i1.value = r.d; i1.placeholder = 'Ders adı'; i1.setAttribute('aria-label','Ders adı');
       i1.addEventListener('input', () => r.d = i1.value);
-      const i2 = document.createElement('input'); i2.value = r.n; i2.className = 'n'; i2.placeholder = 'Not'; i2.setAttribute('aria-label','Not');
+      const i2 = document.createElement('input'); i2.inputMode = 'none'; i2.value = r.n; i2.className = 'n'; i2.placeholder = 'Not'; i2.setAttribute('aria-label','Not');
       i2.addEventListener('input', () => r.n = i2.value);
       const x = document.createElement('button'); x.className = 'del'; x.textContent = '✕'; x.setAttribute('aria-label','Dersi sil');
       x.addEventListener('click', () => { notlar.splice(i,1); renderRows(); });
@@ -390,7 +402,7 @@ $('editBtn').addEventListener('click', () => {
   }
   $('editBtn').textContent = editing ? 'Kaydet ✔' : 'Düzenle ✏️';
   $('addBtn').hidden = !editing;
-  renderRows();
+  renderRows(); refreshToggle();
 });
 $('addBtn').addEventListener('click', () => { notlar.push({d:'', n:''}); renderRows(); });
 renderRows();
@@ -491,7 +503,7 @@ function sameLine(typed, target){
 const canType = () => role === 'student' && yazi && yazi.done < yazi.count;
 function renderTyped(){ $('yaziTyped').textContent = buf; }
 function renderYazi(){
-  const sec = $('yaziSec'); sec.hidden = !yazi; if(!yazi) return;
+  const sec = $('yaziSec'); sec.hidden = !yazi; if(!yazi){ if(kbTarget && kbTarget.type === 'yazi') closeKb(); refreshToggle(); return; }
   const st = role === 'student', te = role === 'teacher', fin = yazi.done >= yazi.count;
   $('yaziTask').textContent = '“' + yazi.text + '” cümlesini ' + yazi.count + ' kez yaz';
   $('yaziCnt').textContent = yazi.done + ' / ' + yazi.count;
@@ -499,7 +511,10 @@ function renderYazi(){
   for(let i=0;i<yazi.done;i++){ const li = document.createElement('li'); li.textContent = yazi.text; ol.appendChild(li); }
   $('yaziDone').hidden = !fin;
   const typing = st && !fin;
-  $('yaziTyped').hidden = !typing; $('kb').hidden = !typing; $('yaziRule').hidden = !typing;
+  $('yaziTyped').hidden = !typing; $('yaziRule').hidden = !typing;
+  if(typing){ if(autoKbFor !== yazi.id){ autoKbFor = yazi.id; openKb({type:'yazi'}); } }
+  else if(kbTarget && kbTarget.type === 'yazi') closeKb();
+  refreshToggle();
   $('yaziCancel').hidden = !te;
   $('yaziReset').hidden = !te; $('yaziReset').disabled = yazi.done === 0;
   $('yaziSub').textContent = te ? 'Öğrenci yazdıkça tahtada canlı görünür.' : 'Cümleyi tahtadaki gibi yaz, bitince ↵ tuşuna bas.';
@@ -528,14 +543,16 @@ function press(k){
   const mk = (cls, label, key, aria) => { const b = document.createElement('button'); b.className = 'k ' + cls; b.textContent = label; b.dataset.k = key; if(aria) b.setAttribute('aria-label', aria); return b; };
   rows.forEach((r, i) => {
     const d = document.createElement('div'); d.className = 'row';
+    if(i === 3) d.appendChild(mk('sh', '⇧', 'shift', 'Büyük harf'));
     r.split('').forEach(c => d.appendChild(mk('', c, c)));
     if(i === 3) d.appendChild(mk('bk', '⌫', 'back', 'Sil'));
     kb.appendChild(d);
   });
   const last = document.createElement('div'); last.className = 'row';
+  [',','.','!','?'].forEach(c => last.appendChild(mk('pn', c, c)));
   last.append(mk('sp', 'boşluk', ' ', 'Boşluk'), mk('en', '↵', 'enter', 'Gönder'));
   kb.appendChild(last);
-  kb.addEventListener('click', e => { const b = e.target.closest('button[data-k]'); if(b) press(b.dataset.k); });
+  kb.addEventListener('click', e => { const b = e.target.closest('button[data-k]'); if(b) typeKey(b.dataset.k); });
 })();
 document.addEventListener('keydown', e => {
   if(!canType() || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -544,6 +561,7 @@ document.addEventListener('keydown', e => {
   else if(e.key === 'Enter'){ e.preventDefault(); press('enter'); }
   else if(e.key.length === 1){ e.preventDefault(); press(e.key.toLocaleLowerCase('tr')); }
 });
+$('yaziCount').addEventListener('input', () => { $('yaziCountOut').textContent = $('yaziCount').value; });
 $('yaziBtn').addEventListener('click', () => {
   const text = $('yaziText').value.trim();
   const count = Math.max(1, Math.min(50, parseInt($('yaziCount').value, 10) || 1));
@@ -559,6 +577,60 @@ $('yaziReset').addEventListener('click', () => {
   saveYaziDone(0).then(() => toast('Öğrenci baştan başlıyor 😈')).catch(() => toast('Sıfırlanamadı, bağlantıyı kontrol et'));
 });
 $('yaziCancel').addEventListener('click', () => { if(saveYazi) saveYazi(null).catch(() => toast('Kaldırılamadı')); });
+
+/* ---------- Klavye: aç/kapa, her yazı alanında ---------- */
+let kbTarget = null, lastInput = null, autoKbFor = null, shift = false;
+function typeInto(el, k){
+  const max = el.maxLength > 0 ? el.maxLength : Infinity;
+  const st = el.selectionStart ?? el.value.length, en = el.selectionEnd ?? st;
+  if(k === 'back'){ if(st !== en) el.setRangeText('', st, en, 'end'); else if(st > 0) el.setRangeText('', st-1, st, 'end'); }
+  else if(k === 'enter'){ el.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter', bubbles:true})); return; }
+  else { if(el.value.length - (en - st) >= max) return; el.setRangeText(k, st, en, 'end'); }
+  el.dispatchEvent(new Event('input', {bubbles:true}));
+  el.focus({preventScroll:true});
+}
+function applyShift(){
+  $('kb').querySelectorAll('button.k').forEach(b => { const k = b.dataset.k; if(k.length === 1 && /\p{L}/u.test(k)) b.textContent = shift ? k.toLocaleUpperCase('tr') : k; });
+  $('kb').querySelector('.sh').classList.toggle('on', shift);
+}
+function typeKey(k){
+  if(k === 'shift'){ shift = !shift; applyShift(); return; }
+  if(shift && k.length === 1 && /\p{L}/u.test(k)){ k = k.toLocaleUpperCase('tr'); shift = false; applyShift(); }
+  if(!kbTarget) return;
+  if(kbTarget.type === 'yazi') press(k);
+  else if(kbTarget.el && document.contains(kbTarget.el)) typeInto(kbTarget.el, k);
+}
+function fitKb(){ document.body.style.paddingBottom = $('kb').hidden ? '' : $('kb').offsetHeight + 'px'; }
+function openKb(t){
+  kbTarget = t;
+  $('kbFor').textContent = t.type === 'yazi' ? 'Yazı cezası ✍️' : (t.el.getAttribute('aria-label') || t.el.placeholder || 'Yaz');
+  $('kb').hidden = false; $('kbToggle').hidden = true; fitKb();
+  setTimeout(() => { const el = t.type === 'yazi' ? $('yaziTyped') : t.el; if(el && el.scrollIntoView) el.scrollIntoView({block:'center', behavior:'smooth'}); }, 60);
+}
+function closeKb(){ $('kb').hidden = true; fitKb(); refreshToggle(); }
+function defaultTarget(){
+  if(canType()) return {type:'yazi'};
+  if(lastInput && document.contains(lastInput)) return {type:'input', el:lastInput};
+  if(editing){ const el = document.querySelector('#rows input'); if(el) return {type:'input', el}; }
+  if(role === 'teacher') return {type:'input', el:$('yaziText')};
+  return null;
+}
+function refreshToggle(){ $('kbToggle').hidden = !$('kb').hidden || !defaultTarget(); }
+$('kbClose').addEventListener('click', closeKb);
+$('kbToggle').addEventListener('click', () => {
+  const t = defaultTarget(); if(!t){ toast('Yazılacak bir yer yok'); return; }
+  openKb(t); if(t.type === 'input') t.el.focus({preventScroll:true});
+});
+$('yaziTyped').addEventListener('click', () => { if(canType()) openKb({type:'yazi'}); });
+document.addEventListener('focusin', e => {
+  const el = e.target;
+  if(el.tagName !== 'INPUT' || el.type === 'range' || el.type === 'checkbox') return;
+  lastInput = el;
+  if(!$('kb').hidden && kbTarget && kbTarget.el === el) return;
+  openKb({type:'input', el});
+});
+window.addEventListener('resize', fitKb);
+refreshToggle();
 
 /* ---------- Firebase ---------- */
 const firebaseConfig = {
