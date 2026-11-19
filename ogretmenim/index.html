@@ -102,6 +102,24 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 .aferin .txt.on{display:flex;animation:bump .6s ease-out}
 @keyframes bump{0%{transform:scale(.2) rotate(-12deg);opacity:0}60%{transform:scale(1.2) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0)}}
 @media (prefers-reduced-motion:reduce){.aferin .cf,.aferin .txt.on{animation:none}.aferin .cf{display:none}}
+.add input{font:inherit;color:inherit;background:transparent;border:0;border-bottom:2px dashed var(--muted);padding:4px 2px;outline:none;border-radius:0}
+.add input:focus{border-bottom-color:var(--lizard)}
+#yaziCount{flex:none;width:4.5rem;min-width:0;text-align:center}
+.lines.yz{min-height:0}
+.lines .task{font-family:var(--hand);font-size:1.8rem;margin:0 0 8px;color:#ffe9a8;line-height:1.15}
+.typed{font-family:var(--hand);font-size:1.7rem;border-top:2px dashed rgba(244,241,230,.4);margin-top:12px;padding-top:8px;min-height:2.8rem;word-break:break-word}
+.typed::after{content:'|';animation:blink 1s steps(1) infinite}
+.typed.bad{animation:shk .3s}
+@keyframes blink{50%{opacity:0}}
+@keyframes shk{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.kb{margin-top:14px;padding:14px 8px 8px;border-radius:14px;background:#24433a url(klavye.jpg) center 88%/cover;border:8px solid #8b6a47;position:relative;overflow:hidden}
+.kb::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.1)}
+.kb .row{position:relative;display:flex;gap:5px;margin-bottom:6px}
+.kb button.k{flex:1;min-width:0;height:48px;padding:0;border-radius:10px;font:700 1.6rem var(--hand);
+  background:rgba(244,241,230,.95);color:#24433a;box-shadow:0 3px 0 rgba(0,0,0,.4)}
+.kb button.k.sp{flex:6;font-size:1.2rem}
+.kb button.k.en{flex:2;background:#8fd16a}
+.kb button.k.bk{flex:2;background:#e58b8b}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
   background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
 .toast.on{opacity:1}
@@ -156,18 +174,44 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
     <button class="alt" id="aferinBtn">⭐ Aferin ver</button>
     <span class="status" id="status"></span>
   </div>
+  <p class="sub" style="margin-top:20px">Yazı cezası: cümleyi ve kaç kez yazılacağını seç.</p>
+  <div class="add">
+    <input id="yaziText" placeholder="Örn. Derse geç kalmayacağım" maxlength="80" aria-label="Ceza cümlesi">
+    <input id="yaziCount" type="number" min="1" max="50" value="5" aria-label="Kaç kez">
+    <button id="yaziBtn">Yazı cezası ver ✍️</button>
+  </div>
+</section>
+
+<section id="yaziSec" hidden>
+  <h2>Yazı cezası</h2>
+  <p class="sub" id="yaziSub"></p>
+  <div class="lines yz">
+    <p class="task" id="yaziTask"></p>
+    <ol id="yaziList"></ol>
+    <p class="hint" id="yaziDone" hidden>Ceza bitti! Eline sağlık öğrenci. 💚</p>
+    <div class="typed" id="yaziTyped" hidden></div>
+  </div>
+  <div class="bar">
+    <span class="count" id="yaziCnt"></span>
+    <button id="yaziReset" hidden>Yazıları sıfırla 😈</button>
+    <button class="alt" id="yaziCancel" hidden>Cezayı kaldır</button>
+  </div>
+  <p class="status" id="yaziRule" hidden>Büyük-küçük harf, boşluk ve noktalama fark etmez. ı/i, ö/o, ü/u, ğ/g, ş/s, ç/c karışabilir. Cümle uzadıkça 1-3 harf yanlışa ve 1 eksik harfe izin var.</p>
+  <div class="kb" id="kb" hidden></div>
 </section>
 
 <section>
   <h2>Ceza tahtası</h2>
-  <p class="sub">Derse geç kalan öğrenci tahtaya yazı yazar. Butona bas, ben yazayım.</p>
+  <p class="sub" id="tahtaSub">Derse geç kalan öğrenci tahtaya yazı yazar. Yazılanlar herkesin ekranında görünür.</p>
   <div class="lines" id="board" aria-live="polite">
     <p class="hint" id="hint">Tahta boş. Öğrenci henüz yazmaya başlamadı…</p>
     <ol id="list"></ol>
+    <p class="hint" id="doneMsg" hidden>Ceza bitti öğretmenim. Ama bu cümleyi yüz kere daha yazarım. 💚</p>
   </div>
   <div class="bar">
     <button id="write">Bir satır yaz ✍️</button>
     <span class="count" id="count">0 / 10</span>
+    <button class="alt" id="clearBtn" hidden>Tahtayı sil 🧽</button>
   </div>
 </section>
 
@@ -270,28 +314,45 @@ applyRole();
 let tt;
 function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2600); }
 
-/* ---------- Ceza tahtası (öğrenci yazıyor) ---------- */
-(function(){
-  const LINE = 'Öğretmenim dünyanın en iyi öğretmeni.', MAX = 10; let n = 0;
-  $('write').addEventListener('click', function(){
-    if(n >= MAX) return; n++;
-    $('hint').style.display = 'none';
-    const li = document.createElement('li'); li.textContent = LINE; $('list').appendChild(li);
-    $('count').textContent = n + ' / ' + MAX;
-    if(n === MAX){
-      const d = document.createElement('p'); d.className = 'hint';
-      d.textContent = 'Ceza bitti öğretmenim. Ama bu cümleyi yüz kere daha yazarım. 💚';
-      $('board').appendChild(d);
-      this.textContent = 'Ödev teslim edildi ✔'; this.disabled = true;
-      for(let i=0;i<14;i++){
-        const h = document.createElement('i'); h.textContent = i%2 ? '💚' : '🤎';
-        h.style.left = Math.random()*100 + '%'; h.style.fontSize = (18+Math.random()*22) + 'px';
-        h.style.animationDelay = Math.random()*.6 + 's'; $('hearts').appendChild(h);
-        setTimeout(() => h.remove(), 3200);
-      }
-    }
-  });
-})();
+/* ---------- Ceza tahtası (öğrenci yazar, herkes görür) ---------- */
+const LINE = 'Öğretmenim dünyanın en iyi öğretmeni.', MAX = 10;
+let tahtaN = 0, saveTahta = null, tahtaReady = false;
+function burst(){
+  for(let i=0;i<14;i++){
+    const h = document.createElement('i'); h.textContent = i%2 ? '💚' : '🤎';
+    h.style.left = Math.random()*100 + '%'; h.style.fontSize = (18+Math.random()*22) + 'px';
+    h.style.animationDelay = Math.random()*.6 + 's'; $('hearts').appendChild(h);
+    setTimeout(() => h.remove(), 3200);
+  }
+}
+function renderTahta(){
+  const list = $('list'); list.innerHTML = '';
+  for(let i=0;i<tahtaN;i++){ const li = document.createElement('li'); li.textContent = LINE; list.appendChild(li); }
+  const teacher = role === 'teacher';
+  $('hint').style.display = tahtaN ? 'none' : '';
+  $('hint').textContent = teacher ? 'Tahta boş. Öğrenci henüz yazmadı…' : 'Tahta boş. Öğrenci henüz yazmaya başlamadı…';
+  $('doneMsg').hidden = tahtaN < MAX;
+  $('count').textContent = tahtaN + ' / ' + MAX;
+  const w = $('write');
+  w.hidden = teacher;
+  w.disabled = tahtaN >= MAX;
+  w.textContent = tahtaN >= MAX ? 'Ödev teslim edildi ✔' : 'Bir satır yaz ✍️';
+  $('clearBtn').hidden = !teacher;
+  $('tahtaSub').textContent = teacher
+    ? 'Öğrencinin yazdıkları burada canlı görünür. İstersen tahtayı silebilirsin.'
+    : 'Derse geç kalan öğrenci tahtaya yazı yazar. Butona bas, ben yazayım.';
+}
+function setTahta(n){
+  tahtaN = n; renderTahta();
+  if(saveTahta) saveTahta(n).catch(() => toast('Kaydedilemedi, bağlantıyı kontrol et'));
+}
+$('write').addEventListener('click', () => {
+  if(role === 'teacher' || tahtaN >= MAX) return;
+  setTahta(tahtaN + 1);
+  if(tahtaN >= MAX) burst();
+});
+$('clearBtn').addEventListener('click', () => { if(role === 'teacher') setTahta(0); });
+renderTahta();
 
 /* ---------- Karne (düzenlenebilir) ---------- */
 let notlar = [
@@ -389,7 +450,7 @@ function addOdev(){
 }
 $('odevBtn').addEventListener('click', addOdev);
 $('odevIn').addEventListener('keydown', e => { if(e.key === 'Enter') addOdev(); });
-roleHook = renderOdev; renderOdev();
+roleHook = () => { renderOdev(); renderTahta(); renderYazi(); }; renderOdev();
 
 /* ---------- Aferin konfetisi ---------- */
 let aferinT;
@@ -412,6 +473,93 @@ function startAferin(){
   aferinT = setTimeout(() => { $('aferinTxt').classList.remove('on'); box.innerHTML = ''; }, 5500);
 }
 
+/* ---------- Yazı cezası ---------- */
+let yazi = null, buf = '', lastYaziId = null, yaziReady = false, saveYazi = null, saveYaziDone = null, giveYazi = null;
+const FOLD = {'ı':'i','ğ':'g','ü':'u','ş':'s','ç':'c','ö':'o','â':'a','î':'i','û':'u'};
+const norm = s => s.normalize('NFC').toLocaleLowerCase('tr').replace(/[ığüşçöâîû]/g, c => FOLD[c]).replace(/[^a-z0-9]/g, '');
+const mism = (a, b) => { let n = 0; for(let i=0;i<a.length;i++) if(a[i] !== b[i]) n++; return n; };
+function sameLine(typed, target){
+  const a = norm(typed), t = norm(target), L = t.length;
+  if(!L) return true;
+  const sub = L <= 6 ? 1 : L <= 15 ? 2 : 3;
+  if(a.length === L) return mism(a, t) <= sub;
+  if(a.length === L - 1 && L >= 4){
+    for(let k=0;k<L;k++) if(mism(a, t.slice(0,k) + t.slice(k+1)) <= sub) return true;
+  }
+  return false;
+}
+const canType = () => role === 'student' && yazi && yazi.done < yazi.count;
+function renderTyped(){ $('yaziTyped').textContent = buf; }
+function renderYazi(){
+  const sec = $('yaziSec'); sec.hidden = !yazi; if(!yazi) return;
+  const st = role === 'student', te = role === 'teacher', fin = yazi.done >= yazi.count;
+  $('yaziTask').textContent = '“' + yazi.text + '” cümlesini ' + yazi.count + ' kez yaz';
+  $('yaziCnt').textContent = yazi.done + ' / ' + yazi.count;
+  const ol = $('yaziList'); ol.innerHTML = '';
+  for(let i=0;i<yazi.done;i++){ const li = document.createElement('li'); li.textContent = yazi.text; ol.appendChild(li); }
+  $('yaziDone').hidden = !fin;
+  const typing = st && !fin;
+  $('yaziTyped').hidden = !typing; $('kb').hidden = !typing; $('yaziRule').hidden = !typing;
+  $('yaziCancel').hidden = !te;
+  $('yaziReset').hidden = !te; $('yaziReset').disabled = yazi.done === 0;
+  $('yaziSub').textContent = te ? 'Öğrenci yazdıkça tahtada canlı görünür.' : 'Cümleyi tahtadaki gibi yaz, bitince ↵ tuşuna bas.';
+}
+function press(k){
+  if(!canType()) return;
+  if(k === 'back') buf = buf.slice(0,-1);
+  else if(k === 'enter'){
+    if(!buf.trim()) return;
+    if(sameLine(buf, yazi.text)){
+      buf = ''; yazi.done++; renderYazi(); renderTyped();
+      if(saveYaziDone) saveYaziDone(yazi.done).catch(() => toast('Kaydedilemedi, bağlantıyı kontrol et'));
+      if(yazi.done >= yazi.count) burst(); else toast('Tamam ✔');
+    } else {
+      const t = $('yaziTyped'); t.classList.remove('bad'); void t.offsetWidth; t.classList.add('bad');
+      toast('Olmadı, tekrar dene ✋');
+    }
+    return;
+  }
+  else if(buf.length < 160) buf += k;
+  renderTyped();
+}
+(function buildKb(){
+  const kb = $('kb');
+  const rows = ['1234567890','qwertyuıopğü','asdfghjklşi','zxcvbnmöç'];
+  const mk = (cls, label, key, aria) => { const b = document.createElement('button'); b.className = 'k ' + cls; b.textContent = label; b.dataset.k = key; if(aria) b.setAttribute('aria-label', aria); return b; };
+  rows.forEach((r, i) => {
+    const d = document.createElement('div'); d.className = 'row';
+    r.split('').forEach(c => d.appendChild(mk('', c, c)));
+    if(i === 3) d.appendChild(mk('bk', '⌫', 'back', 'Sil'));
+    kb.appendChild(d);
+  });
+  const last = document.createElement('div'); last.className = 'row';
+  last.append(mk('sp', 'boşluk', ' ', 'Boşluk'), mk('en', '↵', 'enter', 'Gönder'));
+  kb.appendChild(last);
+  kb.addEventListener('click', e => { const b = e.target.closest('button[data-k]'); if(b) press(b.dataset.k); });
+})();
+document.addEventListener('keydown', e => {
+  if(!canType() || e.ctrlKey || e.metaKey || e.altKey) return;
+  if(e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if(e.key === 'Backspace'){ e.preventDefault(); press('back'); }
+  else if(e.key === 'Enter'){ e.preventDefault(); press('enter'); }
+  else if(e.key.length === 1){ e.preventDefault(); press(e.key.toLocaleLowerCase('tr')); }
+});
+$('yaziBtn').addEventListener('click', () => {
+  const text = $('yaziText').value.trim();
+  const count = Math.max(1, Math.min(50, parseInt($('yaziCount').value, 10) || 1));
+  if(!text){ toast('Önce ceza cümlesini yaz'); return; }
+  if(!giveYazi){ toast('Bağlantı yok, ceza verilemedi'); return; }
+  giveYazi({ id: Date.now().toString(36) + Math.random().toString(36).slice(2,5), text, count, done: 0, by: myId })
+    .then(() => { toast('Yazı cezası verildi ✍️'); $('yaziText').value = ''; })
+    .catch(() => toast('Gönderilemedi, bağlantıyı kontrol et'));
+});
+$('yaziReset').addEventListener('click', () => {
+  if(role !== 'teacher') return;
+  if(!saveYaziDone){ toast('Bağlantı yok'); return; }
+  saveYaziDone(0).then(() => toast('Öğrenci baştan başlıyor 😈')).catch(() => toast('Sıfırlanamadı, bağlantıyı kontrol et'));
+});
+$('yaziCancel').addEventListener('click', () => { if(saveYazi) saveYazi(null).catch(() => toast('Kaldırılamadı')); });
+
 /* ---------- Firebase ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyCVufVE2sG5-qSFt3G_pt8TnE-qo6hj7eM",
@@ -431,6 +579,36 @@ try{
 
   saveRemote = list => set(ref(db, 'notlar'), list);
   saveOdev = list => set(ref(db, 'odevler'), list);
+  saveTahta = n => set(ref(db, 'tahta'), n);
+  giveYazi = obj => set(ref(db, 'yazi'), obj);
+  saveYazi = v => set(ref(db, 'yazi'), v);
+  saveYaziDone = n => set(ref(db, 'yazi/done'), n);
+
+  onValue(ref(db, 'yazi'), snap => {
+    const v = snap.val();
+    const prevDone = yazi ? yazi.done : 0, prevId = yazi ? yazi.id : null;
+    yazi = v ? { id: v.id, text: String(v.text || ''), count: Number(v.count) || 1, done: Number(v.done) || 0, by: v.by } : null;
+    if(!yazi){ buf = ''; renderTyped(); lastYaziId = null; }
+    else if(yazi.id !== lastYaziId){
+      lastYaziId = yazi.id; buf = ''; renderTyped();
+      if(yaziReady && role === 'student' && yazi.by !== myId){
+        startCeza(); toast('Yeni yazı cezası! 😬');
+        setTimeout(() => $('yaziSec').scrollIntoView({behavior:'smooth'}), 300);
+      }
+    } else if(yaziReady && prevId === yazi.id && yazi.done < prevDone){
+      if(role === 'student'){ buf = ''; renderTyped(); startCeza(); toast('Öğretmen yazılarını sildi! 😈'); }
+    } else if(yaziReady && role === 'teacher' && prevId === yazi.id && prevDone < yazi.count && yazi.done >= yazi.count) burst();
+    renderYazi();
+    yaziReady = true;
+  });
+
+  onValue(ref(db, 'tahta'), snap => {
+    const was = tahtaN;
+    tahtaN = Math.max(0, Math.min(MAX, Number(snap.val()) || 0));
+    renderTahta();
+    if(tahtaReady && was < MAX && tahtaN >= MAX) burst();
+    tahtaReady = true;
+  });
 
   onValue(ref(db, 'odevler'), snap => {
     const v = snap.val();
@@ -474,6 +652,7 @@ try{
   $('status').textContent = 'Çevrimdışı';
   $('cezaBtn').addEventListener('click', () => toast('Bağlantı yok, ceza gönderilemedi'));
   $('aferinBtn').addEventListener('click', () => toast('Bağlantı yok, aferin gönderilemedi'));
+  $('yaziCancel').addEventListener('click', () => toast('Bağlantı yok'));
 }
 </script>
 </body>
