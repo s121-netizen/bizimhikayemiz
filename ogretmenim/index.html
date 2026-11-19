@@ -21,6 +21,7 @@
 }
 :root[data-theme="dark"]{--bg:#171a17;--ink:#ece8d8;--muted:#a7a38f;--paper:#2a2a22;--line:#3b4a58;}
 *,*::before,*::after{box-sizing:inherit;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none !important}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 1.05rem/1.6 var(--body)}
 main{max-width:760px;margin:0 auto;padding:0 18px 56px}
@@ -129,6 +130,21 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 .kb button.k.pn{flex:1}
 .fab{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:55;width:56px;height:56px;padding:0;border-radius:50%;font-size:1.7rem;background:var(--board);border:3px solid #8b6a47}
 #yaziTyped{cursor:text}
+.ders{padding:10px 2px;border-bottom:1px dashed var(--line)}
+.ders .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ders .dn{font-family:var(--hand);font-size:1.55rem;line-height:1.1}
+.ders .dp{font-family:var(--hand);font-size:1.9rem;font-weight:700;color:var(--apple);white-space:nowrap;line-height:1}
+.ders .dp small{font-size:1.1rem;color:var(--muted)}
+.pbar{height:12px;margin-top:6px;border:2px solid var(--ink);border-radius:8px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--lizard);transition:width .9s ease-out}
+.pbar i.mid{background:#f2c14e}
+.pbar i.low{background:var(--apple)}
+.ders.edit{display:flex;gap:8px;align-items:center}
+.avg{display:flex;align-items:center;gap:14px;margin-top:16px;padding:10px 14px;border:3px dashed var(--apple);border-radius:12px;transform:rotate(-1deg)}
+.avg .big{font-family:var(--hand);font-size:3.4rem;font-weight:700;color:var(--apple);line-height:1}
+.avg .txt{font-family:var(--hand);font-size:1.5rem;line-height:1.15}
+@media (prefers-reduced-motion:reduce){.pbar i{transition:none}}
+.kb button.k{-webkit-touch-callout:none}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
   background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
 .toast.on{opacity:1}
@@ -247,14 +263,9 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 
 <section>
   <h2>Karne</h2>
-  <p class="sub">Bu dönemin değerlendirmesi, öğrenciden öğretmene.</p>
+  <p class="sub">Bu dönemin değerlendirmesi, öğrenciden öğretmene. Notlar 100 üzerinden.</p>
   <div class="card">
-    <div class="wrap">
-      <table>
-        <thead><tr><th>Ders</th><th>Not</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
-    </div>
+    <div id="rows"></div>
     <div class="tools">
       <button class="alt" id="editBtn">Düzenle ✏️</button>
       <button class="alt" id="addBtn" hidden>+ Ders ekle</button>
@@ -285,7 +296,6 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 <div class="kb" id="kb" hidden>
   <div class="kbbar"><span id="kbFor">Klavye</span><button id="kbClose" aria-label="Klavyeyi kapat">Kapat ⌄</button></div>
 </div>
-<button class="fab" id="kbToggle" aria-label="Klavyeyi aç" hidden>⌨️</button>
 <div class="ceza" id="ceza"><h1 id="cezaTxt"></h1><p>(kapatmak için dokun)</p></div>
 <div class="hearts" id="hearts" aria-hidden="true"></div>
 <div class="aferin" id="aferin" aria-hidden="true"><div id="confetti"></div><div class="txt" id="aferinTxt">Aferin! ⭐</div></div>
@@ -293,6 +303,29 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 
 <script type="module">
 const $ = id => document.getElementById(id);
+
+/* ====================================================================
+   📚 KARNE DERSLERİ — DERSLERİ BURAYA EKLE
+   Her satır:  ['Ders adı', puan],   puan 0 ile 100 arası bir sayı.
+   Adı boş bırakılan satırlar (['', 0]) sitede görünmez.
+   Aşağıdaki 5 boş satıra istediğin dersleri yaz, sonra GitHub'a yükle.
+   ==================================================================== */
+const DERSLER = [
+  ['Sabır (beni her seferinde çekiyorsun)', 92],
+  ['Güldürme sanatı', 100],
+  ['Sarılma ve sıcaklık', 100],
+  ['Bana inanma', 97],
+  // ↓↓↓ BOŞ SATIRLAR: dersi ve puanı yaz ↓↓↓
+  ['', 0],
+  ['', 0],
+  ['', 0],
+  ['', 0],
+  ['', 0],
+  // ↑↑↑ daha fazla lazım olursa bir satır kopyalayıp yapıştır ↑↑↑
+];
+// true yaparsan karne sitede de düzenlenir (Firebase'e kaydeder ve koddaki listeyi ezer).
+const KARNE_DUZENLENEBILIR = false;
+/* ==================================================================== */
 
 /* ---------- Avatarlar: ogretmen.png / ogrenci.png yoksa emoji ---------- */
 function avatar(src, emoji, label){
@@ -366,45 +399,64 @@ $('write').addEventListener('click', () => {
 $('clearBtn').addEventListener('click', () => { if(role === 'teacher') setTahta(0); });
 renderTahta();
 
-/* ---------- Karne (düzenlenebilir) ---------- */
-let notlar = [
-  {d:'Sabır (beni her seferinde çekiyorsun)', n:'100'},
-  {d:'Güldürme sanatı', n:'100'},
-  {d:'Sarılma ve sıcaklık', n:'100'},
-  {d:'Bana inanma', n:'100'}
-];
+/* ---------- Karne (100 üzerinden) ---------- */
+const clamp = n => Math.max(0, Math.min(100, Math.round(Number(n) || 0)));
+let notlar = DERSLER.filter(r => String(r[0]).trim()).map(r => ({d: String(r[0]), n: clamp(r[1])}));
 let editing = false, saveRemote = null;
 const rows = $('rows');
+const gradeOf = a => a >= 85 ? 'Pekiyi 🌟' : a >= 70 ? 'İyi 👍' : a >= 55 ? 'Orta 🙂' : a >= 45 ? 'Geçer 😅' : 'Zayıf (ama sevgi tam 💚)';
 
 function renderRows(){
   rows.innerHTML = '';
+  const fills = [];
   notlar.forEach((r, i) => {
-    const tr = document.createElement('tr'), a = document.createElement('td'), b = document.createElement('td');
+    const el = document.createElement('div');
     if(editing){
+      el.className = 'ders edit';
       const i1 = document.createElement('input'); i1.inputMode = 'none'; i1.value = r.d; i1.placeholder = 'Ders adı'; i1.setAttribute('aria-label','Ders adı');
       i1.addEventListener('input', () => r.d = i1.value);
-      const i2 = document.createElement('input'); i2.inputMode = 'none'; i2.value = r.n; i2.className = 'n'; i2.placeholder = 'Not'; i2.setAttribute('aria-label','Not');
+      const i2 = document.createElement('input'); i2.inputMode = 'none'; i2.value = r.n; i2.maxLength = 3; i2.className = 'n'; i2.placeholder = '0-100'; i2.setAttribute('aria-label','Puan (100 üzerinden)');
       i2.addEventListener('input', () => r.n = i2.value);
       const x = document.createElement('button'); x.className = 'del'; x.textContent = '✕'; x.setAttribute('aria-label','Dersi sil');
       x.addEventListener('click', () => { notlar.splice(i,1); renderRows(); });
-      a.appendChild(i1); b.append(i2, x);
-    } else { a.textContent = r.d; b.textContent = r.n; b.className = 'grade'; }
-    tr.append(a, b); rows.appendChild(tr);
+      el.append(i1, i2, x);
+    } else {
+      el.className = 'ders';
+      const top = document.createElement('div'); top.className = 'top';
+      const dn = document.createElement('span'); dn.className = 'dn'; dn.textContent = r.d;
+      const dp = document.createElement('span'); dp.className = 'dp'; dp.textContent = r.n;
+      const sm = document.createElement('small'); sm.textContent = ' / 100'; dp.appendChild(sm);
+      top.append(dn, dp);
+      const bar = document.createElement('div'); bar.className = 'pbar'; bar.setAttribute('aria-hidden','true');
+      const fill = document.createElement('i'); fill.className = r.n >= 85 ? '' : r.n >= 60 ? 'mid' : 'low';
+      bar.appendChild(fill); fills.push([fill, r.n]);
+      el.append(top, bar);
+    }
+    rows.appendChild(el);
   });
+  if(!editing && notlar.length){
+    const avg = notlar.reduce((t, r) => t + r.n, 0) / notlar.length;
+    const box = document.createElement('div'); box.className = 'avg';
+    const big = document.createElement('span'); big.className = 'big'; big.textContent = Math.round(avg);
+    const txt = document.createElement('span'); txt.className = 'txt'; txt.textContent = 'Karne ortalaması: ' + gradeOf(avg);
+    box.append(big, txt); rows.appendChild(box);
+  }
+  requestAnimationFrame(() => requestAnimationFrame(() => fills.forEach(([f, n]) => f.style.width = n + '%')));
 }
+$('editBtn').parentElement.hidden = !KARNE_DUZENLENEBILIR;
 $('editBtn').addEventListener('click', () => {
   if(!editing){ editing = true; }
   else {
-    notlar = notlar.filter(r => r.d.trim() || r.n.trim());
+    notlar = notlar.filter(r => String(r.d).trim()).map(r => ({d: r.d, n: clamp(r.n)}));
     editing = false;
     if(saveRemote) saveRemote(notlar).then(() => toast('Karne kaydedildi ✔')).catch(() => toast('Kaydedilemedi, bağlantıyı kontrol et'));
     else toast('Bağlantı yok, sadece bu cihazda değişti');
   }
   $('editBtn').textContent = editing ? 'Kaydet ✔' : 'Düzenle ✏️';
   $('addBtn').hidden = !editing;
-  renderRows(); refreshToggle();
+  renderRows();
 });
-$('addBtn').addEventListener('click', () => { notlar.push({d:'', n:''}); renderRows(); });
+$('addBtn').addEventListener('click', () => { notlar.push({d:'', n:0}); renderRows(); });
 renderRows();
 
 /* ---------- Ceza ekranı (diğer kişilerde) ---------- */
@@ -552,7 +604,15 @@ function press(k){
   [',','.','!','?'].forEach(c => last.appendChild(mk('pn', c, c)));
   last.append(mk('sp', 'boşluk', ' ', 'Boşluk'), mk('en', '↵', 'enter', 'Gönder'));
   kb.appendChild(last);
-  kb.addEventListener('click', e => { const b = e.target.closest('button[data-k]'); if(b) typeKey(b.dataset.k); });
+  let rpt = null;
+  const stop = () => { clearTimeout(rpt); clearInterval(rpt); rpt = null; };
+  kb.addEventListener('pointerdown', e => {
+    const b = e.target.closest('button[data-k]'); if(!b) return;
+    e.preventDefault(); typeKey(b.dataset.k);
+    if(b.dataset.k === 'back'){ stop(); rpt = setTimeout(() => { rpt = setInterval(() => typeKey('back'), 70); }, 400); }
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(t => kb.addEventListener(t, stop));
+  kb.addEventListener('click', e => { const b = e.target.closest('button[data-k]'); if(b && e.detail === 0) typeKey(b.dataset.k); });
 })();
 document.addEventListener('keydown', e => {
   if(!canType() || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -604,7 +664,7 @@ function fitKb(){ document.body.style.paddingBottom = $('kb').hidden ? '' : $('k
 function openKb(t){
   kbTarget = t;
   $('kbFor').textContent = t.type === 'yazi' ? 'Yazı cezası ✍️' : (t.el.getAttribute('aria-label') || t.el.placeholder || 'Yaz');
-  $('kb').hidden = false; $('kbToggle').hidden = true; fitKb();
+  $('kb').hidden = false; fitKb();
   setTimeout(() => { const el = t.type === 'yazi' ? $('yaziTyped') : t.el; if(el && el.scrollIntoView) el.scrollIntoView({block:'center', behavior:'smooth'}); }, 60);
 }
 function closeKb(){ $('kb').hidden = true; fitKb(); refreshToggle(); }
@@ -615,13 +675,9 @@ function defaultTarget(){
   if(role === 'teacher') return {type:'input', el:$('yaziText')};
   return null;
 }
-function refreshToggle(){ $('kbToggle').hidden = !$('kb').hidden || !defaultTarget(); }
+function refreshToggle(){}
 $('kbClose').addEventListener('click', closeKb);
-$('kbToggle').addEventListener('click', () => {
-  const t = defaultTarget(); if(!t){ toast('Yazılacak bir yer yok'); return; }
-  openKb(t); if(t.type === 'input') t.el.focus({preventScroll:true});
-});
-$('yaziTyped').addEventListener('click', () => { if(canType()) openKb({type:'yazi'}); });
+document.querySelector('.lines.yz').addEventListener('click', () => { if(canType()) openKb({type:'yazi'}); });
 document.addEventListener('focusin', e => {
   const el = e.target;
   if(el.tagName !== 'INPUT' || el.type === 'range' || el.type === 'checkbox') return;
@@ -702,7 +758,7 @@ try{
 
   onValue(ref(db, 'notlar'), snap => {
     const v = snap.val();
-    if(v && !editing){ notlar = (Array.isArray(v) ? v : Object.values(v)).filter(Boolean); renderRows(); }
+    if(KARNE_DUZENLENEBILIR && v && !editing){ notlar = (Array.isArray(v) ? v : Object.values(v)).filter(Boolean).map(r => ({d: String(r.d || ''), n: clamp(r.n)})); renderRows(); }
   });
 
   onValue(ref(db, '.info/connected'), s => { $('status').textContent = s.val() ? 'Bağlı ✔' : 'Bağlanıyor…'; });
