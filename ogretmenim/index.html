@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Öğretmenler Günün Kutlu Olsun, Kevser Öğretmenim</title>
+<meta name="theme-color" content="#24433a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A6%8E%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;700;800&display=swap">
 <style>
 :root{
@@ -145,6 +147,29 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 .avg .txt{font-family:var(--hand);font-size:1.5rem;line-height:1.15}
 @media (prefers-reduced-motion:reduce){.pbar i{transition:none}}
 .kb button.k{-webkit-touch-callout:none}
+.sub:empty{display:none}
+.cd{margin-top:20px;border-top:2px dashed rgba(244,241,230,.35);padding-top:14px}
+.cdt{font-family:var(--hand);font-size:1.7rem;line-height:1.1}
+.cdn{display:flex;justify-content:center;gap:10px;margin-top:8px}
+.cdn div{min-width:64px;border:2px dashed rgba(244,241,230,.55);border-radius:8px;padding:4px 6px 2px;font-family:var(--hand);font-size:2.3rem;line-height:1}
+.cdn small{display:block;font:700 .75rem var(--body);opacity:.8;margin-top:2px}
+.ders .set{display:flex;align-items:center;gap:10px;margin-top:8px}
+.card .ders .set input{flex:1;min-width:0;height:32px;padding:0;border:0;accent-color:#5f7f4c;touch-action:pan-y}
+.ders .set output{font-family:var(--hand);font-size:1.7rem;color:var(--apple);min-width:2.4ch;text-align:center;font-weight:700}
+.ders .set button{padding:6px 14px;font-size:.9rem}
+.ders .wait{font-family:var(--hand);font-size:1.3rem;color:var(--muted)}
+.gate p{font-family:var(--hand);font-size:1.6rem;max-width:420px;margin:0;line-height:1.2}
+.gate .ghost{color:var(--chalk);opacity:.8}
+.foot2{margin-top:6px}
+#lock{z-index:90;justify-content:flex-start;overflow-y:auto;padding-top:calc(36px + env(safe-area-inset-top,0px));padding-bottom:40px;gap:16px}
+#lock .cdn{margin-top:0}
+.spo{width:100%;max-width:440px;text-align:left;background:rgba(0,0,0,.2);border:2px dashed rgba(244,241,230,.45);border-radius:12px;padding:14px 16px}
+.spo .spt{font-family:var(--hand);font-size:1.8rem;font-weight:700;margin-bottom:4px}
+.spo ul{margin:0 0 10px;padding-left:0;list-style:none;font-family:var(--hand);font-size:1.45rem;line-height:1.2}
+.spo li{margin:6px 0}
+.spo .bl p{margin:4px 0;font-family:var(--hand);font-size:1.4rem;line-height:1.2}
+.spo .hid{filter:blur(7px);user-select:none;-webkit-user-select:none;pointer-events:none}
+.spo img{display:block;width:100%;max-height:190px;object-fit:cover;filter:blur(16px);border-radius:8px;margin-top:10px;transform:scale(1.04)}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
   background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
 .toast.on{opacity:1}
@@ -173,6 +198,27 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 </head>
 <body>
 
+<div class="gate" id="lock">
+  <h2>Bu hediye 24 Kasım’da açılacak 🎁</h2>
+  <p>Öğretmenler Günü’ne kadar kapalı. Biraz sabır, Kevser öğretmenim 🦎</p>
+  <div class="cdn" id="cdn2"></div>
+  <div class="spo">
+    <div class="spt">Küçük spoiler 🤫</div>
+    <ul class="hid" aria-hidden="true">
+      <li>🦎 Sınıfta bir kertenkele öğretmen, 🐻 bir de ayı öğrenci var</li>
+      <li>📝 Karnede notları sen vereceksin</li>
+      <li>✍️ Ceza tahtası, yazı cezası ve titreyen kırmızı ekran…</li>
+      <li>⭐ Bir de “Aferin” butonu var</li>
+    </ul>
+    <div class="bl hid" aria-hidden="true">
+      <p>Sevgili Kevserim Öğretmenim,</p>
+      <p>Sen bana en çok güneşte duran taşın sıcaklığı gibi iyi geliyorsun. Hep bir adım önde, hep sakin.</p>
+      <p>…İyi ki varsın. Öğretmenler Günün kutlu olsun!</p>
+    </div>
+    <img src="foto.jpg" alt="" onerror="this.remove()">
+  </div>
+</div>
+
 <div class="gate" id="gate">
   <h2>Kim giriyor?</h2>
   <div class="pick">
@@ -189,18 +235,20 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
     <div class="who" id="whoT"></div>
     <div class="who" id="whoS"></div>
   </div>
+  <div class="cd">
+    <div class="cdt" id="cdt"></div>
+    <div class="cdn" id="cdn"></div>
+  </div>
 </header>
 
 <section id="teacherDesk" hidden>
   <h2>Öğretmen masası</h2>
-  <p class="sub">Yaramazlık mı yaptı? Ceza ver. İyi mi davrandı? Aferin ver. Öğrencinin ekranında görünür.</p>
   <div class="bar">
     <button id="cezaBtn">🚨 Ceza ver</button>
     <button class="alt" id="aferinBtn">⭐ Aferin ver</button>
     <span class="status" id="status"></span>
   </div>
-  <p class="sub" style="margin-top:20px">Yazı cezası: cümleyi ve kaç kez yazılacağını seç.</p>
-  <div class="add">
+  <div class="add" style="margin-top:20px">
     <input id="yaziText" inputmode="none" placeholder="Örn. Derse geç kalmayacağım" maxlength="80" aria-label="Ceza cümlesi">
     <div class="cnt"><span>Kaç kez yazsın?</span><input id="yaziCount" type="range" min="1" max="50" step="1" value="5" aria-label="Kaç kez yazılsın"><output id="yaziCountOut" for="yaziCount">5</output></div>
     <button id="yaziBtn">Yazı cezası ver ✍️</button>
@@ -209,7 +257,6 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 
 <section id="yaziSec" hidden>
   <h2>Yazı cezası</h2>
-  <p class="sub" id="yaziSub"></p>
   <div class="lines yz">
     <p class="task" id="yaziTask"></p>
     <ol id="yaziList"></ol>
@@ -221,12 +268,11 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
     <button id="yaziReset" hidden>Yazıları sıfırla 😈</button>
     <button class="alt" id="yaziCancel" hidden>Cezayı kaldır</button>
   </div>
-  <p class="status" id="yaziRule" hidden>Büyük-küçük harf, boşluk ve noktalama fark etmez. ı/i, ö/o, ü/u, ğ/g, ş/s, ç/c karışabilir. Cümle uzadıkça 1-3 harf yanlışa ve 1 eksik harfe izin var.</p>
 </section>
 
 <section>
   <h2>Ceza tahtası</h2>
-  <p class="sub" id="tahtaSub">Derse geç kalan öğrenci tahtaya yazı yazar. Yazılanlar herkesin ekranında görünür.</p>
+  <p class="sub">Derse geç kalan öğrenci tahtaya yazı yazar.</p>
   <div class="lines" id="board" aria-live="polite">
     <p class="hint" id="hint">Tahta boş. Öğrenci henüz yazmaya başlamadı…</p>
     <ol id="list"></ol>
@@ -241,7 +287,6 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 
 <section>
   <h2>Ödev defteri</h2>
-  <p class="sub" id="odevSub">Öğretmenin verdiği ödevler burada. Yapınca işaretle.</p>
   <div class="card">
     <ul class="odev" id="odevList"></ul>
     <div class="empty odev" id="odevEmpty"><div class="empty">Henüz ödev yok. Öğrenci rahat rahat oturuyor 😴</div></div>
@@ -263,13 +308,9 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 
 <section>
   <h2>Karne</h2>
-  <p class="sub">Bu dönemin değerlendirmesi, öğrenciden öğretmene. Notlar 100 üzerinden.</p>
+  <p class="sub">Bu dönemin değerlendirmesi, öğrenciden öğretmene.</p>
   <div class="card">
     <div id="rows"></div>
-    <div class="tools">
-      <button class="alt" id="editBtn">Düzenle ✏️</button>
-      <button class="alt" id="addBtn" hidden>+ Ders ekle</button>
-    </div>
     <p class="note">Öğrenci notu: Bu karne sadece öğretmen için hazırlanmıştır, başka öğretmenlere gösterilmez.</p>
   </div>
 </section>
@@ -290,6 +331,7 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
   <b>24 Kasım Öğretmenler Günü</b>
   Bu site sadece sana özel. 🦎💚🐻
   <div><button class="ghost" id="switchRole">Kim olduğunu değiştir</button></div>
+  <div class="foot2"><button class="ghost" id="resetDevice">Bu cihazı sıfırla</button> <button class="ghost" id="resetAll">Her şeyi sıfırla</button></div>
 </footer>
 </main>
 
@@ -305,27 +347,29 @@ footer b{font-family:var(--hand);font-size:1.7rem;color:var(--ink);display:block
 const $ = id => document.getElementById(id);
 
 /* ====================================================================
-   📚 KARNE DERSLERİ — DERSLERİ BURAYA EKLE
-   Her satır:  ['Ders adı', puan],   puan 0 ile 100 arası bir sayı.
-   Adı boş bırakılan satırlar (['', 0]) sitede görünmez.
-   Aşağıdaki 5 boş satıra istediğin dersleri yaz, sonra GitHub'a yükle.
+   📚 KARNE DERSLERİ — DERS ADLARINI BURAYA EKLE
+   Sadece ders adını yaz. Puanı Kevser öğretmen kendi telefonundan verir.
+   Boş bırakılan satırlar ('') sitede görünmez.
    ==================================================================== */
 const DERSLER = [
-  ['Sabır (beni her seferinde çekiyorsun)', 92],
-  ['Güldürme sanatı', 100],
-  ['Sarılma ve sıcaklık', 100],
-  ['Bana inanma', 97],
-  // ↓↓↓ BOŞ SATIRLAR: dersi ve puanı yaz ↓↓↓
-  ['', 0],
-  ['', 0],
-  ['', 0],
-  ['', 0],
-  ['', 0],
-  // ↑↑↑ daha fazla lazım olursa bir satır kopyalayıp yapıştır ↑↑↑
+  'Sabır (beni her seferinde çekiyorsun)',
+  'Güldürme sanatı',
+  'Sarılma ve sıcaklık',
+  'Bana inanma',
+  // ↓↓↓ BOŞ SATIRLAR: ders adını tırnak içine yaz ↓↓↓
+  '',
+  '',
+  '',
+  '',
+  '',
+  // ↑↑↑ daha fazla lazım olursa bir satır ekle ↑↑↑
 ];
-// true yaparsan karne sitede de düzenlenir (Firebase'e kaydeder ve koddaki listeyi ezer).
-const KARNE_DUZENLENEBILIR = false;
 /* ==================================================================== */
+
+/* 🎁 SİTENİN AÇILIŞ TARİHİ: bu tarihe kadar sadece geri sayım ve spoiler görünür.
+   (yıl, ay-1, gün, saat, dakika)  →  24 Kasım 2026, gece 00:00
+   Adresin sonuna  ?1  yazarsan kilit atlanır (örn. ...github.io/repo/?1). Yazmazsan sayım devam eder. */
+const ACILIS_TARIHI = new Date(2026, 10, 24, 0, 0, 0);
 
 /* ---------- Avatarlar: ogretmen.png / ogrenci.png yoksa emoji ---------- */
 function avatar(src, emoji, label){
@@ -383,9 +427,6 @@ function renderTahta(){
   w.disabled = tahtaN >= MAX;
   w.textContent = tahtaN >= MAX ? 'Ödev teslim edildi ✔' : 'Bir satır yaz ✍️';
   $('clearBtn').hidden = !teacher;
-  $('tahtaSub').textContent = teacher
-    ? 'Öğrencinin yazdıkları burada canlı görünür. İstersen tahtayı silebilirsin.'
-    : 'Derse geç kalan öğrenci tahtaya yazı yazar. Butona bas, ben yazayım.';
 }
 function setTahta(n){
   tahtaN = n; renderTahta();
@@ -399,43 +440,46 @@ $('write').addEventListener('click', () => {
 $('clearBtn').addEventListener('click', () => { if(role === 'teacher') setTahta(0); });
 renderTahta();
 
-/* ---------- Karne (100 üzerinden) ---------- */
+/* ---------- Karne (puanı öğretmen verir, 100 üzerinden) ---------- */
 const clamp = n => Math.max(0, Math.min(100, Math.round(Number(n) || 0)));
-let notlar = DERSLER.filter(r => String(r[0]).trim()).map(r => ({d: String(r[0]), n: clamp(r[1])}));
-let editing = false, saveRemote = null;
+const dersKey = d => { let h = 5381; for(const c of d) h = ((h << 5) + h + c.charCodeAt(0)) >>> 0; return 'k' + h.toString(36); };
+const dersler = DERSLER.map(x => String(x).trim()).filter(Boolean).map(d => ({d, key: dersKey(d)}));
+let puanlar = {}, savePuan = null, puanReady = false;
 const rows = $('rows');
 const gradeOf = a => a >= 85 ? 'Pekiyi 🌟' : a >= 70 ? 'İyi 👍' : a >= 55 ? 'Orta 🙂' : a >= 45 ? 'Geçer 😅' : 'Zayıf (ama sevgi tam 💚)';
 
 function renderRows(){
   rows.innerHTML = '';
-  const fills = [];
-  notlar.forEach((r, i) => {
-    const el = document.createElement('div');
-    if(editing){
-      el.className = 'ders edit';
-      const i1 = document.createElement('input'); i1.inputMode = 'none'; i1.value = r.d; i1.placeholder = 'Ders adı'; i1.setAttribute('aria-label','Ders adı');
-      i1.addEventListener('input', () => r.d = i1.value);
-      const i2 = document.createElement('input'); i2.inputMode = 'none'; i2.value = r.n; i2.maxLength = 3; i2.className = 'n'; i2.placeholder = '0-100'; i2.setAttribute('aria-label','Puan (100 üzerinden)');
-      i2.addEventListener('input', () => r.n = i2.value);
-      const x = document.createElement('button'); x.className = 'del'; x.textContent = '✕'; x.setAttribute('aria-label','Dersi sil');
-      x.addEventListener('click', () => { notlar.splice(i,1); renderRows(); });
-      el.append(i1, i2, x);
-    } else {
-      el.className = 'ders';
-      const top = document.createElement('div'); top.className = 'top';
-      const dn = document.createElement('span'); dn.className = 'dn'; dn.textContent = r.d;
-      const dp = document.createElement('span'); dp.className = 'dp'; dp.textContent = r.n;
-      const sm = document.createElement('small'); sm.textContent = ' / 100'; dp.appendChild(sm);
-      top.append(dn, dp);
-      const bar = document.createElement('div'); bar.className = 'pbar'; bar.setAttribute('aria-hidden','true');
-      const fill = document.createElement('i'); fill.className = r.n >= 85 ? '' : r.n >= 60 ? 'mid' : 'low';
-      bar.appendChild(fill); fills.push([fill, r.n]);
-      el.append(top, bar);
+  const fills = [], teacher = role === 'teacher';
+  dersler.forEach(r => {
+    const n = puanlar[r.key], has = typeof n === 'number';
+    const el = document.createElement('div'); el.className = 'ders';
+    const top = document.createElement('div'); top.className = 'top';
+    const dn = document.createElement('span'); dn.className = 'dn'; dn.textContent = r.d;
+    const dp = document.createElement('span'); dp.className = has ? 'dp' : 'wait';
+    if(has){ dp.textContent = n; const sm = document.createElement('small'); sm.textContent = ' / 100'; dp.appendChild(sm); }
+    else dp.textContent = 'not bekleniyor ⏳';
+    top.append(dn, dp);
+    const bar = document.createElement('div'); bar.className = 'pbar'; bar.setAttribute('aria-hidden','true');
+    const fill = document.createElement('i'); fill.className = !has || n >= 85 ? '' : n >= 60 ? 'mid' : 'low';
+    bar.appendChild(fill); fills.push([fill, has ? n : 0]);
+    el.append(top, bar);
+    if(teacher){
+      const set = document.createElement('div'); set.className = 'set';
+      const rg = document.createElement('input'); rg.type = 'range'; rg.min = 0; rg.max = 100; rg.step = 1; rg.value = has ? n : 50; rg.setAttribute('aria-label', r.d + ' puanı');
+      const out = document.createElement('output'); out.textContent = rg.value;
+      rg.addEventListener('input', () => out.textContent = rg.value);
+      const ok = document.createElement('button'); ok.textContent = has ? 'Güncelle' : 'Notu ver';
+      ok.addEventListener('click', () => givePuan(r.key, clamp(rg.value)));
+      set.append(rg, out, ok);
+      if(has){ const x = document.createElement('button'); x.className = 'del'; x.textContent = '✕'; x.setAttribute('aria-label','Notu sil'); x.addEventListener('click', () => givePuan(r.key, null)); set.appendChild(x); }
+      el.appendChild(set);
     }
     rows.appendChild(el);
   });
-  if(!editing && notlar.length){
-    const avg = notlar.reduce((t, r) => t + r.n, 0) / notlar.length;
+  const got = dersler.filter(r => typeof puanlar[r.key] === 'number');
+  if(got.length){
+    const avg = got.reduce((t, r) => t + puanlar[r.key], 0) / got.length;
     const box = document.createElement('div'); box.className = 'avg';
     const big = document.createElement('span'); big.className = 'big'; big.textContent = Math.round(avg);
     const txt = document.createElement('span'); txt.className = 'txt'; txt.textContent = 'Karne ortalaması: ' + gradeOf(avg);
@@ -443,20 +487,11 @@ function renderRows(){
   }
   requestAnimationFrame(() => requestAnimationFrame(() => fills.forEach(([f, n]) => f.style.width = n + '%')));
 }
-$('editBtn').parentElement.hidden = !KARNE_DUZENLENEBILIR;
-$('editBtn').addEventListener('click', () => {
-  if(!editing){ editing = true; }
-  else {
-    notlar = notlar.filter(r => String(r.d).trim()).map(r => ({d: r.d, n: clamp(r.n)}));
-    editing = false;
-    if(saveRemote) saveRemote(notlar).then(() => toast('Karne kaydedildi ✔')).catch(() => toast('Kaydedilemedi, bağlantıyı kontrol et'));
-    else toast('Bağlantı yok, sadece bu cihazda değişti');
-  }
-  $('editBtn').textContent = editing ? 'Kaydet ✔' : 'Düzenle ✏️';
-  $('addBtn').hidden = !editing;
-  renderRows();
-});
-$('addBtn').addEventListener('click', () => { notlar.push({d:'', n:0}); renderRows(); });
+function givePuan(key, v){
+  if(role !== 'teacher') return;
+  if(!savePuan){ toast('Bağlantı yok, not verilemedi'); return; }
+  savePuan(key, v).then(() => toast(v === null ? 'Not silindi' : 'Not verildi ✔')).catch(() => toast('Kaydedilemedi, bağlantıyı kontrol et'));
+}
 renderRows();
 
 /* ---------- Ceza ekranı (diğer kişilerde) ---------- */
@@ -489,9 +524,6 @@ function renderOdev(){
   const ul = $('odevList'); ul.innerHTML = '';
   $('odevEmpty').hidden = odevler.length > 0;
   $('odevAdd').hidden = role !== 'teacher';
-  $('odevSub').textContent = role === 'teacher'
-    ? 'Öğrenciye ödev yaz. Yapınca işaretleyecek.'
-    : 'Öğretmenin verdiği ödevler burada. Yapınca işaretle.';
   odevler.forEach((o, i) => {
     const li = document.createElement('li'); if(o.done) li.className = 'done';
     const lab = document.createElement('label');
@@ -514,7 +546,7 @@ function addOdev(){
 }
 $('odevBtn').addEventListener('click', addOdev);
 $('odevIn').addEventListener('keydown', e => { if(e.key === 'Enter') addOdev(); });
-roleHook = () => { renderOdev(); renderTahta(); renderYazi(); }; renderOdev();
+roleHook = () => { renderOdev(); renderTahta(); renderYazi(); renderRows(); }; renderOdev();
 
 /* ---------- Aferin konfetisi ---------- */
 let aferinT;
@@ -563,13 +595,12 @@ function renderYazi(){
   for(let i=0;i<yazi.done;i++){ const li = document.createElement('li'); li.textContent = yazi.text; ol.appendChild(li); }
   $('yaziDone').hidden = !fin;
   const typing = st && !fin;
-  $('yaziTyped').hidden = !typing; $('yaziRule').hidden = !typing;
+  $('yaziTyped').hidden = !typing;
   if(typing){ if(autoKbFor !== yazi.id){ autoKbFor = yazi.id; openKb({type:'yazi'}); } }
   else if(kbTarget && kbTarget.type === 'yazi') closeKb();
   refreshToggle();
   $('yaziCancel').hidden = !te;
   $('yaziReset').hidden = !te; $('yaziReset').disabled = yazi.done === 0;
-  $('yaziSub').textContent = te ? 'Öğrenci yazdıkça tahtada canlı görünür.' : 'Cümleyi tahtadaki gibi yaz, bitince ↵ tuşuna bas.';
 }
 function press(k){
   if(!canType()) return;
@@ -688,6 +719,50 @@ document.addEventListener('focusin', e => {
 window.addEventListener('resize', fitKb);
 refreshToggle();
 
+/* ---------- Geri sayım + açılış kilidi ---------- */
+(function(){
+  const preview = /[?&]1(?:[&=]|$)/.test(location.search);   // adresin sonuna ?1 yazılırsa kilit atlanır
+  const OPEN = ACILIS_TARIHI.getTime(), lock = $('lock'), main = document.querySelector('main');
+  const mk = box => ['gün','saat','dakika','saniye'].map(l => { const d = document.createElement('div'), n = document.createElement('b'), s = document.createElement('small'); s.textContent = l; d.append(n, s); box.appendChild(d); return n; });
+  const fill = (arr, diff) => { const d = Math.floor(diff / 864e5), h = Math.floor(diff / 36e5) % 24, m = Math.floor(diff / 6e4) % 60, s = Math.floor(diff / 1e3) % 60; [d, h, m, s].forEach((v, i) => arr[i].textContent = String(v).padStart(2, '0')); };
+  const hero = mk($('cdn')), lockT = mk($('cdn2')), cdt = $('cdt'), cdn = $('cdn');
+  let locked = !preview && Date.now() < OPEN;
+  const setLocked = v => { locked = v; lock.classList.toggle('on', v); main.inert = v; };
+  setLocked(locked);
+  function tick(){
+    const now = new Date();
+    if(locked && now.getTime() >= OPEN){ setLocked(false); toast('Hediyen açıldı! 🎁'); burst(); }
+    if(locked) fill(lockT, OPEN - now.getTime());
+    let y = now.getFullYear(); if(now >= new Date(y, 10, 25)) y++;
+    if(now.getMonth() === 10 && now.getDate() === 24){ cdt.textContent = 'Bugün Öğretmenler Günü! 🎉'; cdn.hidden = true; return; }
+    cdn.hidden = false; cdt.textContent = 'Öğretmenler Günü’ne kaldı';
+    fill(hero, Math.max(0, new Date(y, 10, 24) - now));
+  }
+  tick(); setInterval(tick, 1000);
+})();
+
+/* Eski kurulum kaydı kaldıysa temizle */
+try{ if('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(r => r.forEach(x => x.unregister())).catch(() => {}); }catch(e){}
+
+/* ---------- Sıfırlama ---------- */
+let wipeAll = null;
+async function resetDevice(){
+  try{ const regs = await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r => r.unregister())); }catch(e){}
+  try{ const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); }catch(e){}
+  try{ if(indexedDB.databases){ const dbs = await indexedDB.databases(); dbs.forEach(d => d.name && indexedDB.deleteDatabase(d.name)); } }catch(e){}
+  try{ localStorage.clear(); sessionStorage.clear(); }catch(e){}
+  location.replace(location.pathname + '?yeni=' + Date.now());
+}
+$('resetDevice').addEventListener('click', () => {
+  if(confirm('Bu cihazdaki giriş, önbellek ve kayıtlar silinecek. Site ilk kez açılmış gibi başlayacak. Devam edilsin mi?')) resetDevice();
+});
+$('resetAll').addEventListener('click', async () => {
+  if(!confirm('HERKESİN ekranındaki tüm veriler (notlar, ödevler, ceza, tahta) silinecek ve bu cihaz sıfırlanacak. Emin misin?')) return;
+  if(!wipeAll){ toast('Bağlantı yok, sıfırlanamadı'); return; }
+  try{ await wipeAll(); }catch(e){ toast('Sıfırlanamadı, bağlantıyı kontrol et'); return; }
+  resetDevice();
+});
+
 /* ---------- Firebase ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyCVufVE2sG5-qSFt3G_pt8TnE-qo6hj7eM",
@@ -705,7 +780,8 @@ try{
   const { getDatabase, ref, onValue, set, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/'+V+'/firebase-database.js');
   const db = getDatabase(initializeApp(firebaseConfig));
 
-  saveRemote = list => set(ref(db, 'notlar'), list);
+  savePuan = (key, v) => set(ref(db, 'puanlar/' + key), v);
+  wipeAll = () => Promise.all(['puanlar','odevler','tahta','yazi','aferin','ceza'].map(k => set(ref(db, k), null)));
   saveOdev = list => set(ref(db, 'odevler'), list);
   saveTahta = n => set(ref(db, 'tahta'), n);
   giveYazi = obj => set(ref(db, 'yazi'), obj);
@@ -756,9 +832,14 @@ try{
       .catch(() => toast('Gönderilemedi, bağlantıyı kontrol et'));
   });
 
-  onValue(ref(db, 'notlar'), snap => {
-    const v = snap.val();
-    if(KARNE_DUZENLENEBILIR && v && !editing){ notlar = (Array.isArray(v) ? v : Object.values(v)).filter(Boolean).map(r => ({d: String(r.d || ''), n: clamp(r.n)})); renderRows(); }
+  onValue(ref(db, 'puanlar'), snap => {
+    const v = snap.val() || {}, old = puanlar; puanlar = {};
+    Object.keys(v).forEach(k => { if(typeof v[k] === 'number') puanlar[k] = v[k]; });
+    if(puanReady && role === 'student'){
+      const ch = dersler.filter(r => puanlar[r.key] !== undefined && puanlar[r.key] !== old[r.key]).pop();
+      if(ch){ toast('Kevser öğretmen not verdi: ' + ch.d + ' → ' + puanlar[ch.key] + ' 📝'); if(puanlar[ch.key] >= 85) burst(); }
+    }
+    puanReady = true; renderRows();
   });
 
   onValue(ref(db, '.info/connected'), s => { $('status').textContent = s.val() ? 'Bağlı ✔' : 'Bağlanıyor…'; });
